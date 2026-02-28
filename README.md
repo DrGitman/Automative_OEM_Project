@@ -1,3 +1,6 @@
+# Automative_OEM_Project
+A small system for a car manufacturer that helps customers track their vehicle’s maintenance history.
+
 # Gearhouse Automotive OEM Project
 
 A premium vehicle fleet management platform featuring real-time diagnostics, maintenance tracking, and workshop bookings.
