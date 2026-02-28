@@ -119,6 +119,12 @@ class DashboardStats(BaseModel):
     service_records_count: int
     scheduled_tasks_count: int
     user_name: str
+    investment_change: str = "0%"
+    records_change: str = "0%"
+    tasks_change: str = "0%"
+    investment_trend: List[float] = []
+    records_trend: List[float] = []
+    tasks_trend: List[float] = []
 
 class ChartDataPoint(BaseModel):
     month: str

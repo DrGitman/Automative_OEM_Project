@@ -5,6 +5,7 @@ import { HiDotsVertical, HiPlus, HiSearch, HiX, HiUpload, HiTrash, HiCheckCircle
 import { toast } from "sonner";
 // @ts-ignore
 import gearhouseLogo from "../../assets/Gearhouse logo Car only.png";
+import Pagination from "../components/common/Pagination";
 
 // ==========================================
 // MY VEHICLES PAGE
@@ -20,8 +21,7 @@ export default function MyVehicles() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
-
-  const itemsPerPage = 6;
+  const [itemsPerPage, setItemsPerPage] = useState(6);
 
   const fetchVehicles = async () => {
     const userStr = localStorage.getItem("user");
@@ -80,25 +80,17 @@ export default function MyVehicles() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[256px] flex-1">
-        <Header title="My Vehicles" subtitle="Let's check your Garage today" />
+      <div className="ml-[240px] flex-1">
+        <Header
+          title="My Vehicles"
+          subtitle="Let's check your Garage today"
+          searchValue={searchQuery}
+          onSearch={setSearchQuery}
+        />
 
-        <div className="p-10 space-y-8 max-w-[1600px] mx-auto">
+        <div className="p-8 space-y-6 max-w-[1200px] mx-auto">
           {/* Header Actions */}
-          <div className="flex justify-between items-center">
-            <div className="relative w-[400px]">
-              <HiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-[#A3A6B4] text-xl" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-14 pl-14 pr-6 bg-white border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] shadow-sm transition-all"
-              />
-              <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-bold text-[#A3A6B4] border border-[#EEEFF2] px-2 py-1 rounded-md">
-                <span>⌘</span><span>K</span>
-              </div>
-            </div>
+          <div className="flex justify-end items-center">
             <button
               onClick={() => setShowAddModal(true)}
               className="bg-[#D72322] text-white px-8 h-14 rounded-2xl font-black text-sm flex items-center gap-2 shadow-xl shadow-red-100 hover:scale-105 transition-all"
@@ -120,24 +112,16 @@ export default function MyVehicles() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between pt-10">
-            <p className="text-xs font-bold text-[#A3A6B4]">
-              Showing <span className="text-[#04091E]">1 to {currentVehicles.length}</span> of <span className="text-[#04091E]">{filteredVehicles.length}</span> vehicles
-            </p>
-            <div className="flex gap-2">
-              <button className="w-10 h-10 flex items-center justify-center border border-[#EEEFF2] rounded-xl text-[#A3A6B4] hover:bg-white sm:text-lg">&lt;</button>
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`w-10 h-10 flex items-center justify-center rounded-xl text-xs font-black transition-all ${currentPage === i + 1 ? 'bg-[#D72322] text-white shadow-lg' : 'bg-white text-[#747681] border border-[#EEEFF2]'}`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-              <button className="w-10 h-10 flex items-center justify-center border border-[#EEEFF2] rounded-xl text-[#A3A6B4] hover:bg-white sm:text-lg">&gt;</button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setItemsPerPage(size);
+              setCurrentPage(1);
+            }}
+          />
         </div>
       </div>
 
@@ -150,7 +134,7 @@ export default function MyVehicles() {
 
 function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => void, onView: () => void }) {
   return (
-    <div className="bg-white rounded-[32px] p-8 border border-[#EEEFF2] shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+    <div className="bg-white rounded-[32px] p-6 border border-[#EEEFF2] shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
       <div className="flex justify-between items-start mb-6">
         <div className="w-14 h-14 bg-[#F8F9FB] rounded-2xl flex items-center justify-center p-3 border border-[#EEEFF2]">
           {vehicle.image_url ? (
@@ -205,12 +189,12 @@ function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => 
 function ModalLayout({ title, children, onClose }: { title: string, children: React.ReactNode, onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="p-8 flex justify-between items-center bg-white border-b border-[#EEEFF2]">
+      <div className="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+        <div className="p-8 flex justify-between items-center bg-white border-b border-[#EEEFF2] shrink-0">
           <h2 className="text-2xl font-black text-[#04091E]">{title}</h2>
           <button onClick={onClose} className="p-2 hover:bg-[#F8F9FB] rounded-xl transition-all"><HiX className="text-2xl text-[#747681]" /></button>
         </div>
-        <div className="p-8 max-h-[85vh] overflow-y-auto">
+        <div className="p-8 overflow-y-auto">
           {children}
         </div>
       </div>
@@ -432,7 +416,7 @@ function Select({ label, options, value, onChange }: any) {
     <div className="space-y-2">
       <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">{label}</label>
       <select
-        value={value}
+        value={value || ""}
         onChange={e => onChange(e.target.value)}
         className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] transition-all text-sm font-black text-[#04091E] appearance-none"
       >

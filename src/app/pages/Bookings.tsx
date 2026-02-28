@@ -17,6 +17,7 @@ export default function Bookings() {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const hours = ["07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"];
 
@@ -66,6 +67,14 @@ export default function Bookings() {
     }
   }, [currentDate, viewMode]);
 
+  const filteredAppointments = useMemo(() => {
+    if (!searchQuery) return appointments;
+    return appointments.filter(a =>
+      a.service?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [appointments, searchQuery]);
+
   const handlePrev = () => {
     if (viewMode === "week") setCurrentDate(subDays(currentDate, 7));
     else if (viewMode === "day") setCurrentDate(subDays(currentDate, 1));
@@ -90,19 +99,24 @@ export default function Bookings() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[256px] flex-1 overflow-x-hidden">
-        <Header title="Bookings" subtitle="Let's check your Garage today" />
+      <div className="ml-[240px] flex-1 overflow-x-hidden">
+        <Header
+          title="Bookings"
+          subtitle="Let's check your Garage today"
+          searchValue={searchQuery}
+          onSearch={setSearchQuery}
+        />
 
-        <div className="p-10 max-w-[1600px] mx-auto">
+        <div className="p-8 max-w-[1240px] mx-auto">
           <div className="bg-white rounded-[40px] border border-[#EEEFF2] shadow-sm overflow-hidden min-h-[800px] flex flex-col">
             {/* Calendar Header */}
-            <div className="p-8 border-b border-[#EEEFF2] flex flex-col md:flex-row items-center justify-between gap-6 bg-white">
+            <div className="p-6 border-b border-[#EEEFF2] flex flex-col md:flex-row items-center justify-between gap-6 bg-white">
               <div className="flex items-center gap-6">
-                <div className="w-14 h-14 border border-[#EEEFF2] rounded-2xl flex items-center justify-center text-[#D72322] shadow-inner">
-                  <HiCalendar className="text-2xl" />
+                <div className="w-12 h-12 border border-[#EEEFF2] rounded-2xl flex items-center justify-center text-[#D72322] shadow-inner">
+                  <HiCalendar className="text-xl" />
                 </div>
                 <div>
-                  <h3 className="text-[#04091E] text-2xl font-black">
+                  <h3 className="text-[#04091E] text-xl font-black">
                     {viewMode === 'day' ? format(currentDate, "EEEE, MMM d, yyyy") : format(currentDate, "MMMM yyyy")}
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
@@ -130,7 +144,7 @@ export default function Bookings() {
 
               <button
                 onClick={() => setShowAddModal(true)}
-                className="bg-[#D72322] w-14 h-14 rounded-2xl shadow-xl shadow-red-100 hover:bg-[#B91C1C] transition-all flex items-center justify-center text-white"
+                className="bg-[#D72322] w-12 h-12 rounded-2xl shadow-xl shadow-red-100 hover:bg-[#B91C1C] transition-all flex items-center justify-center text-white"
               >
                 <HiPlus className="text-2xl" />
               </button>
@@ -139,9 +153,9 @@ export default function Bookings() {
             {/* Calendar Body */}
             <div className="flex-1 overflow-auto">
               {viewMode === 'month' ? (
-                <MonthView days={calendarDays} appointments={appointments} currentDate={currentDate} onSelect={setSelectedBooking} />
+                <MonthView days={calendarDays} appointments={filteredAppointments} currentDate={currentDate} onSelect={setSelectedBooking} />
               ) : (
-                <GridView mode={viewMode} days={calendarDays} hours={hours} appointments={appointments} onSelect={setSelectedBooking} />
+                <GridView mode={viewMode} days={calendarDays} hours={hours} appointments={filteredAppointments} onSelect={setSelectedBooking} />
               )}
             </div>
           </div>
@@ -276,8 +290,8 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-[40px] w-full max-w-4xl flex overflow-hidden animate-in zoom-in-95 duration-200">
-        <div className="flex-1 p-10 border-r border-[#EEEFF2]">
+      <div className="bg-white rounded-[40px] w-full max-w-4xl flex overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh]">
+        <div className="flex-1 p-10 border-r border-[#EEEFF2] overflow-y-auto">
           <div className="flex items-center gap-3 mb-8">
             <HiCalendar className="text-[#D72322] text-2xl" />
             <h2 className="text-[10px] font-black text-[#04091E] uppercase tracking-[0.2em]">Service Details</h2>
@@ -361,8 +375,7 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
             </div>
           </form>
         </div>
-
-        <div className="w-80 bg-[#F8F9FB] p-10 flex flex-col">
+        <div className="w-80 bg-[#F8F9FB] p-10 flex flex-col overflow-y-auto shrink-0">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-10">
               <HiInformationCircle className="text-[#A3A6B4] text-2xl" />
@@ -403,8 +416,8 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
 function BookingDetailsModal({ booking, onClose }: any) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-[40px] w-full max-w-xl p-10 animate-in zoom-in-95 duration-200 shadow-2xl overflow-hidden relative">
-        <button onClick={onClose} className="absolute top-8 right-8 p-2 hover:bg-[#F8F9FB] rounded-xl"><HiX className="text-2xl text-[#747681]" /></button>
+      <div className="bg-white rounded-[40px] w-full max-w-xl p-10 animate-in zoom-in-95 duration-200 shadow-2xl overflow-y-auto max-h-[90vh] relative">
+        <button onClick={onClose} className="absolute top-8 right-8 p-2 hover:bg-[#F8F9FB] rounded-xl z-10"><HiX className="text-2xl text-[#747681]" /></button>
 
         <div className="flex items-center gap-4 mb-10">
           <div className="w-20 h-20 rounded-[24px] bg-[#FEF2F2] border border-red-50 flex items-center justify-center text-[#D72322]">

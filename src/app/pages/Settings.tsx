@@ -17,10 +17,10 @@ export default function Settings() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[256px] flex-1 overflow-x-hidden">
+      <div className="ml-[240px] flex-1 overflow-x-hidden">
         <Header title="Settings" subtitle="Configure your Gearhouse experience" />
 
-        <div className="p-10 space-y-8 max-w-[1000px]">
+        <div className="p-8 space-y-6 max-w-[1000px]">
           {/* Notifications Section */}
           <Section icon={<HiBell />} title="Notifications" subtitle="Choose what you want to be notified about">
             <div className="space-y-6">
@@ -101,7 +101,7 @@ export default function Settings() {
 
 function Section({ icon, title, subtitle, children }: any) {
   return (
-    <div className="bg-white rounded-3xl p-10 border border-[#EEEFF2] shadow-sm">
+    <div className="bg-white rounded-3xl p-8 border border-[#EEEFF2] shadow-sm">
       <div className="flex items-center gap-6 mb-10">
         <div className="bg-[#FEF2F2] p-4 rounded-2xl text-[#D72322] text-2xl">
           {icon}

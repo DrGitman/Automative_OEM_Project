@@ -48,18 +48,18 @@ export default function MyAccount() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[256px] flex-1 overflow-x-hidden">
+      <div className="ml-[240px] flex-1 overflow-x-hidden">
         <Header title="My Account" subtitle="Manage your personal profile and security" />
 
-        <div className="p-10 space-y-8 max-w-[1000px]">
+        <div className="p-8 space-y-6 max-w-[1000px]">
           <div className="bg-white rounded-3xl border border-[#EEEFF2] shadow-sm overflow-hidden">
-            <div className="p-10">
+            <div className="p-8">
               {/* Profile Header */}
               <div className="flex flex-col md:flex-row items-center md:items-start justify-between pb-10 border-b border-[#EEEFF2] mb-10 gap-8">
                 <div className="flex flex-col md:flex-row items-center gap-8">
                   <div className="relative">
-                    <div className="size-[140px] rounded-full bg-[#FEF2F2] flex items-center justify-center border-4 border-white shadow-xl">
-                      <span className="font-black text-[#D72322] text-5xl">
+                    <div className="size-[120px] rounded-full bg-[#FEF2F2] flex items-center justify-center border-4 border-white shadow-xl">
+                      <span className="font-black text-[#D72322] text-4xl">
                         {formData.firstname[0]}{formData.lastname[0]}
                       </span>
                     </div>

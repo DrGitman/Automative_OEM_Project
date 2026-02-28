@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router";
 import { HiDotsVertical, HiClock, HiExclamationCircle, HiSparkles, HiX } from "react-icons/hi";
 import gearhouseLogo from "../../assets/Gearhouse logo Car only.png";
+import Pagination from "../components/common/Pagination";
 
 // ==========================================
 // DASHBOARD PAGE
@@ -18,9 +19,9 @@ export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [vehiclesPerPage, setVehiclesPerPage] = useState(6);
   const [showAiModal, setShowAiModal] = useState(false);
   const navigate = useNavigate();
-  const vehiclesPerPage = 3;
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -111,38 +112,38 @@ export default function Dashboard() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[256px] flex-1 overflow-x-hidden">
+      <div className="ml-[240px] flex-1 overflow-x-hidden">
         <Header
           title={`Hi, ${stats.user_name.split(' ')[0]}`}
           subtitle="Let's check your Garage today"
         />
 
-        <div className="p-10 space-y-8 max-w-[1400px]">
+        <div className="p-8 space-y-6 max-w-[1200px]">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard
               label="Total Investment"
               value={`N$${stats.total_investment.toLocaleString()}`}
-              change="- 0.5% from last week"
+              change={stats.investment_change}
               type="investment"
               color="red"
-              trend={[30, 70, 45, 90, 60, 100, 80]}
+              trend={stats.investment_trend}
             />
             <StatCard
               label="Service Records"
               value={stats.service_records_count.toString()}
-              change="+ 1.0% from last week"
+              change={stats.records_change}
               type="records"
               color="orange"
-              trend={[20, 40, 30, 60, 50, 80, 70]}
+              trend={stats.records_trend}
             />
             <StatCard
               label="Scheduled Tasks"
               value={stats.scheduled_tasks_count.toString()}
-              change="+ 1.0% from last week"
+              change={stats.tasks_change}
               type="tasks"
               color="pink"
-              trend={[50, 30, 60, 40, 70, 50, 90]}
+              trend={stats.tasks_trend}
             />
           </div>
 
@@ -153,9 +154,9 @@ export default function Dashboard() {
               <div className="bg-white p-8 rounded-2xl border border-[#EEEFF2] shadow-sm">
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
                   <div>
-                    <p className="text-[#747681] text-sm mb-1 font-medium">Maintenance Activity Overview</p>
+                    <p className="text-[#747681] text-xs mb-1 font-medium">Maintenance Activity Overview</p>
                     <div className="flex items-center gap-3">
-                      <h2 className="text-3xl font-black text-[#04091E]">242 Alerts</h2>
+                      <h2 className="text-2xl font-black text-[#04091E]">242 Alerts</h2>
                       <span className="bg-[#EC221F] text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
                           <path d="m19 12-7 7-7-7M12 19V5" />
@@ -236,8 +237,8 @@ export default function Dashboard() {
               </div>
 
               {/* Vehicle Status Table */}
-              <div className="bg-white p-8 rounded-2xl border border-[#EEEFF2] shadow-sm">
-                <h3 className="text-xl font-bold text-[#04091E] mb-6">Vehicle Status</h3>
+              <div className="bg-white p-6 rounded-2xl border border-[#EEEFF2] shadow-sm">
+                <h3 className="text-lg font-bold text-[#04091E] mb-6">Vehicle Status</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
@@ -293,20 +294,16 @@ export default function Dashboard() {
                   </table>
                 </div>
                 {/* Pagination */}
-                <div className="mt-8 flex justify-end gap-2">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                    <button
-                      key={page}
-                      onClick={() => setCurrentPage(page)}
-                      className={`w-8 h-8 rounded-lg text-sm font-black transition-all ${currentPage === page
-                        ? 'bg-[#D72322] text-white shadow-lg shadow-red-100'
-                        : 'bg-[#F8F9FB] text-[#747681] hover:bg-gray-200 border border-[#EEEFF2]'
-                        }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={vehiclesPerPage}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={(size) => {
+                    setVehiclesPerPage(size);
+                    setCurrentPage(1);
+                  }}
+                />
               </div>
             </div>
 
@@ -461,11 +458,11 @@ function StatCard({ label, value, change, type, color, trend }: any) {
   const isPositive = change.includes('+');
 
   return (
-    <div className="bg-white p-8 rounded-2xl border border-[#EEEFF2] shadow-sm group hover:border-[#D72322]/20 transition-all duration-300">
+    <div className="bg-white p-6 rounded-2xl border border-[#EEEFF2] shadow-sm group hover:border-[#D72322]/20 transition-all duration-300">
       <div className="flex justify-between items-start mb-6">
         <div>
           <p className="text-[#A3A6B4] text-sm font-bold mb-4 uppercase tracking-wider">{label}</p>
-          <h3 className="text-3xl font-black text-[#04091E] mb-2">{value}</h3>
+          <h3 className="text-2xl font-black text-[#04091E] mb-2">{value}</h3>
           <div className="flex items-center gap-1.5">
             <span className={`text-xs font-black ${isPositive ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
               {isPositive ? '↑' : '↓'} {change.split(' ')[1]}
@@ -482,7 +479,7 @@ function StatCard({ label, value, change, type, color, trend }: any) {
       </div>
 
       {/* Sparkline simulation */}
-      <div className="flex items-end gap-1.5 h-14 mt-8">
+      <div className="flex items-end gap-1.5 h-12 mt-8">
         {trend.map((h: number, i: number) => (
           <div
             key={i}

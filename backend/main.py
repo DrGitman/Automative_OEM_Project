@@ -85,20 +85,26 @@ def seed_user_data(db: Session, user_id: int):
     db.add_all([v1, v2, v3])
     db.commit()
 
-    # Add Service History with Parts
+    # Add Service History (Total $9,445 across 2 records)
     s1 = models.ServiceHistory(
-        vehicle_id=v1.id, cost=350.0, 
-        description="Critical safety check of brake pads and hydraulic lines. Found significant wear on front left rotor. Replaced pads with heavy-duty ceramic variant for improved towing performance.", 
-        service_type="Brake Change", service_date=datetime(2023, 10, 20),
-        technician_location="Main Street Auto Service", mileage=124500
+        vehicle_id=v1.id, cost=5620.0, 
+        description="Major engine overhaul and fuel system cleaning. Replaced fuel injectors and high-pressure pump.", 
+        service_type="Engine Overhaul", service_date=datetime(2023, 11, 15),
+        technician_location="Gearhouse Premium Service", mileage=124500
     )
-    db.add(s1)
+    s2 = models.ServiceHistory(
+        vehicle_id=v2.id, cost=3825.0, 
+        description="Comprehensive electrical system diagnostic and battery replacement. Updated firmware for all control modules.", 
+        service_type="Electrical Service", service_date=datetime(2024, 1, 10),
+        technician_location="Electro Auto Lab", mileage=12400
+    )
+    db.add_all([s1, s2])
     db.commit()
     
     parts = [
-        models.ServicePart(service_id=s1.id, part_name="Heavy Duty Brake Pads (Front Set)", cost=185.0),
-        models.ServicePart(service_id=s1.id, part_name="Rotor Refacing Service", cost=95.0),
-        models.ServicePart(service_id=s1.id, part_name="DOT 4 Brake Fluid (1L)", cost=25.0)
+        models.ServicePart(service_id=s1.id, part_name="Fuel Injectors (Set of 6)", cost=2400.0),
+        models.ServicePart(service_id=s1.id, part_name="High Pressure Fuel Pump", cost=1850.0),
+        models.ServicePart(service_id=s2.id, part_name="Premium AGM Battery", cost=850.0)
     ]
     db.add_all(parts)
 
@@ -217,36 +223,50 @@ def get_dashboard_data(user_id: int, db: Session = Depends(database.get_db)):
 
         return {
             "stats": {
-                "total_investment": float(total_inv),
-                "service_records_count": int(service_count),
-                "scheduled_tasks_count": int(scheduled_tasks),
-                "user_name": f"{user.firstname} {user.lastname}"
+                "total_investment": float(total_inv or 0.0),
+                "service_records_count": int(service_count or 0),
+                "scheduled_tasks_count": int(scheduled_tasks or 0),
+                "user_name": f"{getattr(user, 'firstname', 'User')} {getattr(user, 'lastname', '')}".strip(),
+                "investment_change": "- 0.5% from last week",
+                "records_change": "+ 1.0% from last week",
+                "tasks_change": "+ 1.0% from last week",
+                "investment_trend": [30, 70, 45, 90, 60, 100, 80],
+                "records_trend": [20, 40, 30, 60, 50, 80, 70],
+                "tasks_trend": [50, 30, 60, 40, 70, 50, 90]
             },
             "vehicles": [
                 {
-                    "id": v.id,
-                    "make": v.make,
-                    "model": v.model,
-                    "year": v.year,
-                    "vin": v.vin,
-                    "license_plate": v.license_plate,
-                    "color": v.color,
-                    "mileage": v.mileage,
-                    "engine_cc": v.engine_cc,
-                    "engine_type": v.engine_type,
-                    "transmission": v.transmission,
-                    "fuel_capacity": v.fuel_capacity,
-                    "fuel_type": v.fuel_type,
-                    "last_service_date": v.last_service_date,
-                    "service_interval": v.service_interval,
-                    "status": v.status,
-                    "risk_level": v.risk_level,
-                    "health_score": v.health_score,
-                    "image_url": v.image_url
+                    "id": getattr(v, 'id', 0),
+                    "make": getattr(v, 'make', 'Unknown'),
+                    "model": getattr(v, 'model', 'Unknown'),
+                    "year": getattr(v, 'year', 2024),
+                    "vin": getattr(v, 'vin', 'N/A'),
+                    "license_plate": getattr(v, 'license_plate', 'N/A'),
+                    "color": getattr(v, 'color', 'N/A'),
+                    "mileage": getattr(v, 'mileage', 0),
+                    "engine_cc": getattr(v, 'engine_cc', 'N/A'),
+                    "engine_type": getattr(v, 'engine_type', 'N/A'),
+                    "transmission": getattr(v, 'transmission', 'N/A'),
+                    "fuel_capacity": getattr(v, 'fuel_capacity', 'N/A'),
+                    "fuel_type": getattr(v, 'fuel_type', 'N/A'),
+                    "last_service_date": v.last_service_date.isoformat() if v.last_service_date else None,
+                    "service_interval": getattr(v, 'service_interval', 10000),
+                    "status": getattr(v, 'status', 'Operational'),
+                    "risk_level": getattr(v, 'risk_level', 'Low'),
+                    "health_score": getattr(v, 'health_score', 100),
+                    "image_url": getattr(v, 'image_url', None)
                 } for v in user.vehicles
             ],
             "chart_data": chart_data,
-            "notifications": notifications
+            "notifications": [
+                {
+                    "id": getattr(n, 'id', 0),
+                    "title": getattr(n, 'title', 'Notification'),
+                    "message": getattr(n, 'message', ''),
+                    "type": getattr(n, 'type', 'info'),
+                    "created_at": n.created_at.isoformat() if n.created_at else None
+                } for n in notifications
+            ]
         }
     except Exception as e:
         import traceback
@@ -349,13 +369,36 @@ def get_maintenance_data(user_id: int, db: Session = Depends(database.get_db)):
 
         return {
             "stats": {
-                "total_logs": total_logs,
-                "active_alerts": active_alerts,
-                "completed_ytd": completed_ytd,
+                "total_logs": int(total_logs or 0),
+                "active_alerts": int(active_alerts or 0),
+                "completed_ytd": int(completed_ytd or 0),
                 "ai_predicted": 15
             },
-            "records": sorted(records, key=lambda x: x['date'], reverse=True),
-            "upcoming": upcoming
+            "records": sorted(records, key=lambda x: x.get('date', ''), reverse=True),
+            "upcoming": upcoming,
+            "vehicles": [
+                {
+                    "id": getattr(v, 'id', 0),
+                    "make": getattr(v, 'make', 'Unknown'),
+                    "model": getattr(v, 'model', 'Unknown'),
+                    "year": getattr(v, 'year', 2024),
+                    "vin": getattr(v, 'vin', 'N/A'),
+                    "license_plate": getattr(v, 'license_plate', 'N/A'),
+                    "color": getattr(v, 'color', 'N/A'),
+                    "mileage": getattr(v, 'mileage', 0.0),
+                    "engine_cc": getattr(v, 'engine_cc', 'N/A'),
+                    "engine_type": getattr(v, 'engine_type', 'N/A'),
+                    "transmission": getattr(v, 'transmission', 'N/A'),
+                    "fuel_capacity": getattr(v, 'fuel_capacity', 'N/A'),
+                    "fuel_type": getattr(v, 'fuel_type', 'N/A'),
+                    "last_service_date": v.last_service_date,
+                    "service_interval": getattr(v, 'service_interval', 10000),
+                    "status": getattr(v, 'status', 'In Operation'),
+                    "risk_level": getattr(v, 'risk_level', 'Low'),
+                    "health_score": getattr(v, 'health_score', 100),
+                    "image_url": getattr(v, 'image_url', None)
+                } for v in user.vehicles
+            ]
         }
     except Exception as e:
         import traceback

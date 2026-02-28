@@ -27,10 +27,10 @@ export default function Sidebar() {
   const location = useLocation();
 
   return (
-    <div className="bg-white h-full w-[256px] fixed left-0 top-0 border-r border-[#EEEFF2] flex flex-col items-center z-10">
+    <div className="bg-white h-full w-[240px] fixed left-0 top-0 border-r border-[#EEEFF2] flex flex-col items-center z-10">
       {/* Logo Section */}
-      <div className="pt-10 pb-12 flex flex-col items-center">
-        <div className="w-[106px] h-[85px] mb-4">
+      <div className="pt-8 pb-10 flex flex-col items-center">
+        <div className="w-[86px] h-[70px] mb-4">
           <img src={gearhouseLogo} alt="Gearhouse" className="w-full h-full object-contain" />
         </div>
         <h2 className="font-['Outfit',sans-serif] font-black text-[#D72322] text-2xl tracking-tighter">

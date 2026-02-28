@@ -6,7 +6,17 @@ import { HiSearch, HiBell, HiSparkles } from "react-icons/hi";
 // HEADER COMPONENT
 // Displays page title, search bar, and user profile information.
 // ==========================================
-export default function Header({ title, subtitle }: { title: string; subtitle: string }) {
+export default function Header({
+  title,
+  subtitle,
+  onSearch,
+  searchValue
+}: {
+  title: string;
+  subtitle: string;
+  onSearch?: (value: string) => void;
+  searchValue?: string;
+}) {
   const [user, setUser] = useState<{ firstname: string, lastname: string } | null>(null);
 
   useEffect(() => {
@@ -17,20 +27,22 @@ export default function Header({ title, subtitle }: { title: string; subtitle: s
   }, []);
 
   return (
-    <div className="bg-white h-[96px] w-full flex items-center justify-between px-[48px] border-b border-[#EEEFF2]">
+    <div className="bg-white h-[80px] w-full flex items-center justify-between px-8 border-b border-[#EEEFF2]">
       <div>
         <h1 className="font-['Outfit',sans-serif] font-bold text-[#04091e] text-[24px]">{title}</h1>
         <p className="font-['Outfit',sans-serif] text-[#747681] text-[14px]">{subtitle}</p>
       </div>
 
-      <div className="flex items-center gap-[48px]">
+      <div className="flex items-center gap-8">
         {/* Search */}
-        <div className="bg-[#f5f5f5] h-[48px] w-[412px] rounded-[12px] flex items-center justify-between px-[16px]">
+        <div className="bg-[#f5f5f5] h-[44px] w-[360px] rounded-[10px] flex items-center justify-between px-[16px]">
           <div className="flex items-center gap-[12px] flex-1">
             <HiSearch className="text-[#04091E] text-xl" />
             <input
               type="text"
               placeholder="Search..."
+              value={searchValue !== undefined ? searchValue : undefined}
+              onChange={(e) => onSearch?.(e.target.value)}
               className="bg-transparent border-none outline-none font-['Outfit',sans-serif] text-[#747681] text-[14px] w-full"
             />
           </div>
