@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from typing import List, Optional, Dict
 from datetime import datetime
-import models, schemas, database
+import models, schemas, database, os, shutil, uuid
 
 app = FastAPI()
 
@@ -24,6 +25,13 @@ app.add_middleware(
 
 # Password hashing configuration
 pwd_context = CryptContext(schemes=["pbkdf2_sha256", "bcrypt"], deprecated="auto")
+
+# Ensure uploads directory exists
+UPLOAD_DIR = "uploads"
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -544,6 +552,19 @@ def add_vehicle(vehicle: schemas.VehicleCreate, user_id: int, db: Session = Depe
     db.commit()
     db.refresh(db_vehicle)
     return db_vehicle
+
+@app.post("/upload-image")
+async def upload_image(file: UploadFile = File(...)):
+    # Generate unique filename
+    file_extension = os.path.splitext(file.filename)[1]
+    unique_filename = f"{uuid.uuid4()}{file_extension}"
+    file_path = os.path.join(UPLOAD_DIR, unique_filename)
+    
+    # Save file
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+        
+    return {"url": f"http://localhost:8000/uploads/{unique_filename}"}
 
 @app.put("/vehicles/update/{vehicle_id}", response_model=schemas.VehicleResponse)
 def update_vehicle(vehicle_id: int, vehicle: schemas.VehicleUpdate, db: Session = Depends(database.get_db)):

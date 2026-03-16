@@ -170,29 +170,29 @@ export default function Maintenance() {
                 </div>
               </div>
 
-              <div className="overflow-visible pb-10">
-                <table className="w-full relative">
+              <div className="overflow-visible pb-10 min-h-[480px]">
+                <table className="w-full relative table-fixed">
                   <thead>
                     <tr className="text-left bg-white border-b border-[#EEEFF2]">
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Vehicle</th>
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Service Type</th>
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Date</th>
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Status</th>
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Cost</th>
+                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[160px]">Vehicle</th>
+                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[120px]">Service Type</th>
+                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Date</th>
+                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Status</th>
+                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Cost</th>
                       <th className="py-4 px-4 text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Notes</th>
-                      <th className="py-4 px-4 w-10"></th>
+                      <th className="py-4 px-4 w-12"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#EEEFF2]">
                     {currentRecords.map((record: any) => (
-                      <tr key={record.id} className={`hover:bg-gray-50/50 transition-all relative ${statusMenuId === record.id || actionMenuId === record.id ? 'z-50' : 'z-0'}`}>
+                      <tr key={record.id} className={`hover:bg-gray-50/50 transition-all relative h-[84px] ${statusMenuId === record.id || actionMenuId === record.id ? 'z-50' : 'z-0'}`}>
                         <td className="py-5 px-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-[#F8F9FB] rounded-xl border border-[#EEEFF2] flex items-center justify-center font-black text-[#D72322] text-[10px]">
                               {record.vehicle.substring(0, 2).toUpperCase()}
                             </div>
-                            <div>
-                              <p className="font-bold text-[#04091E] text-xs leading-tight">{record.vehicle}</p>
+                            <div className="truncate">
+                              <p className="font-bold text-[#04091E] text-xs leading-tight truncate">{record.vehicle}</p>
                               <p className="text-[9px] text-[#A3A6B4] font-medium tracking-wide">
                                 VIN: {record.vin && record.vin !== "N/A" ? `...${record.vin.slice(-6)}` : '...38842'}
                               </p>
@@ -260,6 +260,11 @@ export default function Maintenance() {
                         </td>
                       </tr>
                     ))}
+                    {currentRecords.length < recordsPerPage && Array.from({ length: recordsPerPage - currentRecords.length }).map((_, idx) => (
+                      <tr key={`empty-${idx}`} className="h-[84px]">
+                        <td colSpan={7}>&nbsp;</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -274,6 +279,7 @@ export default function Maintenance() {
                     setRecordsPerPage(size);
                     setCurrentPage(1);
                   }}
+                  hidePageSize={true}
                 />
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { HiDotsVertical, HiPlus, HiSearch, HiX, HiUpload, HiTrash, HiCheckCircle, HiCalendar, HiInformationCircle } from "react-icons/hi";
@@ -100,7 +100,7 @@ export default function MyVehicles() {
           </div>
 
           {/* Grid */}
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid grid-cols-3 gap-8 min-h-[800px] content-start">
             {currentVehicles.map((vehicle) => (
               <VehicleCard
                 key={vehicle.id}
@@ -109,19 +109,27 @@ export default function MyVehicles() {
                 onView={() => handleOpenView(vehicle)}
               />
             ))}
+            {currentVehicles.length < itemsPerPage && Array.from({ length: itemsPerPage - currentVehicles.length }).map((_, idx) => (
+              <div key={`empty-${idx}`} className="h-[420px] rounded-[32px] border border-dashed border-[#EEEFF2] bg-gray-50/30 flex items-center justify-center">
+                <p className="text-[#A3A6B4] text-[10px] font-black uppercase tracking-widest">Empty Slot</p>
+              </div>
+            ))}
           </div>
 
           {/* Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            pageSize={itemsPerPage}
-            onPageChange={setCurrentPage}
-            onPageSizeChange={(size) => {
-              setItemsPerPage(size);
-              setCurrentPage(1);
-            }}
-          />
+          <div className="pt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={itemsPerPage}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(size) => {
+                setItemsPerPage(size);
+                setCurrentPage(1);
+              }}
+              hidePageSize={true}
+            />
+          </div>
         </div>
       </div>
 
@@ -204,8 +212,35 @@ function ModalLayout({ title, children, onClose }: { title: string, children: Re
 
 function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefresh: () => void }) {
   const [formData, setFormData] = useState({
-    make: "", model: "", year: 2024, license_plate: "", fuel_type: "", vehicle_type: "", mileage: 0, service_interval: 10000, vin: "", notes: ""
+    make: "", model: "", year: 2024, license_plate: "", fuel_type: "", vehicle_type: "", mileage: 0, service_interval: 10000, vin: "", notes: "", image_url: ""
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+
+    try {
+      const resp = await fetch("http://localhost:8000/upload-image", {
+        method: "POST",
+        body: formDataUpload,
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        setFormData({ ...formData, image_url: data.url });
+        toast.success("Image uploaded!");
+      }
+    } catch (err) {
+      toast.error("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,9 +279,27 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
           <Input label="YEAR" value={formData.year} onChange={(v: string) => setFormData({ ...formData, year: parseInt(v) })} />
           <div className="space-y-2">
             <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">VEHICLE IMAGE</span>
-            <div className="h-24 border-2 border-dashed border-[#EEEFF2] rounded-2xl flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-[#D72322] transition-all">
-              <HiUpload className="text-[#D72322] text-xl" />
-              <span className="text-[10px] font-bold text-[#747681]">Upload Vehicle Image</span>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className="h-24 border-2 border-dashed border-[#EEEFF2] rounded-2xl flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-[#D72322] transition-all overflow-hidden bg-[#F8F9FB]"
+            >
+              {formData.image_url ? (
+                <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+              ) : uploading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#D72322]"></div>
+              ) : (
+                <>
+                  <HiUpload className="text-[#D72322] text-xl" />
+                  <span className="text-[10px] font-bold text-[#747681]">Upload Vehicle Image</span>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -270,6 +323,33 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
 
 function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClose: () => void, onRefresh: () => void }) {
   const [formData, setFormData] = useState({ ...vehicle });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+
+    try {
+      const resp = await fetch("http://localhost:8000/upload-image", {
+        method: "POST",
+        body: formDataUpload,
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        setFormData({ ...formData, image_url: data.url });
+        toast.success("Image uploaded!");
+      }
+    } catch (err) {
+      toast.error("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -317,12 +397,25 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
           <Select label="FUEL TYPE" options={["Diesel", "Gasoline", "Electric", "Hybrid"]} value={formData.fuel_type} onChange={(v: string) => setFormData({ ...formData, fuel_type: v })} />
           <div className="space-y-2">
             <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">VEHICLE IMAGE</span>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
             <div className="flex items-center gap-4 bg-[#F8F9FB] p-4 rounded-2xl border border-[#EEEFF2]">
-              <div className="w-16 h-12 bg-white rounded-lg p-1 border border-[#EEEFF2]">
-                <img src={vehicle.image_url || gearhouseLogo} alt="" className="w-full h-full object-contain" />
+              <div className="w-16 h-12 bg-white rounded-lg p-1 border border-[#EEEFF2] overflow-hidden">
+                <img src={formData.image_url || gearhouseLogo} alt="" className="w-full h-full object-contain" />
               </div>
-              <button type="button" className="flex items-center gap-2 text-[10px] font-black text-[#04091E] border border-[#EEEFF2] px-4 py-2 rounded-xl bg-white hover:bg-gray-50">
-                <HiUpload /> Replace Image
+              <button 
+                type="button" 
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="flex items-center gap-2 text-[10px] font-black text-[#04091E] border border-[#EEEFF2] px-4 py-2 rounded-xl bg-white hover:bg-gray-50 disabled:opacity-50"
+              >
+                {uploading ? <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-[#D72322]"></div> : <HiUpload />} 
+                {uploading ? "Uploading..." : "Replace Image"}
               </button>
             </div>
           </div>
@@ -397,13 +490,14 @@ function ViewVehicleModal({ vehicle, onEdit, onClose }: { vehicle: any, onEdit: 
   );
 }
 
-function Input({ label, ...props }: any) {
+function Input({ label, onChange, ...props }: any) {
   return (
     <div className="space-y-2 relative">
       <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">{label}</label>
       <div className="relative">
         <input
           {...props}
+          onChange={(e) => onChange?.(e.target.value)}
           className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] transition-all text-sm font-black text-[#04091E]"
         />
         {props.suffix && (

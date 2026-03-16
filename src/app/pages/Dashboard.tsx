@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import { useNavigate } from "react-router";
 import { HiDotsVertical, HiClock, HiExclamationCircle, HiSparkles, HiX } from "react-icons/hi";
+// @ts-ignore
 import gearhouseLogo from "../../assets/Gearhouse logo Car only.png";
 import Pagination from "../components/common/Pagination";
 
@@ -239,32 +240,32 @@ export default function Dashboard() {
               {/* Vehicle Status Table */}
               <div className="bg-white p-6 rounded-2xl border border-[#EEEFF2] shadow-sm">
                 <h3 className="text-lg font-bold text-[#04091E] mb-6">Vehicle Status</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto min-h-[480px]">
+                  <table className="w-full table-fixed">
                     <thead>
                       <tr className="text-left border-b border-[#EEEFF2]">
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4]">No</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4]">Vehicle Name</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4]">Last Service</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4]">Mileage</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4]">Risk Level</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] text-right">Actions</th>
+                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-12">No</th>
+                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-[200px]">Vehicle Name</th>
+                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-[140px]">Last Service</th>
+                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-[120px]">Mileage</th>
+                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-[100px]">Risk Level</th>
+                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] text-right w-12">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#EEEFF2]">
                       {currentVehicles.map((v: any, idx: number) => (
-                        <tr key={v.id} className="group hover:bg-gray-50 transition-colors">
+                        <tr key={v.id} className="group hover:bg-gray-50 transition-colors h-[84px]">
                           <td className="py-5 font-bold text-[#04091E]">
                             {(indexOfFirstVehicle + idx + 1).toString().padStart(2, '0')}
                           </td>
                           <td className="py-5">
                             <div className="flex items-center gap-4">
-                              <div className="w-12 h-10 bg-[#F8F9FB] rounded-lg flex items-center justify-center p-1 border border-[#EEEFF2]">
+                              <div className="w-12 h-10 bg-[#F8F9FB] rounded-lg flex items-center justify-center p-1 border border-[#EEEFF2] shrink-0">
                                 <img src={gearhouseLogo} alt="car" className="w-full h-full object-contain grayscale opacity-60" />
                               </div>
-                              <div>
-                                <p className="text-sm font-black text-[#04091E]">{v.make} : {v.model}</p>
-                                <p className="text-xs font-medium text-[#747681]">{v.license_plate || "N/A"}</p>
+                              <div className="truncate">
+                                <p className="text-sm font-black text-[#04091E] truncate">{v.make} : {v.model}</p>
+                                <p className="text-xs font-medium text-[#747681] truncate">{v.license_plate || "N/A"}</p>
                               </div>
                             </div>
                           </td>
@@ -290,20 +291,28 @@ export default function Dashboard() {
                           </td>
                         </tr>
                       ))}
+                      {currentVehicles.length < vehiclesPerPage && Array.from({ length: vehiclesPerPage - currentVehicles.length }).map((_, idx) => (
+                        <tr key={`empty-${idx}`} className="h-[84px]">
+                          <td colSpan={6}>&nbsp;</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
                 {/* Pagination */}
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  pageSize={vehiclesPerPage}
-                  onPageChange={setCurrentPage}
-                  onPageSizeChange={(size) => {
-                    setVehiclesPerPage(size);
-                    setCurrentPage(1);
-                  }}
-                />
+                <div className="pt-4">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    pageSize={vehiclesPerPage}
+                    onPageChange={setCurrentPage}
+                    onPageSizeChange={(size) => {
+                      setVehiclesPerPage(size);
+                      setCurrentPage(1);
+                    }}
+                    hidePageSize={true}
+                  />
+                </div>
               </div>
             </div>
 

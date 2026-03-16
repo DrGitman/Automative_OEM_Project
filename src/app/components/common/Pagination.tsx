@@ -6,6 +6,7 @@ interface PaginationProps {
     pageSize: number;
     onPageChange: (page: number) => void;
     onPageSizeChange: (size: number) => void;
+    hidePageSize?: boolean;
 }
 
 export default function Pagination({
@@ -14,6 +15,7 @@ export default function Pagination({
     pageSize,
     onPageChange,
     onPageSizeChange,
+    hidePageSize = false,
 }: PaginationProps) {
     const pages = [];
 
@@ -36,29 +38,31 @@ export default function Pagination({
     }
 
     return (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-6 border-t border-[#EEEFF2] mt-6">
+        <div className={`flex flex-col sm:flex-row items-center ${hidePageSize ? 'justify-center' : 'justify-between'} gap-6 py-6 border-t border-[#EEEFF2] mt-6`}>
             {/* Left side: Page Size Selector */}
-            <div className="flex items-center gap-3">
-                <span className="text-[#A3A6B4] text-sm font-medium">Show result:</span>
-                <div className="relative group">
-                    <select
-                        value={pageSize}
-                        onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                        className="appearance-none bg-white border border-[#EEEFF2] rounded-xl px-5 py-2.5 pr-10 text-sm font-bold text-[#04091E] outline-none hover:border-[#D72322] transition-all cursor-pointer shadow-sm group-hover:shadow-md"
-                    >
-                        <option value={3}>3</option>
-                        <option value={6}>6</option>
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#A3A6B4]">
-                        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M1 1L5 5L9 1" />
-                        </svg>
+            {!hidePageSize && (
+                <div className="flex items-center gap-3">
+                    <span className="text-[#A3A6B4] text-sm font-medium">Show result:</span>
+                    <div className="relative group">
+                        <select
+                            value={pageSize}
+                            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                            className="appearance-none bg-white border border-[#EEEFF2] rounded-xl px-5 py-2.5 pr-10 text-sm font-bold text-[#04091E] outline-none hover:border-[#D72322] transition-all cursor-pointer shadow-sm group-hover:shadow-md"
+                        >
+                            <option value={3}>3</option>
+                            <option value={6}>6</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                        </select>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#A3A6B4]">
+                            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M1 1L5 5L9 1" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Right side: Page Controls */}
             <div className="flex items-center gap-3">
