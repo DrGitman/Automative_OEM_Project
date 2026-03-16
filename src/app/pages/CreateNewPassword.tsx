@@ -61,7 +61,7 @@ export default function CreateNewPassword() {
 
   const inputStyle = {
     background: '#fafafa', height: '56px', padding: '0 48px 0 16px', borderRadius: '8px',
-    fontFamily: 'Outfit, sans-serif', fontSize: '16px', color: '#111827',
+    fontFamily: 'Inter, sans-serif', fontSize: '16px', color: '#111827',
     border: '1.5px solid #f0f0f0', outline: 'none', width: '100%', boxSizing: 'border-box' as const,
   };
 
@@ -105,17 +105,17 @@ export default function CreateNewPassword() {
             </div>
 
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '26px', color: '#111827', lineHeight: 1.3, marginBottom: '12px' }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '26px', color: '#111827', lineHeight: 1.3, marginBottom: '12px' }}>
                 Your successfully changed your password
               </p>
-              <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '16px', color: '#747681', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px', color: '#747681', lineHeight: 1.6, margin: 0 }}>
                 Commodo gravida eget ultricies sed in lacus. Commodo, tellus duis eros pellentesque.
               </p>
             </div>
 
             <button
               onClick={() => navigate("/")}
-              style={{ background: '#d72322', height: '56px', borderRadius: '8px', fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '16px', color: 'white', border: 'none', cursor: 'pointer', width: '100%', transition: 'background 0.2s' }}
+              style={{ background: '#d72322', height: '56px', borderRadius: '8px', fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '16px', color: 'white', border: 'none', cursor: 'pointer', width: '100%', transition: 'background 0.2s' }}
               onMouseEnter={e => (e.currentTarget.style.background = '#c01f1e')}
               onMouseLeave={e => (e.currentTarget.style.background = '#d72322')}
             >
@@ -134,10 +134,10 @@ export default function CreateNewPassword() {
 
       <div style={{ background: 'white', borderRadius: '20px', boxShadow: '0px 4px 52px rgba(0,0,0,0.15)', width: '100%', maxWidth: '529px', padding: '40px' }}>
         <div style={{ marginBottom: '24px' }}>
-          <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '28px', color: '#111827', lineHeight: 1.25, marginBottom: '12px' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '28px', color: '#111827', lineHeight: 1.25, marginBottom: '12px' }}>
             Create new password
           </p>
-          <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 500, fontSize: '16px', color: '#718096', lineHeight: 1.6, margin: 0 }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px', color: '#718096', lineHeight: 1.6, margin: 0 }}>
             Please enter a new password. Your new password must be different from previous password.
           </p>
         </div>
@@ -193,7 +193,7 @@ export default function CreateNewPassword() {
 
           <button
             type="submit"
-            style={{ background: '#d72322', height: '56px', borderRadius: '8px', fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '16px', color: 'white', border: 'none', cursor: 'pointer', width: '100%', transition: 'background 0.2s' }}
+            style={{ background: '#d72322', height: '56px', borderRadius: '8px', fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '16px', color: 'white', border: 'none', cursor: 'pointer', width: '100%', transition: 'background 0.2s' }}
             onMouseEnter={e => (e.currentTarget.style.background = '#c01f1e')}
             onMouseLeave={e => (e.currentTarget.style.background = '#d72322')}
           >

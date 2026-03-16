@@ -313,7 +313,7 @@ export default function Maintenance() {
               {/* Upcoming Section */}
               <div>
                 <div className="flex justify-between items-center mb-5">
-                  <h3 className="font-black text-[#04091E] text-[10px] uppercase tracking-widest font-['Outfit']">Upcoming</h3>
+                  <h3 className="font-semibold text-[#09090B] text-[10px] uppercase tracking-wider font-['Inter']">Upcoming</h3>
                   <span className="bg-[#D72322] text-white text-[9px] px-2 py-0.5 rounded font-black tracking-wider">30D Window</span>
                 </div>
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">

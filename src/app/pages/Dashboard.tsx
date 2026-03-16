@@ -71,23 +71,23 @@ export default function Dashboard() {
 
   if (!data) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-[#F8F9FB] p-6 text-center">
-        <div className="bg-white p-10 rounded-3xl shadow-xl border border-[#EEEFF2] max-w-md">
-          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-[#D72322]">
-            <HiExclamationCircle className="text-4xl" />
+      <div className="flex flex-col items-center justify-center h-screen bg-[#F8F9FB] p-6 text-center font-['Inter',sans-serif]">
+        <div className="bg-white p-10 rounded-2xl shadow-sm border border-[#E4E4E7] max-w-md">
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6 text-[#D72322]">
+            <HiExclamationCircle className="text-3xl" />
           </div>
-          <h2 className="text-2xl font-black text-[#04091E] mb-2">Something went wrong</h2>
-          <p className="text-[#747681] mb-8">We couldn't load your dashboard data. Please make sure the backend server is running and you are logged in.</p>
+          <h2 className="text-xl font-semibold text-[#09090B] mb-2">Something went wrong</h2>
+          <p className="text-[#71717A] text-sm mb-8">We couldn't load your dashboard data. Please make sure the backend server is running and you are logged in.</p>
           <div className="flex gap-4">
             <button
               onClick={() => window.location.reload()}
-              className="flex-1 bg-[#D72322] text-white py-3 rounded-xl font-bold hover:bg-[#B91C1C] transition-all"
+              className="flex-1 bg-[#D72322] text-white h-11 rounded-lg font-semibold text-sm hover:bg-[#B91C1C] transition-all"
             >
               Retry
             </button>
             <button
               onClick={() => { localStorage.clear(); window.location.href = '/'; }}
-              className="flex-1 bg-[#F8F9FB] text-[#747681] py-3 rounded-xl font-bold border border-[#EEEFF2] hover:bg-gray-100 transition-all"
+              className="flex-1 bg-white text-[#71717A] h-11 rounded-lg font-semibold text-sm border border-[#E4E4E7] hover:bg-gray-50 transition-all"
             >
               Go to Login
             </button>
@@ -110,7 +110,7 @@ export default function Dashboard() {
   const totalPages = Math.ceil(sortedVehicles.length / vehiclesPerPage);
 
   return (
-    <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
+    <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
       <div className="ml-[240px] flex-1 overflow-x-hidden">

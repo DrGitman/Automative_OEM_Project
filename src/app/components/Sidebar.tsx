@@ -48,10 +48,14 @@ export default function Sidebar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 ${isActive ? "bg-[#FEE2E2] text-[#D72322]" : "text-[#71717A] hover:bg-gray-100"}`}
+              className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
+                isActive 
+                  ? "bg-[#D72322] text-white shadow-lg shadow-red-100" 
+                  : "text-[#09090B] hover:bg-gray-50"
+              }`}
             >
-              <Icon className={`text-xl ${isActive ? "text-[#D72322]" : "text-[#A1A1AA]"}`} />
-              <span className={`font-['Inter',sans-serif] text-sm font-medium ${isActive ? "font-bold text-[#D72322]" : "text-[#71717A]"}`}>
+              <Icon className={`text-xl ${isActive ? "text-white" : "text-[#D72322]"}`} />
+              <span className={`font-['Inter',sans-serif] text-sm ${isActive ? "font-bold" : "font-semibold"}`}>
                 {item.label}
               </span>
             </Link>

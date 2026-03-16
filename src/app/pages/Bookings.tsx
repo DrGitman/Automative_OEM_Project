@@ -172,9 +172,11 @@ function GridView({ mode, days, hours, appointments, onSelect }: any) {
   return (
     <div className="min-w-[1200px] flex flex-col h-full">
       {/* Sticky Day Headers */}
-      <div className="grid grid-cols-[80px_1fr] bg-white sticky top-0 z-30 border-b border-[#F4F4F5]">
-        <div className="border-r border-[#F4F4F5]" />
-        <div className={`grid grid-cols-${days.length} w-full`}>
+      <div className="grid grid-cols-[80px_1fr] bg-white sticky top-0 z-30 border-b border-[#F4F4F5] shadow-sm">
+        <div className="border-r border-[#F4F4F5] bg-white flex items-center justify-center">
+          <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-wider">Time</span>
+        </div>
+        <div className={`grid grid-cols-${days.length} w-full bg-white`}>
           {days.map((day: any) => (
             <div key={day.toString()} className="py-4 px-2 text-center border-r border-[#F4F4F5] last:border-r-0">
               <p className="text-[#71717A] text-[10px] font-semibold uppercase tracking-wider mb-1">{format(day, "EEE")}</p>
