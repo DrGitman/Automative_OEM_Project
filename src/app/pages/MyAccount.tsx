@@ -48,7 +48,7 @@ export default function MyAccount() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1 overflow-x-hidden">
+      <div className="ml-[240px] flex-1 overflow-x-hidden page-transition">
         <Header title="My Account" subtitle="Manage your personal profile and security" />
 
         <div className="p-8 space-y-6 max-w-[1000px]">
@@ -168,9 +168,9 @@ export default function MyAccount() {
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 sm:flex-none px-8 h-12 bg-[#D72322] text-white rounded-xl font-semibold text-sm shadow-sm hover:bg-[#B91C1C] transition-all"
+                      className="flex-1 sm:flex-none px-12 h-14 bg-[#D72322] text-white rounded-2xl font-black text-sm shadow-xl shadow-red-100 hover:scale-105 transition-all uppercase tracking-widest"
                     >
-                      Save Preferences
+                      Save Changes
                     </button>
                   </div>
                 </div>
@@ -191,7 +191,7 @@ function InputGroup({ label, value, onChange }: any) {
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-11 px-4 bg-[#F8F9FB] border border-[#E4E4E7] rounded-xl font-medium text-sm text-[#09090B] outline-none focus:border-[#D72322] focus:bg-white shadow-sm transition-all"
+        className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl font-bold text-sm text-[#04091E] outline-none focus:border-[#D72322] focus:bg-white shadow-sm transition-all"
       />
     </div>
   );

@@ -17,7 +17,7 @@ export default function Settings() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1 overflow-x-hidden">
+      <div className="ml-[240px] flex-1 overflow-x-hidden page-transition">
         <Header title="Settings" subtitle="Configure your Gearhouse experience" />
 
         <div className="p-8 space-y-6 max-w-[1000px]">

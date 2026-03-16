@@ -113,7 +113,7 @@ export default function Dashboard() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1 overflow-x-hidden">
+      <div className="ml-[240px] flex-1 overflow-x-hidden page-transition">
         <Header
           title={`Hi, ${stats.user_name.split(' ')[0]}`}
           subtitle="Let's check your Garage today"
@@ -379,17 +379,10 @@ export default function Dashboard() {
 
       {/* AI Insight Modal */}
       {showAiModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-[#04091E]/60 backdrop-blur-sm animate-in fade-in duration-300"
-            onClick={() => setShowAiModal(false)}
-          />
-
-          {/* Modal Content */}
-          <div className="relative bg-white w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20">
-            {/* Header/Banner */}
-            <div className="bg-[#D72322] p-8 text-white relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/20 flex flex-col max-h-[90vh]">
+            {/* Header/Banner (Fixed) */}
+            <div className="bg-[#D72322] p-8 text-white relative shrink-0">
               <button
                 onClick={() => setShowAiModal(false)}
                 className="absolute top-6 right-6 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
@@ -405,7 +398,7 @@ export default function Dashboard() {
               <p className="text-white/80 font-medium">Predictive maintenance analysis for your fleet</p>
             </div>
 
-            <div className="p-8 space-y-8">
+            <div className="p-8 space-y-8 overflow-y-auto flex-1">
               {/* Prediction Card */}
               <div className="bg-[#F8F9FB] p-6 rounded-2xl border border-[#EEEFF2]">
                 <h4 className="text-[#04091E] font-black text-lg mb-4 flex items-center gap-2">

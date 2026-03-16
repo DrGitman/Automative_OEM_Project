@@ -80,7 +80,7 @@ export default function MyVehicles() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1">
+      <div className="ml-[240px] flex-1 page-transition">
         <Header
           title="My Vehicles"
           subtitle="Let's check your Garage today"
@@ -193,11 +193,11 @@ function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => 
 
 function ModalLayout({ title, children, onClose }: { title: string, children: React.ReactNode, onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-[40px] w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
         <div className="p-8 flex justify-between items-center bg-white border-b border-[#EEEFF2] shrink-0">
           <h2 className="text-2xl font-black text-[#04091E]">{title}</h2>
-          <button onClick={onClose} className="p-2 hover:bg-[#F8F9FB] rounded-xl transition-all"><HiX className="text-2xl text-[#747681]" /></button>
+          <button onClick={onClose} className="p-2 hover:bg-[#F8F9FB] rounded-xl transition-all"><HiX className="text-2xl" /></button>
         </div>
         <div className="p-8 overflow-y-auto">
           {children}

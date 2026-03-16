@@ -71,16 +71,16 @@ export default function CreateNewPassword() {
       <div style={{ backgroundColor: '#d72322', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
         <div style={{ marginBottom: '40px' }}><GearhouseLogo /></div>
 
-        <div style={{ background: 'white', borderRadius: '20px', boxShadow: '0px 4px 52px rgba(0,0,0,0.15)', width: '100%', maxWidth: '520px', padding: '40px', position: 'relative' }}>
+        <div style={{ background: 'white', borderRadius: '32px', boxShadow: '0px 4px 52px rgba(0,0,0,0.15)', width: '100%', maxWidth: '520px', padding: '48px', position: 'relative' }}>
           {/* Close button */}
           <button
             onClick={() => navigate("/")}
-            style={{ position: 'absolute', right: '20px', top: '20px', background: 'none', border: 'none', cursor: 'pointer', color: '#A0AEC0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ position: 'absolute', right: '24px', top: '24px', background: 'none', border: 'none', cursor: 'pointer', color: '#A0AEC0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <IoClose size={24} />
           </button>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px', paddingTop: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '32px', paddingTop: '16px' }}>
             {/* Password-changed illustration */}
             <div style={{ width: '130px', height: '130px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg viewBox="0 0 126 128" fill="none" width="126" height="128">
@@ -105,11 +105,11 @@ export default function CreateNewPassword() {
             </div>
 
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '26px', color: '#111827', lineHeight: 1.3, marginBottom: '12px' }}>
-                Your successfully changed your password
+              <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: '32px', color: '#04091E', lineHeight: 1.2, marginBottom: '12px' }}>
+                Password changed successfully
               </p>
               <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px', color: '#747681', lineHeight: 1.6, margin: 0 }}>
-                Commodo gravida eget ultricies sed in lacus. Commodo, tellus duis eros pellentesque.
+                Your account is now secure. You can log in using your new password.
               </p>
             </div>
 
@@ -132,12 +132,12 @@ export default function CreateNewPassword() {
     <div style={{ backgroundColor: '#d72322', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ marginBottom: '40px' }}><GearhouseLogo /></div>
 
-      <div style={{ background: 'white', borderRadius: '20px', boxShadow: '0px 4px 52px rgba(0,0,0,0.15)', width: '100%', maxWidth: '529px', padding: '40px' }}>
-        <div style={{ marginBottom: '24px' }}>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '28px', color: '#111827', lineHeight: 1.25, marginBottom: '12px' }}>
+      <div style={{ background: 'white', borderRadius: '32px', boxShadow: '0px 4px 52px rgba(0,0,0,0.15)', width: '100%', maxWidth: '529px', padding: '48px' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 900, fontSize: '32px', color: '#04091E', lineHeight: 1.2, marginBottom: '12px' }}>
             Create new password
           </p>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px', color: '#718096', lineHeight: 1.6, margin: 0 }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '16px', color: '#747681', lineHeight: 1.6, margin: 0 }}>
             Please enter a new password. Your new password must be different from previous password.
           </p>
         </div>

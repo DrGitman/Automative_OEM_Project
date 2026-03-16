@@ -113,7 +113,7 @@ export default function Maintenance() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1">
+      <div className="ml-[240px] flex-1 page-transition">
         <Header
           title="Maintenance"
           subtitle="Let's check your Garage today"
@@ -401,8 +401,8 @@ function MiniStat({ label, value, trend, highlight, check, sparkle, color }: any
 
 function ViewMaintenanceModal({ record, onClose }: any) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-[640px] rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
         {/* Print Only Checklist Version */}
         <div className="hidden print:block p-10 font-serif text-[#04091E]">
           <div className="text-center mb-10">
@@ -477,7 +477,7 @@ function ViewMaintenanceModal({ record, onClose }: any) {
         </div>
 
         {/* Normal Modal View (Hidden on Print) */}
-        <div className="print:hidden">
+        <div className="print:hidden overflow-y-auto flex-1">
           <div className="p-10 flex justify-between items-start">
             <div>
               <h2 className="text-[32px] font-black text-[#04091E]">{record.vehicle} — {record.service}</h2>
@@ -600,8 +600,8 @@ function AddMaintenanceModal({ onClose, vehicles }: any) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-[640px] rounded-[32px] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#04091E]/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="bg-white w-full max-w-2xl rounded-[32px] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
         <div className="p-10 flex justify-between items-center border-b border-[#EEEFF2] shrink-0">
           <h2 className="text-2xl font-black text-[#D72322]">Add Maintenance Request</h2>
           <button onClick={onClose} className="p-2 text-[#A3A6B4] hover:bg-gray-50 rounded-full transition-all"><HiX className="text-2xl" /></button>
@@ -678,8 +678,8 @@ function EditMaintenanceModal({ record, onClose, onDelete }: any) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-[640px] rounded-[32px] overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#04091E]/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="bg-white w-full max-w-2xl rounded-[32px] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
         <div className="p-10 flex justify-between items-center border-b border-[#EEEFF2] shrink-0">
           <h2 className="text-2xl font-black text-[#D72322]">Edit Maintenance Request</h2>
           <button onClick={onClose} className="p-2 text-[#A3A6B4] hover:bg-gray-50 rounded-full transition-all"><HiX className="text-2xl" /></button>

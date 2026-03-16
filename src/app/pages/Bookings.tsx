@@ -99,7 +99,7 @@ export default function Bookings() {
     <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1 overflow-x-hidden">
+      <div className="ml-[240px] flex-1 overflow-x-hidden page-transition">
         <Header
           title="Bookings"
           subtitle="Let's check your Garage today"
@@ -302,8 +302,8 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-[40px] w-full max-w-4xl flex overflow-hidden animate-in zoom-in-95 duration-200 max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-white rounded-[32px] w-full max-w-4xl flex overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh]">
         <div className="flex-1 p-10 border-r border-[#EEEFF2] overflow-y-auto">
           <div className="flex items-center gap-3 mb-8">
             <HiCalendar className="text-[#D72322] text-2xl" />
@@ -428,8 +428,8 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
 
 function BookingDetailsModal({ booking, onClose }: any) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-[40px] w-full max-w-xl p-10 animate-in zoom-in-95 duration-200 shadow-2xl overflow-y-auto max-h-[90vh] relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-white rounded-[32px] w-full max-w-xl p-10 animate-in zoom-in-95 duration-300 shadow-2xl overflow-y-auto max-h-[90vh] relative">
         <button onClick={onClose} className="absolute top-8 right-8 p-2 hover:bg-[#F8F9FB] rounded-xl z-10"><HiX className="text-2xl text-[#747681]" /></button>
 
         <div className="flex items-center gap-4 mb-10">
