@@ -21,7 +21,7 @@ export default function MyVehicles() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
-  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
 
   const fetchVehicles = async () => {
     const userStr = localStorage.getItem("user");
@@ -100,7 +100,7 @@ export default function MyVehicles() {
           </div>
 
           {/* Grid */}
-          <div className="grid grid-cols-3 gap-8 min-h-[800px] content-start">
+          <div className="grid grid-cols-3 gap-8 min-h-[480px] content-start">
             {currentVehicles.map((vehicle) => (
               <VehicleCard
                 key={vehicle.id}
