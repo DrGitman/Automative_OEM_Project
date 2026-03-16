@@ -4,8 +4,10 @@ interface PaginationProps {
     currentPage: number;
     totalPages: number;
     pageSize: number;
+    totalItems: number;
+    itemsName?: string;
     onPageChange: (page: number) => void;
-    onPageSizeChange: (size: number) => void;
+    onPageSizeChange?: (size: number) => void;
     hidePageSize?: boolean;
 }
 
@@ -13,6 +15,8 @@ export default function Pagination({
     currentPage,
     totalPages,
     pageSize,
+    totalItems,
+    itemsName = "items",
     onPageChange,
     onPageSizeChange,
     hidePageSize = false,
@@ -37,54 +41,37 @@ export default function Pagination({
         if (!pages.includes(totalPages)) pages.push(totalPages);
     }
 
+    const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const endItem = Math.min(currentPage * pageSize, totalItems);
+
     return (
-        <div className={`flex flex-col sm:flex-row items-center ${hidePageSize ? 'justify-center' : 'justify-between'} gap-6 py-6 border-t border-[#EEEFF2] mt-6`}>
-            {/* Left side: Page Size Selector */}
-            {!hidePageSize && (
-                <div className="flex items-center gap-3">
-                    <span className="text-[#A3A6B4] text-sm font-medium">Show result:</span>
-                    <div className="relative group">
-                        <select
-                            value={pageSize}
-                            onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                            className="appearance-none bg-white border border-[#EEEFF2] rounded-xl px-5 py-2.5 pr-10 text-sm font-bold text-[#04091E] outline-none hover:border-[#D72322] transition-all cursor-pointer shadow-sm group-hover:shadow-md"
-                        >
-                            <option value={3}>3</option>
-                            <option value={6}>6</option>
-                            <option value={10}>10</option>
-                            <option value={20}>20</option>
-                            <option value={50}>50</option>
-                        </select>
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#A3A6B4]">
-                            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M1 1L5 5L9 1" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            )}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-8 border-t border-[#EEEFF2] mt-8">
+            {/* Left side: Item Count */}
+            <div className="flex items-center gap-1 text-[#A3A6B4] text-sm font-medium">
+                Showing <span className="text-[#04091E] font-black">{startItem}</span> to <span className="text-[#04091E] font-black">{endItem}</span> of <span className="text-[#04091E] font-black">{totalItems}</span> {itemsName}
+            </div>
 
             {/* Right side: Page Controls */}
             <div className="flex items-center gap-3">
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-2.5 rounded-xl border border-[#EEEFF2] text-[#A3A6B4] hover:text-[#D72322] hover:bg-gray-50 transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#A3A6B4] shadow-sm"
+                    className="w-10 h-10 rounded-xl border border-[#EEEFF2] bg-white text-[#A3A6B4] hover:text-[#D72322] hover:bg-gray-50 transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#A3A6B4] shadow-sm flex items-center justify-center"
                 >
                     <HiChevronLeft className="text-xl" />
                 </button>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                     {pages.map((page, idx) => (
                         page === "..." ? (
-                            <span key={`dots-${idx}`} className="px-3 text-[#A3A6B4] font-bold">...</span>
+                            <span key={`dots-${idx}`} className="px-2 text-[#A3A6B4] font-bold">...</span>
                         ) : (
                             <button
                                 key={`page-${page}`}
                                 onClick={() => onPageChange(page as number)}
-                                className={`min-w-[40px] h-[40px] rounded-xl text-sm font-bold transition-all ${currentPage === page
-                                        ? "bg-[#EC221F] text-white shadow-lg shadow-red-100 scale-105"
-                                        : "bg-white text-[#A3A6B4] hover:text-[#04091E] hover:bg-gray-50 border border-[#EEEFF2] shadow-sm"
+                                className={`min-w-[40px] h-[40px] rounded-xl text-sm font-bold transition-all border ${currentPage === page
+                                        ? "bg-[#D72322] text-white border-[#D72322] shadow-lg shadow-red-100 scale-105"
+                                        : "bg-white text-[#A3A6B4] hover:text-[#04091E] hover:bg-gray-50 border-[#EEEFF2] shadow-sm"
                                     }`}
                             >
                                 {page}
@@ -96,7 +83,7 @@ export default function Pagination({
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages || totalPages === 0}
-                    className="p-2.5 rounded-xl border border-[#EEEFF2] text-[#A3A6B4] hover:text-[#D72322] hover:bg-gray-50 transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#A3A6B4] shadow-sm"
+                    className="w-10 h-10 rounded-xl border border-[#EEEFF2] bg-white text-[#A3A6B4] hover:text-[#D72322] hover:bg-gray-50 transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#A3A6B4] shadow-sm flex items-center justify-center"
                 >
                     <HiChevronRight className="text-xl" />
                 </button>

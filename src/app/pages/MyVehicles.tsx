@@ -122,12 +122,9 @@ export default function MyVehicles() {
               currentPage={currentPage}
               totalPages={totalPages}
               pageSize={itemsPerPage}
+              totalItems={filteredVehicles.length}
+              itemsName="vehicles"
               onPageChange={setCurrentPage}
-              onPageSizeChange={(size) => {
-                setItemsPerPage(size);
-                setCurrentPage(1);
-              }}
-              hidePageSize={true}
             />
           </div>
         </div>

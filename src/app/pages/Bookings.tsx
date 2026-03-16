@@ -151,7 +151,7 @@ export default function Bookings() {
             </div>
 
             {/* Calendar Body */}
-            <div className="flex-1 overflow-auto">
+            <div className="flex-1 overflow-y-auto">
               {viewMode === 'month' ? (
                 <MonthView days={calendarDays} appointments={filteredAppointments} currentDate={currentDate} onSelect={setSelectedBooking} />
               ) : (
@@ -170,11 +170,12 @@ export default function Bookings() {
 
 function GridView({ mode, days, hours, appointments, onSelect }: any) {
   return (
-    <div className="min-w-[1200px]">
-      <div className="grid grid-cols-[100px_repeat(auto-fit,minmax(0,1fr))] bg-[#F8F9FB]/30 border-b border-[#EEEFF2]">
+    <div className="min-w-[1200px] flex flex-col h-full">
+      {/* Sticky Header */}
+      <div className="grid grid-cols-[100px_repeat(auto-fit,minmax(0,1fr))] bg-[#F8F9FB] border-b border-[#EEEFF2] sticky top-0 z-20">
         <div className="p-6 border-r border-[#EEEFF2]" />
         {days.map((day: any) => (
-          <div key={day.toString()} className="p-6 text-center border-r border-[#EEEFF2] last:border-r-0">
+          <div key={day.toString()} className="p-6 text-center border-r border-[#EEEFF2] last:border-r-0 bg-[#F8F9FB]">
             <p className="text-[#A3A6B4] text-[10px] font-black uppercase tracking-widest mb-1">{format(day, "EEE d")}</p>
             <p className={`text-xl font-black ${isSameDay(day, new Date()) ? 'text-[#D72322]' : 'text-[#04091E]'}`}>
               {format(day, "d")}
@@ -183,7 +184,7 @@ function GridView({ mode, days, hours, appointments, onSelect }: any) {
         ))}
       </div>
 
-      <div className="relative">
+      <div className="relative flex-1">
         {hours.map((hour: string, hIdx: number) => (
           <div key={hour} className="grid grid-cols-[100px_repeat(auto-fit,minmax(0,1fr))] border-b border-[#EEEFF2] last:border-b-0 min-h-[140px]">
             <div className="p-4 text-right border-r border-[#EEEFF2] flex flex-col items-end pt-6">
@@ -264,8 +265,9 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const userStr = localStorage.getItem("user");
-    if (!userStr || !formData.vehicle_id) return;
-    const userId = JSON.parse(userStr).id;
+    const user = JSON.parse(userStr);
+    const userId = user.id || user.user?.id;
+    if (!userId || !formData.vehicle_id) return;
 
     try {
       const resp = await fetch(`http://localhost:8000/appointments/add?user_id=${userId}`, {

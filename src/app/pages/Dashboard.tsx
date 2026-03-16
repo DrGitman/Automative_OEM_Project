@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [vehiclesPerPage, setVehiclesPerPage] = useState(6);
+  const [vehiclesPerPage, setVehiclesPerPage] = useState(5);
   const [showAiModal, setShowAiModal] = useState(false);
   const navigate = useNavigate();
 
@@ -240,7 +240,7 @@ export default function Dashboard() {
               {/* Vehicle Status Table */}
               <div className="bg-white p-6 rounded-2xl border border-[#EEEFF2] shadow-sm">
                 <h3 className="text-lg font-bold text-[#04091E] mb-6">Vehicle Status</h3>
-                <div className="overflow-x-auto min-h-[480px]">
+                <div className="overflow-x-auto min-h-[420px]">
                   <table className="w-full table-fixed">
                     <thead>
                       <tr className="text-left border-b border-[#EEEFF2]">
@@ -305,12 +305,9 @@ export default function Dashboard() {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     pageSize={vehiclesPerPage}
+                    totalItems={sortedVehicles.length}
+                    itemsName="vehicles"
                     onPageChange={setCurrentPage}
-                    onPageSizeChange={(size) => {
-                      setVehiclesPerPage(size);
-                      setCurrentPage(1);
-                    }}
-                    hidePageSize={true}
                   />
                 </div>
               </div>

@@ -274,12 +274,9 @@ export default function Maintenance() {
                   currentPage={currentPage}
                   totalPages={totalPages}
                   pageSize={recordsPerPage}
+                  totalItems={filteredRecords.length}
+                  itemsName="records"
                   onPageChange={setCurrentPage}
-                  onPageSizeChange={(size) => {
-                    setRecordsPerPage(size);
-                    setCurrentPage(1);
-                  }}
-                  hidePageSize={true}
                 />
               </div>
             </div>
