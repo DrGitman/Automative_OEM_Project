@@ -52,29 +52,64 @@ export default function SignUp() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center p-6"
-      style={{ backgroundColor: "#D72322" }}
+      style={{
+        height: "100vh",
+        backgroundColor: "#D72322",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        fontFamily: "Inter, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
+        overflowY: "auto",
+      }}
     >
       {/* Logo */}
-      <div className="mb-8">
-        <img src={gearhouseLogo} alt="Gearhouse" className="h-10 object-contain" />
+      <div style={{ marginBottom: "28px", textAlign: "center" }}>
+        <img
+          src={gearhouseLogo}
+          alt="Gearhouse"
+          style={{ height: "56px", maxWidth: "200px", objectFit: "contain" }}
+        />
       </div>
 
-      {/* White Card */}
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-[500px] px-10 py-10">
-        <h1 className="font-['Inter',sans-serif] font-bold text-[#04091E] text-2xl text-center mb-8">
+      {/* Card */}
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: "12px",
+          padding: "40px 40px",
+          width: "100%",
+          maxWidth: "460px",
+          minWidth: "380px",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.18)",
+        }}
+      >
+        <h1
+          style={{
+            fontFamily: "Inter, sans-serif",
+            fontSize: "24px",
+            fontWeight: 600,
+            color: "#0A0F1E",
+            textAlign: "center",
+            marginBottom: "28px",
+            lineHeight: 1.3,
+          }}
+        >
           Create a new account
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {/* First & Last Name */}
-          <div className="flex gap-3">
+          <div style={{ display: "flex", gap: "12px" }}>
             <input
               type="text"
               placeholder="First name"
               value={formData.firstName}
               onChange={handleChange("firstName")}
-              className="flex-1 h-12 px-4 bg-[#F8F9FB] border border-[#EEEFF2] rounded-xl font-['Inter',sans-serif] text-sm text-[#04091E] outline-none focus:border-[#D72322] transition-colors"
+              style={inputStyle}
+              onFocus={e => (e.target.style.borderColor = "#D72322")}
+              onBlur={e => (e.target.style.borderColor = "#E8E9EE")}
               required
             />
             <input
@@ -82,7 +117,9 @@ export default function SignUp() {
               placeholder="Last name"
               value={formData.lastName}
               onChange={handleChange("lastName")}
-              className="flex-1 h-12 px-4 bg-[#F8F9FB] border border-[#EEEFF2] rounded-xl font-['Inter',sans-serif] text-sm text-[#04091E] outline-none focus:border-[#D72322] transition-colors"
+              style={inputStyle}
+              onFocus={e => (e.target.style.borderColor = "#D72322")}
+              onBlur={e => (e.target.style.borderColor = "#E8E9EE")}
               required
             />
           </div>
@@ -93,64 +130,73 @@ export default function SignUp() {
             placeholder="Email"
             value={formData.email}
             onChange={handleChange("email")}
-            className="w-full h-12 px-4 bg-[#F8F9FB] border border-[#EEEFF2] rounded-xl font-['Inter',sans-serif] text-sm text-[#04091E] outline-none focus:border-[#D72322] transition-colors"
+            style={{ ...inputStyle, flex: "unset" }}
+            onFocus={e => (e.target.style.borderColor = "#D72322")}
+            onBlur={e => (e.target.style.borderColor = "#E8E9EE")}
             required
           />
 
           {/* Password */}
-          <div className="relative">
+          <div style={{ position: "relative" }}>
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={formData.password}
               onChange={handleChange("password")}
-              className="w-full h-12 px-4 pr-12 bg-[#F8F9FB] border border-[#EEEFF2] rounded-xl font-['Inter',sans-serif] text-sm text-[#04091E] outline-none focus:border-[#D72322] transition-colors"
+              style={{ ...inputStyle, flex: "unset", paddingRight: "48px" }}
+              onFocus={e => (e.target.style.borderColor = "#D72322")}
+              onBlur={e => (e.target.style.borderColor = "#E8E9EE")}
               required
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#A3A6B4] hover:text-[#D72322] transition-colors"
-            >
+            <button type="button" onClick={() => setShowPassword(!showPassword)} style={eyeBtnStyle}>
               {showPassword ? <HiEye size={20} /> : <HiEyeOff size={20} />}
             </button>
           </div>
 
           {/* Terms */}
-          <label className="flex items-center gap-3 cursor-pointer" onClick={() => setAgreeToTerms(!agreeToTerms)}>
+          <label
+            style={{ display: "flex", alignItems: "flex-start", gap: "10px", cursor: "pointer" }}
+            onClick={() => setAgreeToTerms(!agreeToTerms)}
+          >
             <div
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                agreeToTerms ? "border-[#D72322] bg-[#D72322]" : "border-[#CBD5E0] bg-white"
-              }`}
+              style={{
+                width: "20px", height: "20px", borderRadius: "50%",
+                border: agreeToTerms ? "2px solid #D72322" : "2px solid #CBD5E0",
+                backgroundColor: agreeToTerms ? "#D72322" : "white",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0, marginTop: "1px", transition: "all 0.15s",
+              }}
             >
-              {agreeToTerms && <div className="w-2 h-2 bg-white rounded-full" />}
+              {agreeToTerms && <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "white" }} />}
             </div>
-            <span className="font-['Inter',sans-serif] text-sm text-[#04091E]">
+            <span style={{ fontSize: "14px", color: "#3D3D3D", userSelect: "none", lineHeight: "1.5" }}>
               By proceeding, you agree to the{" "}
-              <span className="text-[#D72322] font-semibold">Terms and Conditions</span>
+              <span style={{ color: "#D72322", fontWeight: 600 }}>Terms and Conditions</span>
             </span>
           </label>
 
-          {/* Sign Up Button */}
+          {/* Sign Up */}
           <button
             type="submit"
-            className="w-full h-12 bg-[#D72322] text-white rounded-xl font-['Inter',sans-serif] font-semibold text-base hover:bg-[#C01F1E] active:scale-[0.98] transition-all"
+            style={primaryBtnStyle}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#C01F1E")}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#D72322")}
           >
             Sign up with email
           </button>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 py-1">
-            <div className="flex-1 h-px bg-[#EEEFF2]" />
-            <span className="font-['Inter',sans-serif] text-sm text-[#A3A6B4]">Or Signup with</span>
-            <div className="flex-1 h-px bg-[#EEEFF2]" />
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", margin: "4px 0" }}>
+            <div style={{ flex: 1, height: "1px", backgroundColor: "#EEEFF2" }} />
+            <span style={{ fontSize: "14px", color: "#9CA3AF", whiteSpace: "nowrap" }}>Or Signup with</span>
+            <div style={{ flex: 1, height: "1px", backgroundColor: "#EEEFF2" }} />
           </div>
 
           {/* Social Buttons */}
-          <div className="flex gap-4">
-            <button
-              type="button"
-              className="flex-1 h-12 border border-[#EEEFF2] rounded-xl flex items-center justify-center gap-2 bg-white hover:bg-[#F8F9FB] transition-colors font-['Inter',sans-serif] text-sm text-[#04091E]"
+          <div style={{ display: "flex", gap: "12px" }}>
+            <button type="button" style={socialBtnStyle}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F9FAFB")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "white")}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -160,11 +206,11 @@ export default function SignUp() {
               </svg>
               Google
             </button>
-            <button
-              type="button"
-              className="flex-1 h-12 border border-[#EEEFF2] rounded-xl flex items-center justify-center gap-2 bg-white hover:bg-[#F8F9FB] transition-colors font-['Inter',sans-serif] text-sm text-[#04091E]"
+            <button type="button" style={socialBtnStyle}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F9FAFB")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "white")}
             >
-              <svg width="16" height="18" viewBox="0 0 814 1000" fill="currentColor">
+              <svg width="15" height="18" viewBox="0 0 814 1000" fill="#0A0F1E">
                 <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105-38.8-162.1-116.9q-59.91-84-96.8-194.2C18 320.6 0 222.1 0 176.5c0-154.5 100.9-236.6 198.9-236.6 67.1 0 121.2 43.4 161.3 43.4 38.3 0 98.5-46 176.7-46 28.5 0 130.9 2.6 198.3 99.2zm-234-181.5c31.1-36.9 53.1-88.1 53.1-139.3 0-7.1-.6-14.3-1.9-20.1-50.6 1.9-110.8 33.7-147.1 75.8-28.5 32.4-55.1 83.6-55.1 135.5 0 7.8 1.3 15.6 1.9 18.1 3.2.6 8.4 1.3 13.6 1.3 45.4 0 102.5-30.4 135.5-71.3z"/>
               </svg>
               Apple
@@ -172,12 +218,12 @@ export default function SignUp() {
           </div>
 
           {/* Login Link */}
-          <p className="text-center font-['Inter',sans-serif] text-sm text-[#A3A6B4]">
+          <p style={{ textAlign: "center", fontSize: "14px", color: "#9CA3AF", margin: "4px 0 0" }}>
             Already have an account?{" "}
             <button
               type="button"
               onClick={() => navigate("/")}
-              className="font-semibold text-[#D72322] hover:underline"
+              style={{ fontSize: "14px", fontWeight: 600, color: "#D72322", background: "none", border: "none", cursor: "pointer", padding: 0 }}
             >
               Login Now
             </button>
@@ -187,3 +233,59 @@ export default function SignUp() {
     </div>
   );
 }
+
+// ── Shared micro-styles ──────────────────────────────────────────────────────
+const inputStyle: React.CSSProperties = {
+  flex: 1,
+  height: "46px",
+  padding: "0 16px",
+  backgroundColor: "#F6F7F9",
+  border: "1.5px solid #E8E9EE",
+  borderRadius: "8px",
+  fontFamily: "Inter, sans-serif",
+  fontSize: "16px",
+  color: "#0A0F1E",
+  outline: "none",
+  boxSizing: "border-box",
+  transition: "border-color 0.15s",
+  width: "100%",
+};
+
+const eyeBtnStyle: React.CSSProperties = {
+  position: "absolute", right: "14px", top: "50%",
+  transform: "translateY(-50%)", background: "none",
+  border: "none", cursor: "pointer", color: "#9CA3AF",
+  display: "flex", alignItems: "center",
+};
+
+const primaryBtnStyle: React.CSSProperties = {
+  height: "46px",
+  backgroundColor: "#D72322",
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  fontFamily: "Inter, sans-serif",
+  fontWeight: 600,
+  fontSize: "16px",
+  cursor: "pointer",
+  width: "100%",
+  transition: "background-color 0.15s",
+};
+
+const socialBtnStyle: React.CSSProperties = {
+  flex: 1,
+  height: "46px",
+  border: "1.5px solid #E8E9EE",
+  borderRadius: "8px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "8px",
+  backgroundColor: "white",
+  cursor: "pointer",
+  fontFamily: "Inter, sans-serif",
+  fontSize: "14px",
+  fontWeight: 500,
+  color: "#0A0F1E",
+  transition: "background-color 0.15s",
+};
