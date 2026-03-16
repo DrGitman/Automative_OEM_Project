@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 import models, schemas, database, os, shutil, uuid
 
@@ -413,6 +413,63 @@ def get_maintenance_data(user_id: int, db: Session = Depends(database.get_db)):
         print("EXCEPTION in /maintenance/data:")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/appointments/data", response_model=Dict[str, Any])
+def get_appointments_data(user_id: int, db: Session = Depends(database.get_db)):
+    try:
+        appointments = db.query(models.Appointment).filter(
+            models.Appointment.user_id == user_id
+        ).order_by(models.Appointment.preferred_date.asc()).all()
+        
+        return {
+            "bookings": [
+                {
+                    "id": a.id,
+                    "vehicle_id": a.vehicle_id,
+                    "service": a.service_type,
+                    "date": a.preferred_date.isoformat() if a.preferred_date else "",
+                    "time": a.preferred_time,
+                    "status": a.status,
+                    "center": a.service_center,
+                    "address": a.location_address,
+                    "duration": a.estimated_duration,
+                    "cost": a.estimated_cost,
+                    "notes": a.notes,
+                    "name": "Technician Team" # Placeholder or can be linked to a tech table if available
+                } for a in appointments
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/appointments/add", response_model=schemas.AppointmentResponse)
+def add_appointment(user_id: int, appointment: schemas.AppointmentCreate, db: Session = Depends(database.get_db)):
+    try:
+        db_appt = models.Appointment(
+            user_id=user_id,
+            vehicle_id=appointment.vehicle_id,
+            service_center=appointment.service_center,
+            location_address=appointment.location_address,
+            service_type=appointment.service_type,
+            preferred_date=appointment.preferred_date,
+            preferred_time=appointment.preferred_time,
+            notes=appointment.notes,
+            estimated_duration=appointment.estimated_duration,
+            estimated_cost=appointment.estimated_cost,
+            status="Confirmed"
+        )
+        db.add(db_appt)
+        db.commit()
+        db.refresh(db_appt)
+        return db_appt
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/bookings/data", response_model=Dict[str, Any])
+def get_bookings_alias(user_id: int, db: Session = Depends(database.get_db)):
+    # Alias for /appointments/data to support existing frontend calls if any
+    return get_appointments_data(user_id, db)
 
 @app.post("/maintenance/add", response_model=schemas.ServiceHistoryResponse)
 def add_maintenance(record: schemas.ServiceHistoryCreate, db: Session = Depends(database.get_db)):

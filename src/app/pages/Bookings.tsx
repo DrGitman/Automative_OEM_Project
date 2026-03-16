@@ -265,6 +265,10 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const userStr = localStorage.getItem("user");
+    if (!userStr) {
+      toast.error("User session not found. Please log in again.");
+      return;
+    }
     const user = JSON.parse(userStr);
     const userId = user.id || user.user?.id;
     if (!userId || !formData.vehicle_id) return;

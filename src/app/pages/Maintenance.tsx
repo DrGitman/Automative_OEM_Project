@@ -20,7 +20,7 @@ export default function Maintenance() {
   const [actionMenuId, setActionMenuId] = useState<number | null>(null);
   const [statusMenuId, setStatusMenuId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [recordsPerPage, setRecordsPerPage] = useState(4);
+  const [recordsPerPage, setRecordsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchMaintenanceData = async () => {
@@ -121,233 +121,238 @@ export default function Maintenance() {
           onSearch={setSearchQuery}
         />
 
-        <div className="px-6 py-8 flex items-start gap-6 max-w-[1300px] mx-auto">
-          {/* Main Content */}
-          <div className="flex-1 min-w-0 space-y-8">
-            {/* Stats */}
-            <div className="grid grid-cols-4 gap-6">
-              <MiniStat label="TOTAL LOGS" value={data?.stats.total_logs} trend="+12%" color="red" />
-              <MiniStat label="ACTIVE ALERTS" value={data?.stats.active_alerts} highlight="Critical" color="orange" />
-              <MiniStat label="COMPLETED (YTD)" value={data?.stats.completed_ytd} check color="green" />
-              <MiniStat label="AI-PREDICTED (30D)" value={data?.stats.ai_predicted} sparkle color="gray" />
-            </div>
-
-            {/* List Section */}
-            <div className="bg-white rounded-[32px] border border-[#EEEFF2] shadow-sm overflow-hidden">
-              <div className="p-8 flex justify-between items-center bg-white border-b border-[#EEEFF2]">
-                <div className="flex gap-4">
-                  <select className="bg-[#F8F9FB] border border-[#EEEFF2] px-4 py-2 rounded-xl text-sm font-medium outline-none cursor-pointer">
-                    <option>All Vehicles</option>
-                  </select>
-                  <select className="bg-[#F8F9FB] border border-[#EEEFF2] px-4 py-2 rounded-xl text-sm font-medium outline-none cursor-pointer">
-                    <option>Service Type</option>
-                  </select>
-                </div>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => {
-                      const csvContent = "data:text/csv;charset=utf-8,Vehicle,Service Type,Date,Status,Cost,Notes\n" +
-                        data?.records.map((r: any) =>
-                          `"${r.vehicle}","${r.service}","${r.date}","${r.status}","${r.cost}","${r.notes?.replace(/"/g, '""')}"`
-                        ).join("\n");
-                      const encodedUri = encodeURI(csvContent);
-                      const link = document.createElement("a");
-                      link.setAttribute("href", encodedUri);
-                      link.setAttribute("download", `maintenance_export_${new Date().toISOString().split('T')[0]}.csv`);
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
-                    className="flex items-center gap-2 px-6 py-2 border border-[#EEEFF2] rounded-xl text-sm font-bold text-[#04091E] hover:bg-gray-50 transition-all">
-                    <HiDownload className="text-[#D72322]" /> Export
-                  </button>
-                  <button
-                    onClick={() => setShowAddModal(true)}
-                    className="flex items-center gap-2 px-6 py-2 bg-[#D72322] text-white rounded-xl text-sm font-black shadow-lg shadow-red-100 hover:scale-105 transition-all"
-                  >
-                    <HiPlus /> Add Service
-                  </button>
-                </div>
+        <div className="p-8 space-y-8 max-w-[1400px]">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
+            {/* Left Column: Stats and Table */}
+            <div className="space-y-8">
+              {/* Stats */}
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-6">
+                <MiniStat label="TOTAL LOGS" value={data?.stats.total_logs} trend="+12%" color="red" />
+                <MiniStat label="ACTIVE ALERTS" value={data?.stats.active_alerts} highlight="Critical" color="orange" />
+                <MiniStat label="COMPLETED (YTD)" value={data?.stats.completed_ytd} check color="green" />
+                <MiniStat label="AI-PREDICTED (30D)" value={data?.stats.ai_predicted} sparkle color="gray" />
               </div>
 
-              <div className="overflow-visible pb-10 min-h-[480px]">
-                <table className="w-full relative table-fixed">
-                  <thead>
-                    <tr className="text-left bg-white border-b border-[#EEEFF2]">
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[160px]">Vehicle</th>
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[120px]">Service Type</th>
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Date</th>
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Status</th>
-                      <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Cost</th>
-                      <th className="py-4 px-4 text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Notes</th>
-                      <th className="py-4 px-4 w-12"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#EEEFF2]">
-                    {currentRecords.map((record: any) => (
-                      <tr key={record.id} className={`hover:bg-gray-50/50 transition-all relative h-[84px] ${statusMenuId === record.id || actionMenuId === record.id ? 'z-50' : 'z-0'}`}>
-                        <td className="py-5 px-4 whitespace-nowrap">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#F8F9FB] rounded-xl border border-[#EEEFF2] flex items-center justify-center font-black text-[#D72322] text-[10px]">
-                              {record.vehicle.substring(0, 2).toUpperCase()}
-                            </div>
-                            <div className="truncate">
-                              <p className="font-bold text-[#04091E] text-xs leading-tight truncate">{record.vehicle}</p>
-                              <p className="text-[9px] text-[#A3A6B4] font-medium tracking-wide">
-                                VIN: {record.vin && record.vin !== "N/A" ? `...${record.vin.slice(-6)}` : '...38842'}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-5 px-4 whitespace-nowrap">
-                          <span className="text-[9px] font-black text-[#D72322] uppercase tracking-widest border border-red-100 px-3 py-1 rounded-md bg-red-50/30">
-                            {record.service}
-                          </span>
-                        </td>
-                        <td className="py-5 px-4 whitespace-nowrap text-xs font-medium text-[#747681]">{record.date}</td>
-                        <td className="py-5 px-4 whitespace-nowrap relative">
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setStatusMenuId(statusMenuId === record.id ? null : record.id);
-                              setActionMenuId(null);
-                            }}
-                            className="flex items-center gap-2 cursor-pointer group"
-                          >
-                            <div className={`w-2 h-2 rounded-full ${record.status === 'COMPLETED' ? 'bg-[#10B981]' : record.status === 'OVERDUE' ? 'bg-[#D72322]' : 'bg-[#F97316]'}`} />
-                            <span className={`text-[9px] font-black uppercase tracking-widest group-hover:underline ${record.status === 'COMPLETED' ? 'text-[#10B981]' : record.status === 'OVERDUE' ? 'text-[#D72322]' : 'text-[#F97316]'}`}>
-                              {record.status}
-                            </span>
-                          </div>
-                          {statusMenuId === record.id && (
-                            <div className="absolute left-4 top-[80%] bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-[#EEEFF2] py-2 w-40 z-[100] animate-in fade-in slide-in-from-top-2 flex flex-col">
-                              <p className="px-4 py-1 text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest border-b border-[#EEEFF2] mb-1">Set Status</p>
-                              <button onClick={() => handleStatusUpdate(record.id, 'COMPLETED')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#10B981] hover:bg-green-50 transition-colors">Completed</button>
-                              <button onClick={() => handleStatusUpdate(record.id, 'OPEN')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#F97316] hover:bg-orange-50 transition-colors">Open</button>
-                              <button onClick={() => handleStatusUpdate(record.id, 'OVERDUE')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#D72322] hover:bg-red-50 transition-colors">Overdue</button>
-                            </div>
-                          )}
-                        </td>
-                        <td className="py-5 px-4 whitespace-nowrap font-black text-[#04091E] text-xs">${record.cost.toLocaleString()}</td>
-                        <td className="py-5 px-4 text-[11px] text-[#747681] font-medium max-w-[180px] truncate">{record.notes}</td>
-                        <td className="py-5 px-4 text-right relative min-w-[60px]">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActionMenuId(actionMenuId === record.id ? null : record.id);
-                              setStatusMenuId(null);
-                            }}
-                            className="p-2 text-[#A3A6B4] hover:text-[#04091E] hover:bg-gray-100 rounded-full transition-all"
-                          >
-                            <HiDotsVertical />
-                          </button>
-                          {actionMenuId === record.id && (
-                            <div className="absolute right-12 top-[80%] bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-[#EEEFF2] py-2 w-32 z-[100] animate-in fade-in slide-in-from-top-2 flex flex-col">
-                              <button
-                                onClick={() => { setSelectedRecord(record); setShowViewModal(true); setActionMenuId(null); }}
-                                className="w-full text-left px-4 py-3 text-sm font-bold text-[#04091E] hover:bg-gray-50 flex items-center justify-between transition-colors"
-                              >
-                                View
-                              </button>
-                              <button
-                                onClick={() => { setSelectedRecord(record); setShowEditModal(true); setActionMenuId(null); }}
-                                className="w-full text-left px-4 py-3 text-sm font-bold text-[#04091E] hover:bg-gray-50 flex items-center justify-between transition-colors"
-                              >
-                                Edit
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {currentRecords.length < recordsPerPage && Array.from({ length: recordsPerPage - currentRecords.length }).map((_, idx) => (
-                      <tr key={`empty-${idx}`} className="h-[84px]">
-                        <td colSpan={7}>&nbsp;</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="px-8 bg-white">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  pageSize={recordsPerPage}
-                  totalItems={filteredRecords.length}
-                  itemsName="records"
-                  onPageChange={setCurrentPage}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar Area */}
-          <div className="w-[280px] xl:w-[320px] shrink-0 space-y-6">
-            {/* AI Insights Card */}
-            <div className="bg-white rounded-[24px] border-l-[6px] border-[#D72322] p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <HiInformationCircle className="text-[#D72322] text-2xl" />
-                <h3 className="font-black text-[#04091E] text-xs uppercase tracking-widest">AI Insights</h3>
-              </div>
-              <div className="bg-red-50/30 rounded-xl p-5 border border-red-50 mb-5">
-                <p className="text-[9px] font-black text-[#D72322] uppercase tracking-widest mb-1">Next Maint.</p>
-                <p className="font-bold text-[#04091E] text-base">Service in 1,240 km</p>
-              </div>
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <p className="text-[9px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">Est. Cost</p>
-                  <p className="font-black text-[#04091E] text-base">$540.00</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[9px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">Confidence</p>
-                  <p className="font-black text-[#04091E] text-base">92%</p>
-                </div>
-              </div>
-              <button className="w-full bg-[#D72322] text-white py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-red-100 hover:scale-[1.02] transition-all">
-                Optimize Schedule
-              </button>
-            </div>
-
-            {/* Upcoming Section */}
-            <div>
-              <div className="flex justify-between items-center mb-5">
-                <h3 className="font-black text-[#04091E] text-[10px] uppercase tracking-widest font-['Outfit']">Upcoming</h3>
-                <span className="bg-[#D72322] text-white text-[9px] px-2 py-0.5 rounded font-black tracking-wider">30D Window</span>
-              </div>
-              <div className="space-y-3">
-                {data?.upcoming.map((u: any) => (
-                  <div key={u.id} className="bg-white p-4 rounded-2xl border border-[#EEEFF2] flex items-center gap-3 group cursor-pointer hover:border-[#D72322]/20 transition-all">
-                    <div className="p-2.5 bg-[#F8F9FB] rounded-xl text-[#A3A6B4] group-hover:text-[#D72322] transition-colors">
-                      <HiCalendar className="text-lg" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-[#04091E] text-[11px] leading-tight truncate">{u.title}</p>
-                      <p className="text-[9px] text-[#A3A6B4] font-medium mt-0.5 truncate">{u.date}</p>
-                    </div>
-                    <div className="text-[#EEEFF2] group-hover:text-[#D72322] transition-colors text-xs opacity-50">{">"}</div>
+              {/* List Section */}
+              <div className="bg-white rounded-[32px] border border-[#EEEFF2] shadow-sm overflow-hidden">
+                <div className="p-8 flex justify-between items-center bg-white border-b border-[#EEEFF2]">
+                  <div className="flex gap-4">
+                    <select className="bg-[#F8F9FB] border border-[#EEEFF2] px-4 py-2 rounded-xl text-sm font-medium outline-none cursor-pointer">
+                      <option>All Vehicles</option>
+                    </select>
+                    <select className="bg-[#F8F9FB] border border-[#EEEFF2] px-4 py-2 rounded-xl text-sm font-medium outline-none cursor-pointer">
+                      <option>Service Type</option>
+                    </select>
                   </div>
-                ))}
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => {
+                        const csvContent = "data:text/csv;charset=utf-8,Vehicle,Service Type,Date,Status,Cost,Notes\n" +
+                          data?.records.map((r: any) =>
+                            `"${r.vehicle}","${r.service}","${r.date}","${r.status}","${r.cost}","${r.notes?.replace(/"/g, '""')}"`
+                          ).join("\n");
+                        const encodedUri = encodeURI(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", `maintenance_export_${new Date().toISOString().split('T')[0]}.csv`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                      className="flex items-center gap-2 px-6 py-2 border border-[#EEEFF2] rounded-xl text-sm font-bold text-[#04091E] hover:bg-gray-50 transition-all">
+                      <HiDownload className="text-[#D72322]" /> Export
+                    </button>
+                    <button
+                      onClick={() => setShowAddModal(true)}
+                      className="flex items-center gap-2 px-6 py-2 bg-[#D72322] text-white rounded-xl text-sm font-black shadow-lg shadow-red-100 hover:scale-105 transition-all"
+                    >
+                      <HiPlus /> Add Service
+                    </button>
+                  </div>
+                </div>
+
+                <div className="overflow-visible pb-10 min-h-[580px]">
+                  <table className="w-full relative table-fixed">
+                    <thead>
+                      <tr className="text-left bg-white border-b border-[#EEEFF2]">
+                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[160px]">Vehicle</th>
+                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[120px]">Service Type</th>
+                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Date</th>
+                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Status</th>
+                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Cost</th>
+                        <th className="py-4 px-4 text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Notes</th>
+                        <th className="py-4 px-4 w-12"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#EEEFF2]">
+                      {currentRecords.map((record: any) => (
+                        <tr key={record.id} className={`hover:bg-gray-50/50 transition-all relative h-[84px] ${statusMenuId === record.id || actionMenuId === record.id ? 'z-50' : 'z-0'}`}>
+                          <td className="py-5 px-4 whitespace-nowrap">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-[#F8F9FB] rounded-xl border border-[#EEEFF2] flex items-center justify-center font-black text-[#D72322] text-[10px]">
+                                {record.vehicle.substring(0, 2).toUpperCase()}
+                              </div>
+                              <div className="truncate">
+                                <p className="font-bold text-[#04091E] text-xs leading-tight truncate">{record.vehicle}</p>
+                                <p className="text-[9px] text-[#A3A6B4] font-medium tracking-wide">
+                                  VIN: {record.vin && record.vin !== "N/A" ? `...${record.vin.slice(-6)}` : '...38842'}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-5 px-4 whitespace-nowrap">
+                            <span className="text-[9px] font-black text-[#D72322] uppercase tracking-widest border border-red-100 px-3 py-1 rounded-md bg-red-50/30">
+                              {record.service}
+                            </span>
+                          </td>
+                          <td className="py-5 px-4 whitespace-nowrap text-xs font-medium text-[#747681]">{record.date}</td>
+                          <td className="py-5 px-4 whitespace-nowrap relative">
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setStatusMenuId(statusMenuId === record.id ? null : record.id);
+                                setActionMenuId(null);
+                              }}
+                              className="flex items-center gap-2 cursor-pointer group"
+                            >
+                              <div className={`w-2 h-2 rounded-full ${record.status === 'COMPLETED' ? 'bg-[#10B981]' : record.status === 'OVERDUE' ? 'bg-[#D72322]' : 'bg-[#F97316]'}`} />
+                              <span className={`text-[9px] font-black uppercase tracking-widest group-hover:underline ${record.status === 'COMPLETED' ? 'text-[#10B981]' : record.status === 'OVERDUE' ? 'text-[#D72322]' : 'text-[#F97316]'}`}>
+                                {record.status}
+                              </span>
+                            </div>
+                            {statusMenuId === record.id && (
+                              <div className="absolute left-4 top-[80%] bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-[#EEEFF2] py-2 w-40 z-[100] animate-in fade-in slide-in-from-top-2 flex flex-col">
+                                <p className="px-4 py-1 text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest border-b border-[#EEEFF2] mb-1">Set Status</p>
+                                <button onClick={() => handleStatusUpdate(record.id, 'COMPLETED')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#10B981] hover:bg-green-50 transition-colors">Completed</button>
+                                <button onClick={() => handleStatusUpdate(record.id, 'OPEN')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#F97316] hover:bg-orange-50 transition-colors">Open</button>
+                                <button onClick={() => handleStatusUpdate(record.id, 'OVERDUE')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#D72322] hover:bg-red-50 transition-colors">Overdue</button>
+                              </div>
+                            )}
+                          </td>
+                          <td className="py-5 px-4 whitespace-nowrap font-black text-[#04091E] text-xs">${record.cost.toLocaleString()}</td>
+                          <td className="py-5 px-4 text-[11px] text-[#747681] font-medium max-w-[180px] truncate">{record.notes}</td>
+                          <td className="py-5 px-4 text-right relative min-w-[60px]">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActionMenuId(actionMenuId === record.id ? null : record.id);
+                                setStatusMenuId(null);
+                              }}
+                              className="p-2 text-[#A3A6B4] hover:text-[#04091E] hover:bg-gray-100 rounded-full transition-all"
+                            >
+                              <HiDotsVertical />
+                            </button>
+                            {actionMenuId === record.id && (
+                              <div className="absolute right-12 top-[80%] bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-[#EEEFF2] py-2 w-32 z-[100] animate-in fade-in slide-in-from-top-2 flex flex-col">
+                                <button
+                                  onClick={() => { setSelectedRecord(record); setShowViewModal(true); setActionMenuId(null); }}
+                                  className="w-full text-left px-4 py-3 text-sm font-bold text-[#04091E] hover:bg-gray-50 flex items-center justify-between transition-colors"
+                                >
+                                  View
+                                </button>
+                                <button
+                                  onClick={() => { setSelectedRecord(record); setShowEditModal(true); setActionMenuId(null); }}
+                                  className="w-full text-left px-4 py-3 text-sm font-bold text-[#04091E] hover:bg-gray-50 flex items-center justify-between transition-colors"
+                                >
+                                  Edit
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                      {currentRecords.length < recordsPerPage && Array.from({ length: recordsPerPage - currentRecords.length }).map((_, idx) => (
+                        <tr key={`empty-${idx}`} className="h-[84px]">
+                          <td colSpan={7}>&nbsp;</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="px-8 bg-white">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    pageSize={recordsPerPage}
+                    totalItems={filteredRecords.length}
+                    itemsName="records"
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Support/Tips */}
-            <div className="bg-[#FFF8F8] p-5 rounded-2xl border border-red-50">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#D72322]" />
-                <p className="font-black text-[#D72322] text-[9px] uppercase tracking-widest">Maintenance Tip</p>
+            {/* Right Column: Sidebar Area */}
+            <div className="space-y-6">
+              {/* AI Insights Card */}
+              <div className="bg-white rounded-[24px] border-l-[6px] border-[#D72322] p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-6">
+                  <HiInformationCircle className="text-[#D72322] text-2xl" />
+                  <h3 className="font-black text-[#04091E] text-xs uppercase tracking-widest">AI Insights</h3>
+                </div>
+                <div className="bg-red-50/30 rounded-xl p-5 border border-red-50 mb-5">
+                  <p className="text-[9px] font-black text-[#D72322] uppercase tracking-widest mb-1">Next Maint.</p>
+                  <p className="font-bold text-[#04091E] text-base">Service in 1,240 km</p>
+                </div>
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <p className="text-[9px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">Est. Cost</p>
+                    <p className="font-black text-[#04091E] text-base">$540.00</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[9px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">Confidence</p>
+                    <p className="font-black text-[#04091E] text-base">92%</p>
+                  </div>
+                </div>
+                <button className="w-full bg-[#D72322] text-white py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-red-100 hover:scale-[1.02] transition-all">
+                  Optimize Schedule
+                </button>
               </div>
-              <p className="text-[#747681] text-[11px] font-medium leading-relaxed">
-                Check tire pressure monthly to improve fuel efficiency by up to <span className="text-[#04091E] font-bold">3%</span>. Correct inflation also increases tire lifespan significantly.
-              </p>
-            </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-[#EEEFF2] space-y-3">
-              <p className="font-black text-[#04091E] text-[9px] uppercase tracking-widest">Need Assistance?</p>
-              <p className="font-black text-[#04091E] text-2xl">1-800-GEAR-HELP</p>
-              <button className="w-full bg-[#D72322] rounded-xl py-4 text-white text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2">
-                Call Roadside Help
-              </button>
+              {/* Upcoming Section */}
+              <div>
+                <div className="flex justify-between items-center mb-5">
+                  <h3 className="font-black text-[#04091E] text-[10px] uppercase tracking-widest font-['Outfit']">Upcoming</h3>
+                  <span className="bg-[#D72322] text-white text-[9px] px-2 py-0.5 rounded font-black tracking-wider">30D Window</span>
+                </div>
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
+                  {data?.upcoming.map((u: any) => (
+                    <div key={u.id} className="bg-white p-4 rounded-2xl border border-[#EEEFF2] flex items-center gap-3 group cursor-pointer hover:border-[#D72322]/20 transition-all">
+                      <div className="p-2.5 bg-[#F8F9FB] rounded-xl text-[#A3A6B4] group-hover:text-[#D72322] transition-colors">
+                        <HiCalendar className="text-lg" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-[#04091E] text-[11px] leading-tight truncate">{u.title}</p>
+                        <p className="text-[9px] text-[#A3A6B4] font-medium mt-0.5 truncate">{u.date}</p>
+                      </div>
+                      <div className="text-[#EEEFF2] group-hover:text-[#D72322] transition-colors text-xs opacity-50">{">"}</div>
+                    </div>
+                  ))}
+                  {(!data?.upcoming || data.upcoming.length === 0) && (
+                    <p className="text-[#A3A6B4] text-[10px] font-medium text-center py-4 bg-gray-50/50 rounded-2xl border border-dashed border-[#EEEFF2]">No upcoming tasks</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Support/Tips */}
+              <div className="bg-[#FFF8F8] p-5 rounded-2xl border border-red-50">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#D72322]" />
+                  <p className="font-black text-[#D72322] text-[9px] uppercase tracking-widest">Maintenance Tip</p>
+                </div>
+                <p className="text-[#747681] text-[11px] font-medium leading-relaxed">
+                  Check tire pressure monthly to improve fuel efficiency by up to <span className="text-[#04091E] font-bold">3%</span>. Correct inflation also increases tire lifespan significantly.
+                </p>
+              </div>
+
+              <div className="bg-white p-6 rounded-2xl border border-[#EEEFF2] space-y-3">
+                <p className="font-black text-[#04091E] text-[9px] uppercase tracking-widest">Need Assistance?</p>
+                <p className="font-black text-[#04091E] text-2xl">1-800-GEAR-HELP</p>
+                <button className="w-full bg-[#D72322] rounded-xl py-4 text-white text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                  Call Roadside Help
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -538,14 +543,14 @@ function ViewMaintenanceModal({ record, onClose }: any) {
                 <HiTruck className="text-[#A3A6B4] text-xl rotate-180" />
                 <h4 className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Parts Replaced</h4>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {record.parts.map((part: any) => (
-                  <div key={part.id} className="flex justify-between items-center p-5 border border-[#EEEFF2] rounded-2xl">
-                    <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full border border-[#EEEFF2] flex items-center justify-center text-[10px] text-[#A3A6B4]">✓</div>
-                      <span className="font-bold text-[#747681] text-sm">{part.part_name}</span>
+                  <div key={part.id} className="flex justify-between items-center p-3.5 border border-[#EEEFF2] rounded-xl bg-[#FDFDFD]">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-4 h-4 rounded-full border border-green-100 flex items-center justify-center text-[8px] text-[#10B981] bg-green-50">✓</div>
+                      <span className="font-bold text-[#747681] text-xs">{part.part_name}</span>
                     </div>
-                    <span className="font-extrabold text-[#04091E] text-sm">${part.cost.toLocaleString()}</span>
+                    <span className="font-black text-[#04091E] text-xs">${part.cost.toLocaleString()}</span>
                   </div>
                 ))}
               </div>

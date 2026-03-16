@@ -117,7 +117,7 @@ export default function MyVehicles() {
           </div>
 
           {/* Pagination */}
-          <div className="pt-6">
+          <div className="pt-1">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
