@@ -110,7 +110,7 @@ export default function Maintenance() {
   const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
 
   return (
-    <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
+    <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
       <div className="ml-[240px] flex-1">
@@ -121,7 +121,7 @@ export default function Maintenance() {
           onSearch={setSearchQuery}
         />
 
-        <div className="p-8 space-y-8 max-w-[1400px]">
+        <div className="p-8 space-y-8 max-w-[1440px]">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
             {/* Left Column: Stats and Table */}
             <div className="space-y-8">
@@ -134,8 +134,8 @@ export default function Maintenance() {
               </div>
 
               {/* List Section */}
-              <div className="bg-white rounded-[32px] border border-[#EEEFF2] shadow-sm overflow-hidden">
-                <div className="p-8 flex justify-between items-center bg-white border-b border-[#EEEFF2]">
+              <div className="bg-white rounded-2xl border border-[#E4E4E7] shadow-sm overflow-hidden">
+                <div className="p-6 flex justify-between items-center bg-white border-b border-[#F4F4F5]">
                   <div className="flex gap-4">
                     <select className="bg-[#F8F9FB] border border-[#EEEFF2] px-4 py-2 rounded-xl text-sm font-medium outline-none cursor-pointer">
                       <option>All Vehicles</option>
@@ -171,42 +171,42 @@ export default function Maintenance() {
                   </div>
                 </div>
 
-                <div className="overflow-visible pb-10 min-h-[580px]">
+                <div className="overflow-auto max-h-[500px] border border-[#E4E4E7] rounded-2xl relative">
                   <table className="w-full relative table-fixed">
-                    <thead>
-                      <tr className="text-left bg-white border-b border-[#EEEFF2]">
-                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[160px]">Vehicle</th>
-                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[120px]">Service Type</th>
-                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Date</th>
-                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Status</th>
-                        <th className="py-4 px-4 whitespace-nowrap text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest w-[100px]">Cost</th>
-                        <th className="py-4 px-4 text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Notes</th>
-                        <th className="py-4 px-4 w-12"></th>
+                    <thead className="sticky top-0 bg-[#FAFAFA] z-20">
+                      <tr className="text-left border-b border-[#F4F4F5]">
+                        <th className="py-3 px-6 text-[11px] font-semibold text-[#71717A] uppercase tracking-wider w-[160px]">Vehicle</th>
+                        <th className="py-3 px-6 text-[11px] font-semibold text-[#71717A] uppercase tracking-wider w-[120px]">Service</th>
+                        <th className="py-3 px-6 text-[11px] font-semibold text-[#71717A] uppercase tracking-wider w-[100px]">Date</th>
+                        <th className="py-3 px-6 text-[11px] font-semibold text-[#71717A] uppercase tracking-wider w-[100px]">Status</th>
+                        <th className="py-3 px-6 text-[11px] font-semibold text-[#71717A] uppercase tracking-wider w-[100px]">Cost</th>
+                        <th className="py-3 px-6 text-[11px] font-semibold text-[#71717A] uppercase tracking-wider">Notes</th>
+                        <th className="py-3 px-6 w-12"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#EEEFF2]">
+                    <tbody className="divide-y divide-[#F4F4F5] bg-white">
                       {currentRecords.map((record: any) => (
-                        <tr key={record.id} className={`hover:bg-gray-50/50 transition-all relative h-[84px] ${statusMenuId === record.id || actionMenuId === record.id ? 'z-50' : 'z-0'}`}>
-                          <td className="py-5 px-4 whitespace-nowrap">
+                        <tr key={record.id} className={`hover:bg-[#FAFAFA] transition-colors h-[64px] ${statusMenuId === record.id || actionMenuId === record.id ? 'z-50' : 'z-0'}`}>
+                          <td className="py-3 px-6">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-[#F8F9FB] rounded-xl border border-[#EEEFF2] flex items-center justify-center font-black text-[#D72322] text-[10px]">
+                              <div className="w-8 h-8 rounded-md bg-[#F4F4F5] border border-[#E4E4E7] flex items-center justify-center font-bold text-[#D72322] text-[10px]">
                                 {record.vehicle.substring(0, 2).toUpperCase()}
                               </div>
                               <div className="truncate">
-                                <p className="font-bold text-[#04091E] text-xs leading-tight truncate">{record.vehicle}</p>
-                                <p className="text-[9px] text-[#A3A6B4] font-medium tracking-wide">
+                                <p className="font-semibold text-[#09090B] text-xs truncate">{record.vehicle}</p>
+                                <p className="text-[10px] text-[#71717A] font-medium truncate">
                                   VIN: {record.vin && record.vin !== "N/A" ? `...${record.vin.slice(-6)}` : '...38842'}
                                 </p>
                               </div>
                             </div>
                           </td>
-                          <td className="py-5 px-4 whitespace-nowrap">
-                            <span className="text-[9px] font-black text-[#D72322] uppercase tracking-widest border border-red-100 px-3 py-1 rounded-md bg-red-50/30">
+                          <td className="py-3 px-6 whitespace-nowrap">
+                            <span className="text-[10px] font-semibold text-[#D72322] uppercase tracking-wider bg-red-50 px-2 py-0.5 rounded border border-red-100">
                               {record.service}
                             </span>
                           </td>
-                          <td className="py-5 px-4 whitespace-nowrap text-xs font-medium text-[#747681]">{record.date}</td>
-                          <td className="py-5 px-4 whitespace-nowrap relative">
+                          <td className="py-3 px-6 whitespace-nowrap text-xs font-medium text-[#71717A]">{record.date}</td>
+                          <td className="py-3 px-6 whitespace-nowrap relative">
                             <div
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -215,8 +215,8 @@ export default function Maintenance() {
                               }}
                               className="flex items-center gap-2 cursor-pointer group"
                             >
-                              <div className={`w-2 h-2 rounded-full ${record.status === 'COMPLETED' ? 'bg-[#10B981]' : record.status === 'OVERDUE' ? 'bg-[#D72322]' : 'bg-[#F97316]'}`} />
-                              <span className={`text-[9px] font-black uppercase tracking-widest group-hover:underline ${record.status === 'COMPLETED' ? 'text-[#10B981]' : record.status === 'OVERDUE' ? 'text-[#D72322]' : 'text-[#F97316]'}`}>
+                              <div className={`w-1.5 h-1.5 rounded-full ${record.status === 'COMPLETED' ? 'bg-[#10B981]' : record.status === 'OVERDUE' ? 'bg-[#D72322]' : 'bg-[#F97316]'}`} />
+                              <span className={`text-[10px] font-semibold uppercase tracking-wider group-hover:underline ${record.status === 'COMPLETED' ? 'text-[#10B981]' : record.status === 'OVERDUE' ? 'text-[#D72322]' : 'text-[#F97316]'}`}>
                                 {record.status}
                               </span>
                             </div>
@@ -229,9 +229,9 @@ export default function Maintenance() {
                               </div>
                             )}
                           </td>
-                          <td className="py-5 px-4 whitespace-nowrap font-black text-[#04091E] text-xs">${record.cost.toLocaleString()}</td>
-                          <td className="py-5 px-4 text-[11px] text-[#747681] font-medium max-w-[180px] truncate">{record.notes}</td>
-                          <td className="py-5 px-4 text-right relative min-w-[60px]">
+                          <td className="py-3 px-6 font-semibold text-[#09090B] text-xs">${record.cost.toLocaleString()}</td>
+                          <td className="py-3 px-6 text-[11px] text-[#71717A] font-medium max-w-[180px] truncate">{record.notes}</td>
+                          <td className="py-3 px-6 text-right relative">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -262,7 +262,7 @@ export default function Maintenance() {
                         </tr>
                       ))}
                       {currentRecords.length < recordsPerPage && Array.from({ length: recordsPerPage - currentRecords.length }).map((_, idx) => (
-                        <tr key={`empty-${idx}`} className="h-[84px]">
+                        <tr key={`empty-${idx}`} className="h-[64px]">
                           <td colSpan={7}>&nbsp;</td>
                         </tr>
                       ))}
@@ -270,7 +270,7 @@ export default function Maintenance() {
                   </table>
                 </div>
 
-                <div className="px-8 bg-white">
+                <div className="p-4 bg-white border border-[#E4E4E7] border-t-0 rounded-b-2xl">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
@@ -543,14 +543,14 @@ function ViewMaintenanceModal({ record, onClose }: any) {
                 <HiTruck className="text-[#A3A6B4] text-xl rotate-180" />
                 <h4 className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Parts Replaced</h4>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {record.parts.map((part: any) => (
-                  <div key={part.id} className="flex justify-between items-center p-3.5 border border-[#EEEFF2] rounded-xl bg-[#FDFDFD]">
+                  <div key={part.id} className="flex justify-between items-center px-4 py-2.5 border border-[#F4F4F5] rounded-lg bg-[#FAFAFA]">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-4 h-4 rounded-full border border-green-100 flex items-center justify-center text-[8px] text-[#10B981] bg-green-50">✓</div>
-                      <span className="font-bold text-[#747681] text-xs">{part.part_name}</span>
+                      <div className="w-3.5 h-3.5 rounded-full border border-red-100 flex items-center justify-center text-[7px] text-[#D72322] bg-red-50">✓</div>
+                      <span className="font-medium text-[#71717A] text-[11px]">{part.part_name}</span>
                     </div>
-                    <span className="font-black text-[#04091E] text-xs">${part.cost.toLocaleString()}</span>
+                    <span className="font-semibold text-[#09090B] text-[11px]">${part.cost.toLocaleString()}</span>
                   </div>
                 ))}
               </div>

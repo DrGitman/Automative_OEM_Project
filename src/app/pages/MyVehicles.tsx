@@ -77,7 +77,7 @@ export default function MyVehicles() {
   }
 
   return (
-    <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
+    <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
       <div className="ml-[240px] flex-1">
@@ -110,14 +110,14 @@ export default function MyVehicles() {
               />
             ))}
             {currentVehicles.length < itemsPerPage && Array.from({ length: itemsPerPage - currentVehicles.length }).map((_, idx) => (
-              <div key={`empty-${idx}`} className="h-[420px] rounded-[32px] border border-dashed border-[#EEEFF2] bg-gray-50/30 flex items-center justify-center">
-                <p className="text-[#A3A6B4] text-[10px] font-black uppercase tracking-widest">Empty Slot</p>
+              <div key={`empty-${idx}`} className="h-full rounded-2xl border border-dashed border-[#E4E4E7] bg-gray-50/30 flex items-center justify-center min-h-[400px]">
+                <p className="text-[#A3A6B4] text-[10px] font-semibold uppercase tracking-wider">Empty Slot</p>
               </div>
             ))}
           </div>
 
           {/* Pagination */}
-          <div className="pt-1">
+          <div className="mt-2">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -139,7 +139,7 @@ export default function MyVehicles() {
 
 function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => void, onView: () => void }) {
   return (
-    <div className="bg-white rounded-[32px] p-6 border border-[#EEEFF2] shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
+    <div className="bg-white rounded-2xl p-6 border border-[#E4E4E7] shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col h-full">
       <div className="flex justify-between items-start mb-6">
         <div className="w-14 h-14 bg-[#F8F9FB] rounded-2xl flex items-center justify-center p-3 border border-[#EEEFF2]">
           {vehicle.image_url ? (
@@ -157,32 +157,32 @@ function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => 
         </div>
       </div>
 
-      <div className="mb-8">
-        <h3 className="text-xl font-black text-[#04091E] leading-tight mb-1">{vehicle.make} {vehicle.model}</h3>
-        <p className="text-[10px] font-bold text-[#A3A6B4] uppercase tracking-widest">{vehicle.year} • {vehicle.fuel_type || 'Pickup Truck'}</p>
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-[#09090B] leading-tight mb-1">{vehicle.make} {vehicle.model}</h3>
+        <p className="text-[10px] font-semibold text-[#71717A] uppercase tracking-wider">{vehicle.year} • {vehicle.fuel_type || 'Pickup Truck'}</p>
       </div>
 
-      <div className="space-y-4 mb-10">
+      <div className="space-y-4 mb-8 flex-1">
         <div className="flex justify-between items-center">
-          <span className="text-[9px] font-black text-[#A3A6B4] uppercase tracking-widest">VIN</span>
-          <span className="text-sm font-bold text-[#04091E]">{vehicle.vin || 'GH-02938472'}</span>
+          <span className="text-[9px] font-semibold text-[#71717A] uppercase tracking-wider">VIN</span>
+          <span className="text-sm font-medium text-[#09090B]">{vehicle.vin || 'GH-02938472'}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-[9px] font-black text-[#A3A6B4] uppercase tracking-widest">Odometer</span>
-          <span className="text-sm font-bold text-[#04091E]">{(vehicle.mileage || 0).toLocaleString()} km</span>
+          <span className="text-[9px] font-semibold text-[#71717A] uppercase tracking-wider">Odometer</span>
+          <span className="text-sm font-medium text-[#09090B]">{(vehicle.mileage || 0).toLocaleString()} km</span>
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 mt-auto">
         <button
           onClick={onView}
-          className="flex-1 h-12 bg-[#D72322] text-white rounded-xl text-xs font-black shadow-lg shadow-red-50 hover:bg-[#B91C1C] transition-all"
+          className="flex-1 h-11 bg-[#D72322] text-white rounded-lg text-xs font-semibold shadow-sm hover:bg-[#B91C1C] transition-all"
         >
           View Details
         </button>
         <button
           onClick={onEdit}
-          className="px-6 h-12 border border-[#EEEFF2] rounded-xl text-xs font-black text-[#747681] hover:bg-gray-50 transition-all"
+          className="px-6 h-11 border border-[#E4E4E7] rounded-lg text-xs font-semibold text-[#71717A] hover:bg-gray-50 transition-all"
         >
           Edit
         </button>

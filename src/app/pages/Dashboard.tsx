@@ -238,69 +238,70 @@ export default function Dashboard() {
               </div>
 
               {/* Vehicle Status Table */}
-              <div className="bg-white p-6 rounded-2xl border border-[#EEEFF2] shadow-sm">
-                <h3 className="text-lg font-bold text-[#04091E] mb-6">Vehicle Status</h3>
-                <div className="overflow-x-auto min-h-[420px]">
-                  <table className="w-full table-fixed">
-                    <thead>
-                      <tr className="text-left border-b border-[#EEEFF2]">
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-12">No</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-[200px]">Vehicle Name</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-[140px]">Last Service</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-[120px]">Mileage</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] w-[100px]">Risk Level</th>
-                        <th className="pb-4 font-bold text-xs uppercase tracking-wider text-[#A3A6B4] text-right w-12">Actions</th>
+              <div className="bg-white rounded-2xl border border-[#E4E4E7] shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-[#F4F4F5]">
+                  <h3 className="text-sm font-semibold text-[#09090B]">Vehicle Status</h3>
+                </div>
+                <div className="overflow-auto max-h-[400px]">
+                  <table className="w-full table-fixed text-left">
+                    <thead className="sticky top-0 bg-[#FAFAFA] z-10">
+                      <tr className="border-b border-[#F4F4F5]">
+                        <th className="py-3 px-6 font-semibold text-[11px] uppercase tracking-wider text-[#71717A] w-12 text-center">No</th>
+                        <th className="py-3 px-6 font-semibold text-[11px] uppercase tracking-wider text-[#71717A] w-[200px]">Vehicle</th>
+                        <th className="py-3 px-6 font-semibold text-[11px] uppercase tracking-wider text-[#71717A] w-[140px]">Last Service</th>
+                        <th className="py-3 px-6 font-semibold text-[11px] uppercase tracking-wider text-[#71717A] w-[120px]">Mileage</th>
+                        <th className="py-3 px-6 font-semibold text-[11px] uppercase tracking-wider text-[#71717A] w-[100px]">Risk</th>
+                        <th className="py-3 px-6 font-semibold text-[11px] uppercase tracking-wider text-[#71717A] text-center w-12"></th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#EEEFF2]">
+                    <tbody className="divide-y divide-[#F4F4F5]">
                       {currentVehicles.map((v: any, idx: number) => (
-                        <tr key={v.id} className="group hover:bg-gray-50 transition-colors h-[84px]">
-                          <td className="py-5 font-bold text-[#04091E]">
+                        <tr key={v.id} className="group hover:bg-[#FAFAFA] transition-colors h-[64px]">
+                          <td className="py-3 px-6 font-medium text-[#71717A] text-center">
                             {(indexOfFirstVehicle + idx + 1).toString().padStart(2, '0')}
                           </td>
-                          <td className="py-5">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-10 bg-[#F8F9FB] rounded-lg flex items-center justify-center p-1 border border-[#EEEFF2] shrink-0">
+                          <td className="py-3 px-6">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-[#F8F9FB] rounded-md flex items-center justify-center p-1 border border-[#E4E4E7] shrink-0">
                                 <img src={gearhouseLogo} alt="car" className="w-full h-full object-contain grayscale opacity-60" />
                               </div>
                               <div className="truncate">
-                                <p className="text-sm font-black text-[#04091E] truncate">{v.make} : {v.model}</p>
-                                <p className="text-xs font-medium text-[#747681] truncate">{v.license_plate || "N/A"}</p>
+                                <p className="text-xs font-semibold text-[#09090B] truncate">{v.make} {v.model}</p>
+                                <p className="text-[10px] text-[#71717A] truncate font-medium">{v.license_plate || "N/A"}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="py-5">
-                            <p className="text-sm font-bold text-[#04091E]">March 24, 2022</p>
-                            <p className="text-xs font-medium text-[#747681]">09:20 AM</p>
+                          <td className="py-3 px-6">
+                            <p className="text-xs font-semibold text-[#09090B]">Mar 24, 2022</p>
+                            <p className="text-[10px] text-[#71717A] font-medium">09:20 AM</p>
                           </td>
-                          <td className="py-5">
-                            <p className="text-sm font-black text-[#04091E]">{v.mileage.toLocaleString()}.000km</p>
+                          <td className="py-3 px-6">
+                            <p className="text-xs font-semibold text-[#09090B]">{v.mileage.toLocaleString()}.000km</p>
                           </td>
-                          <td className="py-5">
-                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider ${v.risk_level === 'High' ? 'bg-[#FEE2E2] text-[#EF4444]' :
+                          <td className="py-3 px-6">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider ${v.risk_level === 'High' ? 'bg-[#FEE2E2] text-[#D72322]' :
                               v.risk_level === 'Medium' ? 'bg-[#FEF3C7] text-[#D97706]' :
-                                'bg-[#EBFDF5] text-[#10B981]'
+                                'bg-[#DCFCE7] text-[#15803D]'
                               }`}>
                               {v.risk_level}
                             </span>
                           </td>
-                          <td className="py-5 text-right">
-                            <button className="p-2 text-[#A3A6B4] hover:text-[#04091E] hover:bg-white rounded-lg transition-all border border-transparent hover:border-[#EEEFF2]">
-                              <HiDotsVertical />
+                          <td className="py-3 px-6 text-right">
+                            <button className="p-2 text-[#A1A1AA] hover:text-[#09090B] hover:bg-white rounded-md transition-all border border-transparent hover:border-[#E4E4E7]">
+                              <HiDotsVertical className="text-sm" />
                             </button>
                           </td>
                         </tr>
                       ))}
                       {currentVehicles.length < vehiclesPerPage && Array.from({ length: vehiclesPerPage - currentVehicles.length }).map((_, idx) => (
-                        <tr key={`empty-${idx}`} className="h-[84px]">
+                        <tr key={`empty-${idx}`} className="h-[64px]">
                           <td colSpan={6}>&nbsp;</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                {/* Pagination */}
-                <div className="pt-4">
+                <div className="p-4 border-t border-[#F4F4F5]">
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

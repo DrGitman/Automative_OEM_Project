@@ -96,7 +96,7 @@ export default function Bookings() {
   }
 
   return (
-    <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
+    <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
       <div className="ml-[240px] flex-1 overflow-x-hidden">
@@ -107,34 +107,34 @@ export default function Bookings() {
           onSearch={setSearchQuery}
         />
 
-        <div className="p-8 max-w-[1240px] mx-auto">
-          <div className="bg-white rounded-[40px] border border-[#EEEFF2] shadow-sm overflow-hidden min-h-[800px] flex flex-col">
+        <div className="p-8 max-w-[1400px] mx-auto">
+          <div className="bg-white rounded-3xl border border-[#E4E4E7] shadow-sm overflow-hidden h-[calc(100vh-180px)] flex flex-col">
             {/* Calendar Header */}
-            <div className="p-6 border-b border-[#EEEFF2] flex flex-col md:flex-row items-center justify-between gap-6 bg-white">
+            <div className="p-6 border-b border-[#F4F4F5] flex flex-col md:flex-row items-center justify-between gap-6 bg-white shrink-0">
               <div className="flex items-center gap-6">
-                <div className="w-12 h-12 border border-[#EEEFF2] rounded-2xl flex items-center justify-center text-[#D72322] shadow-inner">
-                  <HiCalendar className="text-xl" />
+                <div className="w-10 h-10 border border-[#E4E4E7] rounded-xl flex items-center justify-center text-[#D72322] bg-[#FAFAFA]">
+                  <HiCalendar className="text-lg" />
                 </div>
                 <div>
-                  <h3 className="text-[#04091E] text-xl font-black">
+                  <h3 className="text-[#09090B] text-lg font-semibold">
                     {viewMode === 'day' ? format(currentDate, "EEEE, MMM d, yyyy") : format(currentDate, "MMMM yyyy")}
                   </h3>
-                  <div className="flex items-center gap-2 mt-1">
-                    <button onClick={handlePrev} className="p-1 hover:bg-[#F8F9FB] rounded-lg transition-all text-[#747681]"><HiChevronLeft className="text-xl" /></button>
-                    <button onClick={() => setCurrentDate(new Date())} className="text-[10px] font-black text-[#D72322] uppercase tracking-[0.2em] hover:underline px-2">Today</button>
-                    <button onClick={handleNext} className="p-1 hover:bg-[#F8F9FB] rounded-lg transition-all text-[#747681]"><HiChevronRight className="text-xl" /></button>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <button onClick={handlePrev} className="p-1 hover:bg-[#F4F4F5] rounded-md transition-all text-[#71717A]"><HiChevronLeft className="text-xl" /></button>
+                    <button onClick={() => setCurrentDate(new Date())} className="text-[10px] font-semibold text-[#D72322] uppercase tracking-wider hover:underline px-2">Today</button>
+                    <button onClick={handleNext} className="p-1 hover:bg-[#F4F4F5] rounded-md transition-all text-[#71717A]"><HiChevronRight className="text-xl" /></button>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 bg-[#F8F9FB] p-1.5 rounded-2xl border border-[#EEEFF2]">
+              <div className="flex items-center gap-1 bg-[#F4F4F5] p-1 rounded-xl border border-[#E4E4E7]">
                 {["day", "week", "month"].map((mode) => (
                   <button
                     key={mode}
                     onClick={() => setViewMode(mode as any)}
-                    className={`px-8 py-2.5 rounded-xl text-xs font-black transition-all uppercase tracking-widest ${viewMode === mode
-                      ? "bg-white text-[#D72322] shadow-sm"
-                      : "text-[#A3A6B4] hover:text-[#04091E]"
+                    className={`px-6 py-2 rounded-lg text-xs font-semibold transition-all uppercase tracking-wider ${viewMode === mode
+                      ? "bg-white text-[#D72322] shadow-sm border border-[#E4E4E7]/50"
+                      : "text-[#71717A] hover:text-[#09090B]"
                       }`}
                   >
                     {mode}
@@ -144,14 +144,14 @@ export default function Bookings() {
 
               <button
                 onClick={() => setShowAddModal(true)}
-                className="bg-[#D72322] w-12 h-12 rounded-2xl shadow-xl shadow-red-100 hover:bg-[#B91C1C] transition-all flex items-center justify-center text-white"
+                className="bg-[#D72322] w-10 h-10 rounded-xl shadow-lg shadow-red-100 hover:bg-[#B91C1C] transition-all flex items-center justify-center text-white"
               >
-                <HiPlus className="text-2xl" />
+                <HiPlus className="text-xl" />
               </button>
             </div>
 
-            {/* Calendar Body */}
-            <div className="flex-1 overflow-y-auto">
+            {/* Calendar Body Area with internal scrolling */}
+            <div className="flex-1 overflow-auto bg-white custom-scrollbar">
               {viewMode === 'month' ? (
                 <MonthView days={calendarDays} appointments={filteredAppointments} currentDate={currentDate} onSelect={setSelectedBooking} />
               ) : (
@@ -171,53 +171,58 @@ export default function Bookings() {
 function GridView({ mode, days, hours, appointments, onSelect }: any) {
   return (
     <div className="min-w-[1200px] flex flex-col h-full">
-      {/* Sticky Header */}
-      <div className="grid grid-cols-[100px_repeat(auto-fit,minmax(0,1fr))] bg-[#F8F9FB] border-b border-[#EEEFF2] sticky top-0 z-20">
-        <div className="p-6 border-r border-[#EEEFF2]" />
-        {days.map((day: any) => (
-          <div key={day.toString()} className="p-6 text-center border-r border-[#EEEFF2] last:border-r-0 bg-[#F8F9FB]">
-            <p className="text-[#A3A6B4] text-[10px] font-black uppercase tracking-widest mb-1">{format(day, "EEE d")}</p>
-            <p className={`text-xl font-black ${isSameDay(day, new Date()) ? 'text-[#D72322]' : 'text-[#04091E]'}`}>
-              {format(day, "d")}
-            </p>
-          </div>
-        ))}
+      {/* Sticky Day Headers */}
+      <div className="grid grid-cols-[80px_1fr] bg-white sticky top-0 z-30 border-b border-[#F4F4F5]">
+        <div className="border-r border-[#F4F4F5]" />
+        <div className={`grid grid-cols-${days.length} w-full`}>
+          {days.map((day: any) => (
+            <div key={day.toString()} className="py-4 px-2 text-center border-r border-[#F4F4F5] last:border-r-0">
+              <p className="text-[#71717A] text-[10px] font-semibold uppercase tracking-wider mb-1">{format(day, "EEE")}</p>
+              <p className={`text-base font-bold ${isSameDay(day, new Date()) ? 'text-[#D72322]' : 'text-[#09090B]'}`}>
+                {format(day, "d")}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="relative flex-1">
+      {/* Time Grid */}
+      <div className="relative">
         {hours.map((hour: string, hIdx: number) => (
-          <div key={hour} className="grid grid-cols-[100px_repeat(auto-fit,minmax(0,1fr))] border-b border-[#EEEFF2] last:border-b-0 min-h-[140px]">
-            <div className="p-4 text-right border-r border-[#EEEFF2] flex flex-col items-end pt-6">
-              <span className="text-[#04091E] text-xs font-black">{hour}</span>
+          <div key={hour} className="grid grid-cols-[80px_1fr] border-b border-[#F4F4F5] last:border-b-0 min-h-[120px]">
+            <div className="py-4 pr-3 text-right border-r border-[#F4F4F5] flex flex-col items-end">
+              <span className="text-[#71717A] text-[10px] font-bold">{hour}</span>
             </div>
-            {days.map((day: any, dIdx: number) => {
-              const dayAppts = appointments.filter((a: any) => {
-                const aDate = new Date(a.date);
-                return isSameDay(aDate, day) && a.time === hour;
-              });
+            <div className={`grid grid-cols-${days.length} w-full`}>
+              {days.map((day: any, dIdx: number) => {
+                const dayAppts = appointments.filter((a: any) => {
+                  const aDate = new Date(a.date);
+                  return isSameDay(aDate, day) && a.time === hour;
+                });
 
-              return (
-                <div key={dIdx} className="border-r border-[#EEEFF2] last:border-r-0 p-3 relative group hover:bg-gray-50/50 transition-colors">
-                  {dayAppts.map((appt: any) => (
-                    <div
-                      key={appt.id}
-                      onClick={() => onSelect(appt)}
-                      className="bg-[#D72322] rounded-[24px] p-6 shadow-xl shadow-red-100 cursor-pointer hover:scale-[1.02] transition-all"
-                    >
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full border-2 border-white/20 bg-white/10 flex items-center justify-center text-white overflow-hidden text-xs font-black">
-                          <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${appt.name}`} alt="" />
-                        </div>
-                        <div>
-                          <p className="text-white font-black text-sm leading-tight">{appt.name}</p>
-                          <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest">{appt.service}</p>
+                return (
+                  <div key={dIdx} className="border-r border-[#F4F4F5] last:border-r-0 p-2 relative group hover:bg-[#FAFAFA] transition-colors">
+                    {dayAppts.map((appt: any) => (
+                      <div
+                        key={appt.id}
+                        onClick={() => onSelect(appt)}
+                        className="bg-red-50 border border-red-100 rounded-xl p-4 cursor-pointer hover:bg-red-100/50 transition-all"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-6 h-6 rounded-full border border-[#D72322]/20 overflow-hidden shadow-sm">
+                            <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${appt.name}`} alt="" />
+                          </div>
+                          <div>
+                            <p className="text-[#09090B] font-bold text-[11px] leading-tight truncate">{appt.name}</p>
+                            <p className="text-[#D72322] text-[9px] font-semibold uppercase tracking-wider">{appt.service}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         ))}
       </div>
@@ -229,7 +234,7 @@ function MonthView({ days, appointments, currentDate, onSelect }: any) {
   return (
     <div className="grid grid-cols-7 h-full">
       {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(d => (
-        <div key={d} className="p-6 border-b border-r border-[#EEEFF2] bg-[#F8F9FB]/30 text-center text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">
+        <div key={d} className="py-3 px-6 border-b border-r border-[#F4F4F5] bg-[#FAFAFA] text-center text-[10px] font-semibold text-[#71717A] uppercase tracking-wider sticky top-0 z-20">
           {d}
         </div>
       ))}

@@ -33,7 +33,7 @@ export default function Sidebar() {
         <div className="w-[86px] h-[70px] mb-4">
           <img src={gearhouseLogo} alt="Gearhouse" className="w-full h-full object-contain" />
         </div>
-        <h2 className="font-['Outfit',sans-serif] font-black text-[#D72322] text-2xl tracking-tighter">
+        <h2 className="font-['Inter',sans-serif] font-black text-[#D72322] text-2xl tracking-tighter">
           GEARHOUSE
         </h2>
       </div>
@@ -48,13 +48,10 @@ export default function Sidebar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-6 px-4 h-[56px] rounded-xl transition-all duration-200 ${isActive
-                ? "bg-[#D72322] text-white shadow-lg shadow-red-200"
-                : "text-[#030303] hover:bg-gray-50"
-                }`}
+              className={`flex items-center gap-3 p-2 rounded-lg transition-colors duration-200 ${isActive ? "bg-[#FEE2E2] text-[#D72322]" : "text-[#71717A] hover:bg-gray-100"}`}
             >
-              <Icon className={`text-2xl ${isActive ? "text-white" : "text-[#D22624]"}`} />
-              <span className={`font-['Outfit',sans-serif] text-base font-medium ${isActive ? "font-bold" : ""}`}>
+              <Icon className={`text-xl ${isActive ? "text-[#D72322]" : "text-[#A1A1AA]"}`} />
+              <span className={`font-['Inter',sans-serif] text-sm font-medium ${isActive ? "font-bold text-[#D72322]" : "text-[#71717A]"}`}>
                 {item.label}
               </span>
             </Link>

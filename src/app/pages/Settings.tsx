@@ -14,7 +14,7 @@ export default function Settings() {
   const [theme, setTheme] = useState("light");
 
   return (
-    <div className="bg-[#F8F9FB] min-h-screen flex font-['Outfit',sans-serif]">
+    <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
       <Sidebar />
 
       <div className="ml-[240px] flex-1 overflow-x-hidden">
@@ -59,13 +59,13 @@ export default function Settings() {
                 <div className="flex gap-4">
                   <button
                     onClick={() => setTheme("light")}
-                    className={`flex-1 py-4 rounded-2xl border font-bold transition-all ${theme === 'light' ? 'bg-[#D72322] text-white border-[#D72322]' : 'bg-white text-[#747681] border-[#EEEFF2] hover:bg-gray-50'}`}
+                    className={`flex-1 py-3 rounded-xl border font-semibold text-sm transition-all ${theme === 'light' ? 'bg-[#D72322] text-white border-[#D72322] shadow-sm' : 'bg-white text-[#71717A] border-[#E4E4E7] hover:bg-gray-50'}`}
                   >
                     Light
                   </button>
                   <button
                     onClick={() => setTheme("dark")}
-                    className={`flex-1 py-4 rounded-2xl border font-bold transition-all ${theme === 'dark' ? 'bg-[#D72322] text-white border-[#D72322]' : 'bg-white text-[#747681] border-[#EEEFF2] hover:bg-gray-50'}`}
+                    className={`flex-1 py-3 rounded-xl border font-semibold text-sm transition-all ${theme === 'dark' ? 'bg-[#D72322] text-white border-[#D72322] shadow-sm' : 'bg-white text-[#71717A] border-[#E4E4E7] hover:bg-gray-50'}`}
                   >
                     Dark
                   </button>
@@ -73,7 +73,7 @@ export default function Settings() {
               </div>
               <div>
                 <label className="block text-[#A3A6B4] text-[10px] font-black uppercase tracking-widest mb-3">Language</label>
-                <select className="w-full h-[60px] px-6 bg-white border border-[#EEEFF2] rounded-2xl font-bold text-[#04091E] outline-none focus:border-[#D72322] shadow-sm">
+                  <select className="w-full h-[48px] px-4 bg-white border border-[#E4E4E7] rounded-xl font-semibold text-sm text-[#09090B] outline-none focus:border-[#D72322] shadow-sm">
                   <option>English (US)</option>
                   <option>German</option>
                   <option>Afrikaans</option>
@@ -89,7 +89,7 @@ export default function Settings() {
           </div>
 
           <div className="flex justify-end pt-10">
-            <button className="bg-[#D72322] text-white px-12 py-4 rounded-2xl font-black text-sm shadow-xl shadow-red-100 hover:bg-[#B91C1C] transition-all">
+            <button className="bg-[#D72322] text-white px-8 py-3 rounded-xl font-semibold text-sm shadow-sm hover:bg-[#B91C1C] transition-all">
               Save All Changes
             </button>
           </div>
@@ -101,14 +101,14 @@ export default function Settings() {
 
 function Section({ icon, title, subtitle, children }: any) {
   return (
-    <div className="bg-white rounded-3xl p-8 border border-[#EEEFF2] shadow-sm">
-      <div className="flex items-center gap-6 mb-10">
-        <div className="bg-[#FEF2F2] p-4 rounded-2xl text-[#D72322] text-2xl">
+    <div className="bg-white rounded-2xl p-8 border border-[#E4E4E7] shadow-sm">
+      <div className="flex items-center gap-6 mb-8">
+        <div className="bg-[#FEE2E2] p-4 rounded-xl text-[#D72322] text-xl">
           {icon}
         </div>
         <div>
-          <h3 className="text-[#04091E] text-xl font-black">{title}</h3>
-          <p className="text-[#747681] text-sm font-medium">{subtitle}</p>
+          <h3 className="text-[#09090B] text-lg font-semibold">{title}</h3>
+          <p className="text-[#71717A] text-sm font-medium">{subtitle}</p>
         </div>
       </div>
       {children}

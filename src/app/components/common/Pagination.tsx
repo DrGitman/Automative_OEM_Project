@@ -45,10 +45,10 @@ export default function Pagination({
     const endItem = Math.min(currentPage * pageSize, totalItems);
 
     return (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-8 border-t border-[#EEEFF2] mt-8">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-5 border-t border-[#F4F4F5]">
             {/* Left side: Item Count */}
-            <div className="flex items-center gap-1 text-[#A3A6B4] text-sm font-medium">
-                Showing <span className="text-[#04091E] font-black">{startItem}</span> to <span className="text-[#04091E] font-black">{endItem}</span> of <span className="text-[#04091E] font-black">{totalItems}</span> {itemsName}
+            <div className="flex items-center gap-1 text-[#71717A] text-xs font-medium">
+                Showing <span className="text-[#09090B] font-semibold">{startItem}</span> to <span className="text-[#09090B] font-semibold">{endItem}</span> of <span className="text-[#09090B] font-semibold">{totalItems}</span> {itemsName}
             </div>
 
             {/* Right side: Page Controls */}
@@ -56,22 +56,22 @@ export default function Pagination({
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="w-10 h-10 rounded-xl border border-[#EEEFF2] bg-white text-[#A3A6B4] hover:text-[#D72322] hover:bg-gray-50 transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#A3A6B4] shadow-sm flex items-center justify-center"
+                    className="w-9 h-9 rounded-lg border border-[#E4E4E7] bg-white text-[#71717A] hover:text-[#D72322] hover:bg-gray-50 transition-all disabled:opacity-30 shadow-sm flex items-center justify-center"
                 >
                     <HiChevronLeft className="text-xl" />
                 </button>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                     {pages.map((page, idx) => (
                         page === "..." ? (
-                            <span key={`dots-${idx}`} className="px-2 text-[#A3A6B4] font-bold">...</span>
+                            <span key={`dots-${idx}`} className="px-1 text-[#A1A1AA] text-xs">...</span>
                         ) : (
                             <button
                                 key={`page-${page}`}
                                 onClick={() => onPageChange(page as number)}
-                                className={`min-w-[40px] h-[40px] rounded-xl text-sm font-bold transition-all border ${currentPage === page
-                                        ? "bg-[#D72322] text-white border-[#D72322] shadow-lg shadow-red-100 scale-105"
-                                        : "bg-white text-[#A3A6B4] hover:text-[#04091E] hover:bg-gray-50 border-[#EEEFF2] shadow-sm"
+                                className={`min-w-[36px] h-9 rounded-lg text-xs font-semibold transition-all border ${currentPage === page
+                                        ? "bg-[#D72322] text-white border-[#D72322] shadow-sm"
+                                        : "bg-white text-[#71717A] hover:text-[#09090B] hover:bg-gray-50 border-[#E4E4E7] shadow-sm"
                                     }`}
                             >
                                 {page}
@@ -83,7 +83,7 @@ export default function Pagination({
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages || totalPages === 0}
-                    className="w-10 h-10 rounded-xl border border-[#EEEFF2] bg-white text-[#A3A6B4] hover:text-[#D72322] hover:bg-gray-50 transition-all disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#A3A6B4] shadow-sm flex items-center justify-center"
+                    className="w-9 h-9 rounded-lg border border-[#E4E4E7] bg-white text-[#71717A] hover:text-[#D72322] hover:bg-gray-50 transition-all disabled:opacity-30 shadow-sm flex items-center justify-center"
                 >
                     <HiChevronRight className="text-xl" />
                 </button>

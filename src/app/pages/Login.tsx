@@ -62,7 +62,7 @@ export default function Login() {
 
       {/* White Card */}
       <div style={{ background: 'white', borderRadius: '20px', boxShadow: '0px 4px 52px rgba(0,0,0,0.15)', width: '100%', maxWidth: '529px', padding: '40px' }}>
-        <p style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '28px', color: '#111827', textAlign: 'center', marginBottom: '32px', lineHeight: 1.4 }}>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '28px', color: '#111827', textAlign: 'center', marginBottom: '32px', lineHeight: 1.4 }}>
           Login to your account
         </p>
 
@@ -73,7 +73,7 @@ export default function Login() {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ background: '#fafafa', height: '56px', padding: '0 16px', borderRadius: '8px', fontFamily: 'Outfit, sans-serif', fontSize: '16px', color: '#111827', border: '1.5px solid #f0f0f0', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+            style={{ background: '#fafafa', height: '56px', padding: '0 16px', borderRadius: '8px', fontFamily: 'Inter, sans-serif', fontSize: '16px', color: '#111827', border: '1.5px solid #f0f0f0', outline: 'none', width: '100%', boxSizing: 'border-box' }}
             onFocus={e => e.target.style.borderColor = '#d72322'}
             onBlur={e => e.target.style.borderColor = '#f0f0f0'}
             required
@@ -86,7 +86,7 @@ export default function Login() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{ background: '#fafafa', height: '56px', padding: '0 48px 0 16px', borderRadius: '8px', fontFamily: 'Outfit, sans-serif', fontSize: '16px', color: '#111827', border: '1.5px solid #f0f0f0', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+              style={{ background: '#fafafa', height: '56px', padding: '0 48px 0 16px', borderRadius: '8px', fontFamily: 'Inter, sans-serif', fontSize: '16px', color: '#111827', border: '1.5px solid #f0f0f0', outline: 'none', width: '100%', boxSizing: 'border-box' }}
               onFocus={e => e.target.style.borderColor = '#d72322'}
               onBlur={e => e.target.style.borderColor = '#f0f0f0'}
               required
@@ -115,12 +115,12 @@ export default function Login() {
                   {rememberMe && <path d="M6 10L9 13L14 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
                 </svg>
               </div>
-              <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '15px', color: '#111827' }}>Remember me</span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#111827' }}>Remember me</span>
             </label>
             <button
               type="button"
               onClick={() => navigate("/reset-password")}
-              style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '15px', color: '#ec221f', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '15px', color: '#ec221f', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
               Forgot Password?
             </button>
@@ -129,7 +129,7 @@ export default function Login() {
           {/* Sign In Button */}
           <button
             type="submit"
-            style={{ background: '#d72322', height: '56px', borderRadius: '8px', fontFamily: 'Outfit, sans-serif', fontWeight: 600, fontSize: '16px', color: 'white', border: 'none', cursor: 'pointer', width: '100%', transition: 'background 0.2s' }}
+            style={{ background: '#d72322', height: '56px', borderRadius: '8px', fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '16px', color: 'white', border: 'none', cursor: 'pointer', width: '100%', transition: 'background 0.2s' }}
             onMouseEnter={e => (e.currentTarget.style.background = '#c01f1e')}
             onMouseLeave={e => (e.currentTarget.style.background = '#d72322')}
           >
@@ -139,7 +139,7 @@ export default function Login() {
           {/* Divider */}
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             <div style={{ flex: 1, height: '1px', background: '#EEEFF2' }} />
-            <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '14px', color: '#718096', whiteSpace: 'nowrap' }}>Or login with</span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#718096', whiteSpace: 'nowrap' }}>Or login with</span>
             <div style={{ flex: 1, height: '1px', background: '#EEEFF2' }} />
           </div>
 
@@ -157,7 +157,7 @@ export default function Login() {
                 <path d={svgPaths.p2aa7f680} fill="#FDCF24" />
                 <path d={svgPaths.p18bd6d00} fill="#EB4335" />
               </svg>
-              <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '15px', color: '#111827' }}>Google</span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#111827' }}>Google</span>
             </button>
             <button
               type="button"
@@ -168,17 +168,17 @@ export default function Login() {
               <svg width="18" height="20" viewBox="0 0 20 22" fill="none">
                 <path d={svgPaths.p132f3180} fill="#111827" />
               </svg>
-              <span style={{ fontFamily: 'Outfit, sans-serif', fontSize: '15px', color: '#111827' }}>Apple</span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#111827' }}>Apple</span>
             </button>
           </div>
 
           {/* Sign Up Link */}
-          <p style={{ textAlign: 'center', fontFamily: 'Outfit, sans-serif', fontSize: '15px', color: '#718096', margin: 0 }}>
+          <p style={{ textAlign: 'center', fontFamily: 'Inter, sans-serif', fontSize: '15px', color: '#718096', margin: 0 }}>
             Don't have an account?{" "}
             <button
               type="button"
               onClick={() => navigate("/signup")}
-              style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '15px', color: '#ec221f', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '15px', color: '#ec221f', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
               Get Started
             </button>
