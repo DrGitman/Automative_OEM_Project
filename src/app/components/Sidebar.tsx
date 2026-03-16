@@ -18,6 +18,7 @@ const menuItems: MenuItem[] = [
   { icon: HiCog, label: "Settings", path: "/settings" },
 ];
 
+
 // ==========================================
 // SIDEBAR COMPONENT
 // Main navigation menu for the platform.
@@ -33,7 +34,7 @@ export default function Sidebar() {
         <div className="w-[86px] h-[70px] mb-4">
           <img src={gearhouseLogo} alt="Gearhouse" className="w-full h-full object-contain" />
         </div>
-        <h2 className="font-['Inter',sans-serif] font-black text-[#D72322] text-2xl tracking-tighter">
+        <h2 className="font-['Inter',sans-serif] font-semibold text-[#D72322] text-2xl tracking-tighter">
           GEARHOUSE
         </h2>
       </div>
@@ -55,7 +56,7 @@ export default function Sidebar() {
               }`}
             >
               <Icon className={`text-xl ${isActive ? "text-white" : "text-[#D72322]"}`} />
-              <span className={`font-['Inter',sans-serif] text-sm ${isActive ? "font-bold" : "font-semibold"}`}>
+              <span className={`font-['Inter',sans-serif] text-sm ${isActive ? "font-medium" : "font-normal"}`}>
                 {item.label}
               </span>
             </Link>

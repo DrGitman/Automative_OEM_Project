@@ -10,6 +10,7 @@ import Bookings from "./pages/Bookings";
 import Settings from "./pages/Settings";
 import MyAccount from "./pages/MyAccount";
 import ErrorBoundaryPage from "./pages/ErrorBoundaryPage";
+import Notifications from "./pages/Notifications";
 
 export const router = createBrowserRouter([
   {
@@ -26,8 +27,8 @@ export const router = createBrowserRouter([
       { path: "bookings", Component: Bookings },
       { path: "settings", Component: Settings },
       { path: "account", Component: MyAccount },
+      { path: "notifications", Component: Notifications },
       { path: "*", Component: ErrorBoundaryPage },
     ],
   },
 ]);
-

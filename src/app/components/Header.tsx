@@ -27,7 +27,7 @@ export default function Header({
   }, []);
 
   return (
-    <div className="bg-white h-[72px] w-full flex items-center justify-between px-8 border-b border-[#F4F4F5]">
+    <div className="bg-white h-[72px] w-full flex items-center justify-between px-8 border-b border-[#F4F4F5] sticky top-0 z-20">
       <div>
         <h1 className="font-['Inter',sans-serif] font-semibold text-[#09090B] text-[20px]">{title}</h1>
         <p className="font-['Inter',sans-serif] text-[#71717A] text-[13px]">{subtitle}</p>
@@ -53,13 +53,19 @@ export default function Header({
 
         {/* Icons */}
         <div className="flex items-center gap-1">
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors relative text-[#71717A]">
-            <HiSparkles className="text-xl" />
+          {/* Gearbot AI toggle */}
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent("toggle-gearbot"))}
+            className="p-2 hover:bg-[#FEE2E2] rounded-lg transition-colors relative text-[#71717A] hover:text-[#D72322] group"
+            title="Open Gearbot AI"
+          >
+            <HiSparkles className="text-xl group-hover:rotate-12 transition-transform" />
           </button>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-[#71717A] relative">
+          {/* Notifications */}
+          <Link to="/notifications" className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-[#71717A] relative inline-flex items-center justify-center">
             <HiBell className="text-xl" />
             <div className="absolute top-2 right-2 w-2 h-2 bg-[#D72322] rounded-full border-2 border-white"></div>
-          </button>
+          </Link>
         </div>
 
         <div className="w-px h-8 bg-[#F4F4F5]" />
