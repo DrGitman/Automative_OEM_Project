@@ -211,7 +211,8 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
     e.preventDefault();
     const userStr = localStorage.getItem("user");
     if (!userStr) return;
-    const userId = JSON.parse(userStr).id;
+    const user = JSON.parse(userStr);
+    const userId = user.id || user.user?.id;
 
     try {
       const resp = await fetch(`http://localhost:8000/vehicles/add?user_id=${userId}`, {
@@ -233,7 +234,8 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
     <ModalLayout title="Add Vehicle" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
-          <Input label="VEHICLE NAME" placeholder="e.g. Delivery Van 01" value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
+          <Input label="MAKE" placeholder="e.g. Toyota" value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
+          <Input label="MODEL" placeholder="e.g. Hilux" value={formData.model} onChange={(v: string) => setFormData({ ...formData, model: v })} />
           <Input label="CURRENT MILEAGE" placeholder="0" type="number" value={formData.mileage} onChange={(v: string) => setFormData({ ...formData, mileage: parseInt(v) })} suffix="km" />
           <Input label="LICENSE PLATE" placeholder="ABC-1234" value={formData.license_plate} onChange={(v: string) => setFormData({ ...formData, license_plate: v })} required />
           <Select label="FUEL TYPE" options={["Diesel", "Gasoline", "Electric", "Hybrid"]} value={formData.fuel_type} onChange={(v: string) => setFormData({ ...formData, fuel_type: v })} />
@@ -305,7 +307,8 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
     <ModalLayout title="Edit Vehicle" onClose={onClose}>
       <form onSubmit={handleUpdate} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
-          <Input label="VEHICLE NAME" value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
+          <Input label="MAKE" value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
+          <Input label="MODEL" value={formData.model} onChange={(v: string) => setFormData({ ...formData, model: v })} />
           <Input label="CURRENT MILEAGE" value={formData.mileage} onChange={(v: string) => setFormData({ ...formData, mileage: parseFloat(v) })} suffix="km" />
           <Select label="VEHICLE TYPE" options={["Pickup", "SUV", "Sedan", "Van", "Truck"]} value={formData.vehicle_type} onChange={(v: string) => setFormData({ ...formData, vehicle_type: v })} />
           <Input label="SERVICE INTERVAL" value={formData.service_interval} onChange={(v: string) => setFormData({ ...formData, service_interval: parseInt(v) })} suffix="km" />

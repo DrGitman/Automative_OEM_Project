@@ -204,7 +204,7 @@ class VehicleCreate(BaseModel):
 class VehicleUpdate(BaseModel):
     make: Optional[str] = None
     model: Optional[str] = None
-    year: Optional[str] = None # Using str to allow partial input or validation, but usually int
+    year: Optional[int] = None # Fixed to int
     vin: Optional[str] = None
     license_plate: Optional[str] = None
     color: Optional[str] = None

@@ -531,6 +531,7 @@ def get_bookings_data(user_id: int, db: Session = Depends(database.get_db)):
 # ==========================================
 # VEHICLE MANAGEMENT ENDPOINTS
 # ==========================================
+@app.post("/vehicles/add", response_model=schemas.VehicleResponse)
 def add_vehicle(vehicle: schemas.VehicleCreate, user_id: int, db: Session = Depends(database.get_db)):
     db_vehicle = models.Vehicle(
         **vehicle.dict(),

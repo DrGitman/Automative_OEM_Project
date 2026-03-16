@@ -20,7 +20,7 @@ export default function Maintenance() {
   const [actionMenuId, setActionMenuId] = useState<number | null>(null);
   const [statusMenuId, setStatusMenuId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [recordsPerPage, setRecordsPerPage] = useState(6);
+  const [recordsPerPage, setRecordsPerPage] = useState(4);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchMaintenanceData = async () => {
@@ -170,7 +170,7 @@ export default function Maintenance() {
                 </div>
               </div>
 
-              <div className="overflow-visible pb-32">
+              <div className="overflow-visible pb-10">
                 <table className="w-full relative">
                   <thead>
                     <tr className="text-left bg-white border-b border-[#EEEFF2]">
