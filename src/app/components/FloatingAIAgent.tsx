@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { HiSparkles, HiX, HiMicrophone, HiPaperAirplane } from "react-icons/hi";
+import { useLanguage } from "../context/LanguageContext";
 
 interface Message {
   role: "user" | "ai";
@@ -11,20 +12,21 @@ interface Props {
   onClose: () => void;
 }
 
-const INITIAL_MESSAGE: Message = {
-  role: "ai",
-  content: "Hey! I'm Gearbot, your fleet intelligence assistant. How can I help you today?",
-};
-
-const AI_RESPONSES = [
-  "Your fleet is currently at 92% operational capacity. 2 vehicles require attention.",
-  "Based on maintenance history, Vehicle GH-102 is due for a service check within the next 3 days.",
-  "I've detected 1 critical alert: a brake wear warning on Tesla Model 3 (GH-102). Schedule maintenance immediately.",
-  "Fleet stats: 14 active vehicles, 2 in maintenance, 1 booking pending for tomorrow.",
-  "GH-056 speed threshold was exceeded on M1 Highway yesterday. Driver: Mike Ross.",
-];
-
 export default function FloatingAIAgent({ isOpen, onClose }: Props) {
+  const { t } = useLanguage();
+
+  const INITIAL_MESSAGE: Message = useMemo(() => ({
+    role: "ai",
+    content: t('ai_initial_msg'),
+  }), [t]);
+
+  const AI_RESPONSES = useMemo(() => [
+    t('ai_resp_1'),
+    t('ai_resp_2'),
+    t('ai_resp_3'),
+    t('ai_resp_4'),
+    t('ai_resp_5'),
+  ], [t]);
   const [isListening, setIsListening] = useState(false);
   const [listeningText, setListeningText] = useState("");
   const [input, setInput] = useState("");
@@ -48,6 +50,16 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
       setInitialized(true);
     }
   }, [isOpen, initialized]);
+
+  // Handle initial message localization
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && prev[0].role === "ai" && prev[0].content !== INITIAL_MESSAGE.content) {
+        return [INITIAL_MESSAGE];
+      }
+      return prev;
+    });
+  }, [INITIAL_MESSAGE]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -167,11 +179,11 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
     <div
       ref={popupRef}
       style={{ left: position.x, top: position.y, position: "fixed" }}
-      className="z-50 w-[360px] select-none"
+      className="z-50 w-[360px] select-none transition-all duration-300"
     >
       <div
-        className="bg-white/95 backdrop-blur-xl rounded-[28px] shadow-2xl overflow-hidden flex flex-col"
-        style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06)" }}
+        className="bg-card/95 backdrop-blur-xl rounded-[28px] shadow-2xl overflow-hidden flex flex-col border border-border"
+        style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}
       >
         {/* Drag Handle / Header */}
         <div
@@ -179,30 +191,30 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
           className="flex items-center justify-between px-5 pt-5 pb-3 cursor-grab active:cursor-grabbing"
         >
           <div className="flex items-center gap-2.5">
-            <div className="size-8 rounded-xl bg-[#D72322] flex items-center justify-center shadow-lg shadow-red-200">
+            <div className="size-8 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
               <HiSparkles className="text-white text-base" />
             </div>
             <div>
-              <p className="text-[#04091E] font-semibold text-sm leading-none">Gearbot</p>
-              <p className="text-[#A3A6B4] text-xs font-normal mt-0.5">Fleet Intelligence Assistant</p>
+              <p className="text-foreground font-semibold text-sm leading-none">{t('gearbot')}</p>
+              <p className="text-muted-foreground text-xs font-normal mt-0.5">{t('fleet_assistant')}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="size-7 rounded-lg bg-[#F8F9FB] flex items-center justify-center text-[#A3A6B4] hover:bg-[#EEEFF2] hover:text-[#04091E] transition-all"
+            className="size-7 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
           >
             <HiX className="text-sm" />
           </button>
         </div>
 
         {/* Chat Area */}
-        <div className="mx-4 mb-3 bg-[#F8F9FB] rounded-2xl p-4 max-h-[240px] overflow-y-auto space-y-3">
+        <div className="mx-4 mb-3 bg-muted rounded-2xl p-4 max-h-[240px] overflow-y-auto space-y-3">
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm font-normal leading-relaxed ${
                 msg.role === "user"
-                  ? "bg-[#D72322] text-white rounded-br-sm"
-                  : "bg-white text-[#04091E] rounded-bl-sm shadow-sm border border-[#EEEFF2]"
+                  ? "bg-primary text-white rounded-br-sm"
+                  : "bg-background text-foreground rounded-bl-sm shadow-sm border border-border"
               }`}>
                 {msg.content}
               </div>
@@ -210,10 +222,10 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
           ))}
           {isTyping && (
             <div className="flex justify-start">
-              <div className="bg-white rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm border border-[#EEEFF2] flex gap-1 items-center">
-                <div className="size-1.5 bg-[#A3A6B4] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <div className="size-1.5 bg-[#A3A6B4] rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <div className="size-1.5 bg-[#A3A6B4] rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <div className="bg-background rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm border border-border flex gap-1 items-center">
+                <div className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                <div className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                <div className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
             </div>
           )}
@@ -224,17 +236,17 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
         <div className="flex justify-center py-2">
           <div className="relative">
             <div
-              className={`size-16 rounded-full flex items-center justify-center shadow-xl shadow-red-300 transition-all duration-300 ${isListening ? "scale-110 shadow-2xl shadow-red-400" : ""}`}
+              className={`size-16 rounded-full flex items-center justify-center shadow-xl shadow-primary/30 transition-all duration-300 ${isListening ? "scale-110 shadow-2xl shadow-primary/40" : ""}`}
               style={{
                 background: isListening
-                  ? "radial-gradient(circle at 30% 30%, #ff4444, #D72322)"
-                  : "radial-gradient(circle at 30% 30%, #e83333, #D72322)",
+                  ? "radial-gradient(circle at 30% 30%, #ff4444, var(--primary))"
+                  : "radial-gradient(circle at 30% 30%, #e83333, var(--primary))",
               }}
             >
               {isListening && (
                 <>
-                  <div className="absolute inset-0 rounded-full bg-[#D72322]/30 animate-ping" />
-                  <div className="absolute -inset-2 rounded-full bg-[#D72322]/15 animate-ping" style={{ animationDelay: "150ms" }} />
+                  <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+                  <div className="absolute -inset-2 rounded-full bg-primary/15 animate-ping" style={{ animationDelay: "150ms" }} />
                 </>
               )}
               <HiSparkles className="text-white text-2xl relative z-10" />
@@ -244,30 +256,30 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
 
         {/* Live voice transcript preview */}
         {isListening && listeningText && (
-          <div className="mx-4 mb-2 px-3 py-2 bg-[#FEE2E2] rounded-xl">
-            <p className="text-sm text-[#D72322] font-normal italic leading-snug">{listeningText}</p>
-            <p className="text-[10px] text-[#D72322]/60 mt-0.5">Auto-sending after 4s of silence…</p>
+          <div className="mx-4 mb-2 px-3 py-2 bg-primary/10 rounded-xl">
+            <p className="text-sm text-primary font-normal italic leading-snug">{listeningText}</p>
+            <p className="text-[10px] text-primary/60 mt-0.5">{t('auto_send_note')}</p>
           </div>
         )}
 
         {/* Input Row */}
         <div className="px-4 pb-4 pt-1">
-          <div className="flex items-center gap-2 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl px-4 h-11">
+          <div className="flex items-center gap-2 bg-muted border border-border rounded-2xl px-4 h-11">
             <input
               type="text"
               value={isListening ? listeningText : input}
               onChange={(e) => !isListening && setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={isListening ? "Listening..." : "Ask Gearbot..."}
+              placeholder={isListening ? t('listening_label') : t('ask_gearbot')}
               readOnly={isListening}
-              className={`flex-1 bg-transparent outline-none text-sm font-normal placeholder-[#A3A6B4] ${
-                isListening ? "text-[#D72322] italic" : "text-[#04091E]"
+              className={`flex-1 bg-transparent outline-none text-sm font-normal placeholder-muted-foreground ${
+                isListening ? "text-primary italic" : "text-foreground"
               }`}
             />
             {/* Mic button */}
             <button
               onClick={toggleListen}
-              className={`text-lg transition-colors flex-shrink-0 ${isListening ? "text-[#D72322] animate-pulse" : "text-[#A3A6B4] hover:text-[#D72322]"}`}
+              className={`text-lg transition-colors flex-shrink-0 ${isListening ? "text-primary animate-pulse" : "text-muted-foreground hover:text-primary"}`}
               title={isListening ? "Stop listening" : "Speak to Gearbot"}
             >
               <HiMicrophone />
@@ -278,7 +290,7 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
                 onClick={() => sendMessage()}
                 disabled={!input.trim()}
                 className={`text-lg flex-shrink-0 transition-all ${
-                  input.trim() ? "text-[#D72322] hover:scale-110 active:scale-90" : "text-[#D4D5DB] cursor-not-allowed"
+                  input.trim() ? "text-primary hover:scale-110 active:scale-90" : "text-muted-foreground/30 cursor-not-allowed"
                 }`}
                 title="Send message"
               >

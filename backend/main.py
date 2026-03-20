@@ -6,6 +6,55 @@ from passlib.context import CryptContext
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 import models, schemas, database, os, shutil, uuid
+import smtplib
+from email.mime.text import MIMEText
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# --- SMTP Configuration ---
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SENDER_EMAIL = os.getenv("SMTP_EMAIL", "orilionaobeb@gmail.com") 
+SENDER_PASSWORD = os.getenv("SMTP_PASSWORD") # This must be an App Password
+
+def send_reset_email(receiver_email: str, token: str):
+    if not SENDER_PASSWORD:
+        print("Warning: SMTP_PASSWORD not set. Cannot send real reset email.")
+        # For development, we'll log the link
+        print(f"--- RESET LINK (DEV): http://localhost:5173/reset-password?token={token} ---")
+        return True
+
+    try:
+        reset_link = f"http://localhost:5173/reset-password?token={token}"
+        body = f"""
+        <html>
+        <body>
+            <h2>Password Reset Request</h2>
+            <p>You requested to reset your password for Gearhouse OEM Dashboard.</p>
+            <p>Click the link below to set a new password. This link is valid for 15 minutes.</p>
+            <a href="{reset_link}" style="background-color: #D72322; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
+            <p>If you didn't request this, you can safely ignore this email.</p>
+            <p>Regards,<br>Gearhouse Team</p>
+        </body>
+        </html>
+        """
+        message = MIMEText(body, "html")
+        message["Subject"] = "Gearhouse Password Reset"
+        message["From"] = SENDER_EMAIL
+        message["To"] = receiver_email
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.sendmail(SENDER_EMAIL, receiver_email, message.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"SMTP Error: {e}")
+        return False
 
 app = FastAPI()
 
@@ -285,14 +334,68 @@ def get_dashboard_data(user_id: int, db: Session = Depends(database.get_db)):
             detail=f"Dashboard calculation error: {str(e)}"
         )
 
-@app.post("/reset-password")
-def reset_password(data: schemas.PasswordReset, db: Session = Depends(database.get_db)):
-    db_user = db.query(models.User).filter(models.User.email == data.email).first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
+@app.post("/forgot-password")
+def forgot_password(request: schemas.ForgotPasswordRequest, db: Session = Depends(database.get_db)):
+    user = db.query(models.User).filter(models.User.email == request.email).first()
+    if not user:
+        # We don't want to leak user existence, so we return success anyway
+        # but in a real app you might handle this differently.
+        return {"message": "If an account exists, a reset link has been sent."}
+
+    # Generate token
+    token = str(uuid.uuid4())
+    expires_at = datetime.now() + timedelta(minutes=15)
     
-    db_user.password_hash = get_password_hash(data.new_password)
+    # Store token
+    reset_token = models.PasswordResetToken(
+        token=token,
+        user_id=user.id,
+        expires_at=expires_at
+    )
+    db.add(reset_token)
     db.commit()
+
+    # Send email
+    if send_reset_email(user.email, token):
+        return {"message": "Reset link sent successfully", "to": user.email}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to send email")
+
+@app.get("/verify-reset-token/{token}", response_model=schemas.TokenVerificationResponse)
+def verify_reset_token(token: str, db: Session = Depends(database.get_db)):
+    reset_token = db.query(models.PasswordResetToken).filter(
+        models.PasswordResetToken.token == token,
+        models.PasswordResetToken.is_used == False
+    ).first()
+
+    if not reset_token:
+        return {"valid": False, "message": "Invalid or used token"}
+
+    if datetime.now() > reset_token.expires_at:
+        return {"valid": False, "message": "Token has expired"}
+
+    return {"valid": True, "email": reset_token.user.email, "message": "Token is valid"}
+
+@app.post("/reset-password")
+def reset_password(data: schemas.ResetPasswordRequest, db: Session = Depends(database.get_db)):
+    reset_token = db.query(models.PasswordResetToken).filter(
+        models.PasswordResetToken.token == data.token,
+        models.PasswordResetToken.is_used == False
+    ).first()
+
+    if not reset_token:
+        raise HTTPException(status_code=400, detail="Invalid or used token")
+
+    if datetime.now() > reset_token.expires_at:
+        raise HTTPException(status_code=400, detail="Token has expired")
+
+    user = reset_token.user
+    user.password_hash = get_password_hash(data.password)
+    
+    # Mark token as used
+    reset_token.is_used = True
+    db.commit()
+
     return {"message": "Password updated successfully"}
 
 # ==========================================
@@ -649,4 +752,6 @@ def delete_vehicle(vehicle_id: int, db: Session = Depends(database.get_db)):
 
 if __name__ == "__main__":
     import uvicorn
+    # Create database tables if they don't exist
+    models.Base.metadata.create_all(bind=database.engine)
     uvicorn.run(app, host="0.0.0.0", port=8000)

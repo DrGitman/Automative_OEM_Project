@@ -69,7 +69,7 @@ export default function SignUp() {
         <img
           src={gearhouseLogo}
           alt="Gearhouse"
-          style={{ height: "48px", maxWidth: "200px", objectFit: "contain" }}
+          style={{ height: "56px", maxWidth: "200px", objectFit: "contain" }}
         />
       </div>
 
@@ -78,21 +78,22 @@ export default function SignUp() {
         style={{
           backgroundColor: "#ffffff",
           borderRadius: "12px",
-          padding: "34px 36px",
+          padding: "40px 40px",
           width: "100%",
           maxWidth: "460px",
           minWidth: "380px",
           boxShadow: "0 4px 32px rgba(0,0,0,0.18)",
+          position: "relative",
         }}
       >
         <h1
           style={{
             fontFamily: "Inter, sans-serif",
-            fontSize: "22px",
+            fontSize: "24px",
             fontWeight: 600,
             color: "#0A0F1E",
             textAlign: "center",
-            marginBottom: "24px",
+            marginBottom: "28px",
             lineHeight: 1.3,
           }}
         >

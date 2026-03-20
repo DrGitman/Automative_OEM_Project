@@ -3,9 +3,11 @@ import { useNavigate } from "react-router";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import { HiUser, HiShieldCheck, HiPencilAlt, HiCheckCircle, HiArrowRight } from "react-icons/hi";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function MyAccount() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     firstname: "",
@@ -33,62 +35,62 @@ export default function MyAccount() {
     e.preventDefault();
     // Simulate save
     localStorage.setItem("user", JSON.stringify({ ...user, ...formData }));
-    alert("Profile updated successfully!");
+    alert(t('profile_updated_successfully') || "Profile updated successfully!");
   };
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#F8F9FB]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D72322]"></div>
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
+    <div className="bg-background min-h-screen flex font-['Inter',sans-serif] transition-colors duration-300">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1 overflow-x-hidden page-transition">
-        <Header title="My Account" subtitle="Manage your personal profile and security" />
+      <div className="ml-[240px] flex-1 overflow-x-hidden page-transition pt-[72px]">
+        <Header title={t('profile')} subtitle={t('manage_profile')} />
 
         <div className="p-8 space-y-6 max-w-[1000px]">
-          <div className="bg-white rounded-3xl border border-[#EEEFF2] shadow-sm overflow-hidden">
+          <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden">
             <div className="p-8">
               {/* Profile Header */}
-              <div className="flex flex-col md:flex-row items-center md:items-start justify-between pb-10 border-b border-[#EEEFF2] mb-10 gap-8">
+              <div className="flex flex-col md:flex-row items-center md:items-start justify-between pb-10 border-b border-border mb-10 gap-8">
                 <div className="flex flex-col md:flex-row items-center gap-8">
                   <div className="relative">
-                    <div className="size-[120px] rounded-full bg-[#FEF2F2] flex items-center justify-center border-4 border-white shadow-xl">
-                      <span className="font-black text-[#D72322] text-4xl">
+                    <div className="size-[120px] rounded-full bg-primary/10 flex items-center justify-center border-4 border-card shadow-xl">
+                      <span className="font-black text-primary text-4xl">
                         {formData.firstname[0]}{formData.lastname[0]}
                       </span>
                     </div>
-                    <button className="absolute bottom-2 right-2 size-10 bg-[#D72322] rounded-full shadow-lg flex items-center justify-center border-4 border-white text-white hover:scale-110 transition-transform">
+                    <button className="absolute bottom-2 right-2 size-10 bg-primary rounded-full shadow-lg flex items-center justify-center border-4 border-card text-primary-foreground hover:scale-110 transition-transform">
                       <HiPencilAlt className="text-lg" />
                     </button>
                   </div>
 
                   <div className="text-center md:text-left">
-                    <h2 className="text-[#04091E] text-3xl font-black mb-2">
+                    <h2 className="text-foreground text-3xl font-black mb-2">
                       {formData.firstname} {formData.lastname}
                     </h2>
-                    <p className="text-[#747681] font-medium mb-4">
-                      Vehicle Owner & Fleet Manager
+                    <p className="text-muted-foreground font-medium mb-4">
+                      {t('owner_manager')}
                     </p>
                     <div className="flex justify-center md:justify-start gap-3">
-                      <span className="px-4 py-1.5 bg-[#EBFDF5] text-[#10B981] rounded-full text-[10px] font-black uppercase tracking-wider">
-                        Active
+                      <span className="px-4 py-1.5 bg-green-500/10 text-green-500 rounded-full text-[10px] font-black uppercase tracking-wider">
+                        {t('active')}
                       </span>
-                      <span className="px-4 py-1.5 bg-[#F8F9FB] text-[#747681] rounded-full text-[10px] font-black uppercase tracking-wider border border-[#EEEFF2]">
-                        Owner
+                      <span className="px-4 py-1.5 bg-muted text-muted-foreground rounded-full text-[10px] font-black uppercase tracking-wider border border-border">
+                        {t('owner')}
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="w-full md:w-auto">
-                  <button className="w-full bg-[#F8F9FB] text-[#04091E] px-8 h-14 rounded-2xl font-black text-sm border border-[#EEEFF2] hover:bg-gray-50 hover:border-[#D72322]/20 transition-all flex items-center justify-center gap-2">
-                    Download Profile Data
+                  <button className="w-full bg-muted text-foreground px-8 h-14 rounded-2xl font-black text-sm border border-border hover:bg-muted/80 hover:border-primary/20 transition-all flex items-center justify-center gap-2">
+                    {t('download_profile_data')}
                   </button>
                 </div>
               </div>
@@ -96,81 +98,81 @@ export default function MyAccount() {
               <form onSubmit={handleSave} className="space-y-12">
                 {/* Personal Details */}
                 <div>
-                  <div className="flex items-center gap-3 mb-8 text-[#D72322]">
+                  <div className="flex items-center gap-3 mb-8 text-primary">
                     <HiUser className="text-2xl" />
-                    <h3 className="text-[#04091E] text-lg font-black uppercase tracking-widest">PERSONAL DETAILS</h3>
+                    <h3 className="text-foreground text-lg font-black uppercase tracking-widest">{t('personal_details')}</h3>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InputGroup label="First Name" value={formData.firstname} onChange={(val: string) => setFormData({ ...formData, firstname: val })} />
-                    <InputGroup label="Last Name" value={formData.lastname} onChange={(val: string) => setFormData({ ...formData, lastname: val })} />
-                    <InputGroup label="Email Address" value={formData.email} onChange={(val: string) => setFormData({ ...formData, email: val })} />
-                    <InputGroup label="Phone Number" value={formData.phone} onChange={(val: string) => setFormData({ ...formData, phone: val })} />
+                    <InputGroup label={t('first_name')} value={formData.firstname} onChange={(val: string) => setFormData({ ...formData, firstname: val })} />
+                    <InputGroup label={t('last_name')} value={formData.lastname} onChange={(val: string) => setFormData({ ...formData, lastname: val })} />
+                    <InputGroup label={t('email_address')} value={formData.email} onChange={(val: string) => setFormData({ ...formData, email: val })} />
+                    <InputGroup label={t('phone_number')} value={formData.phone} onChange={(val: string) => setFormData({ ...formData, phone: val })} />
                   </div>
                 </div>
 
                 {/* Account Security */}
                 <div>
-                  <div className="flex items-center gap-3 mb-8 text-[#D72322]">
+                  <div className="flex items-center gap-3 mb-8 text-primary">
                     <HiShieldCheck className="text-2xl" />
-                    <h3 className="text-[#04091E] text-lg font-black uppercase tracking-widest">ACCOUNT SECURITY</h3>
+                    <h3 className="text-foreground text-lg font-black uppercase tracking-widest">{t('account_security')}</h3>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">
-                    <div className="bg-[#F8F9FB] p-6 rounded-2xl border border-[#EEEFF2] flex items-center justify-between group cursor-pointer hover:border-[#D72322]/20 transition-all">
+                    <div className="bg-muted p-6 rounded-2xl border border-border flex items-center justify-between group cursor-pointer hover:border-primary/20 transition-all">
                       <div className="flex items-center gap-6">
-                        <div className="size-12 bg-white rounded-xl flex items-center justify-center text-[#D72322] shadow-sm border border-[#EEEFF2]">
+                        <div className="size-12 bg-card rounded-xl flex items-center justify-center text-primary shadow-sm border border-border">
                           <HiShieldCheck className="text-xl" />
                         </div>
                         <div>
-                          <p className="font-black text-[#04091E]">Change Password</p>
-                          <p className="text-xs text-[#747681]">Update your account credentials</p>
+                          <p className="font-black text-foreground">{t('change_password')}</p>
+                          <p className="text-xs text-muted-foreground">{t('update_credentials')}</p>
                         </div>
                       </div>
-                      <HiArrowRight className="text-[#A3A6B4] group-hover:text-[#D72322] transition-colors" />
+                      <HiArrowRight className="text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
 
-                    <div className="bg-[#F8F9FB] p-6 rounded-2xl border border-[#EEEFF2] flex items-center justify-between">
+                    <div className="bg-muted p-6 rounded-2xl border border-border flex items-center justify-between">
                       <div className="flex items-center gap-6">
-                        <div className="size-12 bg-white rounded-xl flex items-center justify-center text-[#10B981] shadow-sm border border-[#EEEFF2]">
+                        <div className="size-12 bg-card rounded-xl flex items-center justify-center text-green-500 shadow-sm border border-border">
                           <HiCheckCircle className="text-xl" />
                         </div>
                         <div>
-                          <p className="font-black text-[#04091E]">Two-Factor Authentication</p>
-                          <p className="text-xs text-[#747681]">Add an extra layer of security</p>
+                          <p className="font-black text-foreground">{t('two_factor_auth')}</p>
+                          <p className="text-xs text-muted-foreground">{t('extra_security_layer')}</p>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
-                        className={`w-12 h-6.5 rounded-full relative transition-all duration-300 ${twoFactorEnabled ? 'bg-[#10B981]' : 'bg-[#E2E4E8]'}`}
+                        className={`w-12 h-6.5 rounded-full relative transition-all duration-300 ${twoFactorEnabled ? 'bg-green-500' : 'bg-muted-foreground/30'}`}
                       >
-                        <div className={`absolute top-0.5 w-5.5 h-5.5 bg-white rounded-full shadow-sm transition-all duration-300 ${twoFactorEnabled ? 'left-6' : 'left-0.5'}`} />
+                        <div className={`absolute top-0.5 w-5.5 h-5.5 bg-card rounded-full shadow-sm transition-all duration-300 ${twoFactorEnabled ? 'left-6' : 'left-0.5'}`} />
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-10 border-t border-[#EEEFF2]">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-10 border-t border-border">
                   <button
                     type="button"
-                    className="text-[#D72322] font-black text-xs uppercase tracking-widest hover:underline"
+                    className="text-primary font-black text-xs uppercase tracking-widest hover:underline"
                   >
-                    Deactivate Account
+                    {t('deactivate_account')}
                   </button>
                   <div className="flex gap-4 w-full sm:w-auto">
                     <button
                       type="button"
                       onClick={() => navigate("/dashboard")}
-                      className="flex-1 sm:flex-none px-10 h-14 bg-white border border-[#EEEFF2] rounded-2xl font-black text-[#747681] hover:bg-gray-50 transition-all text-sm"
+                      className="flex-1 sm:flex-none px-10 h-14 bg-card border border-border rounded-2xl font-black text-muted-foreground hover:bg-muted transition-all text-sm"
                     >
-                      Cancel
+                      {t('cancel')}
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 sm:flex-none px-12 h-14 bg-[#D72322] text-white rounded-2xl font-black text-sm shadow-xl shadow-red-100 hover:scale-105 transition-all uppercase tracking-widest"
+                      className="flex-1 sm:flex-none px-12 h-14 bg-primary text-primary-foreground rounded-2xl font-black text-sm shadow-xl shadow-primary/20 hover:scale-105 transition-all uppercase tracking-widest"
                     >
-                      Save Changes
+                      {t('save_changes')}
                     </button>
                   </div>
                 </div>
@@ -186,12 +188,12 @@ export default function MyAccount() {
 function InputGroup({ label, value, onChange }: any) {
   return (
     <div className="space-y-3">
-      <label className="block text-[#A3A6B4] text-[10px] font-black uppercase tracking-widest ml-1">{label}</label>
+      <label className="block text-muted-foreground text-[10px] font-black uppercase tracking-widest ml-1">{label}</label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl font-bold text-sm text-[#04091E] outline-none focus:border-[#D72322] focus:bg-white shadow-sm transition-all"
+        className="w-full h-14 px-6 bg-muted border border-border rounded-2xl font-bold text-sm text-foreground outline-none focus:border-primary focus:bg-card shadow-sm transition-all"
       />
     </div>
   );

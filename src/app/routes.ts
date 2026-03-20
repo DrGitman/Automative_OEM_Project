@@ -11,6 +11,8 @@ import Settings from "./pages/Settings";
 import MyAccount from "./pages/MyAccount";
 import ErrorBoundaryPage from "./pages/ErrorBoundaryPage";
 import Notifications from "./pages/Notifications";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import LegalNotice from "./pages/LegalNotice";
 
 export const router = createBrowserRouter([
   {
@@ -18,16 +20,16 @@ export const router = createBrowserRouter([
     Component: Root,
     ErrorBoundary: ErrorBoundaryPage,
     children: [
-      { index: true, Component: Login },
-      { path: "signup", Component: SignUp },
-      { path: "reset-password", Component: CreateNewPassword },
+      { index: true, Component: Dashboard },
       { path: "dashboard", Component: Dashboard },
       { path: "vehicles", Component: MyVehicles },
       { path: "maintenance", Component: Maintenance },
       { path: "bookings", Component: Bookings },
       { path: "settings", Component: Settings },
-      { path: "account", Component: MyAccount },
+      { path: "my-account", Component: MyAccount },
       { path: "notifications", Component: Notifications },
+      { path: "privacy-policy", Component: PrivacyPolicy },
+      { path: "legal-notice", Component: LegalNotice },
       { path: "*", Component: ErrorBoundaryPage },
     ],
   },

@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import { HiSearch, HiBell, HiSparkles } from "react-icons/hi";
+import { useLanguage } from "../context/LanguageContext";
 
 // ==========================================
 // HEADER COMPONENT
@@ -26,28 +27,30 @@ export default function Header({
     }
   }, []);
 
+  const { t } = useLanguage();
+
   return (
-    <div className="bg-white h-[72px] w-full flex items-center justify-between px-8 border-b border-[#F4F4F5] sticky top-0 z-20">
+    <div className="bg-card h-[72px] w-[calc(100%-240px)] flex items-center justify-between px-8 border-b border-border fixed top-0 left-[240px] z-20 transition-colors">
       <div>
-        <h1 className="font-['Inter',sans-serif] font-semibold text-[#09090B] text-[20px]">{title}</h1>
-        <p className="font-['Inter',sans-serif] text-[#71717A] text-[13px]">{subtitle}</p>
+        <h1 className="font-['Inter',sans-serif] font-black text-foreground text-[20px] tracking-tight">{title}</h1>
+        <p className="font-['Inter',sans-serif] text-muted-foreground text-[13px] font-medium">{subtitle}</p>
       </div>
 
       <div className="flex items-center gap-8">
         {/* Search */}
-        <div className="bg-[#F4F4F5] h-[40px] w-[320px] rounded-lg flex items-center justify-between px-4 border border-[#E4E4E7]/50">
+        <div className="bg-muted h-[40px] w-[320px] rounded-xl flex items-center justify-between px-4 border border-border transition-colors">
           <div className="flex items-center gap-3 flex-1">
-            <HiSearch className="text-[#A1A1AA] text-lg" />
+            <HiSearch className="text-muted-foreground text-lg" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder={t('search')}
               value={searchValue !== undefined ? searchValue : undefined}
               onChange={(e) => onSearch?.(e.target.value)}
-              className="bg-transparent border-none outline-none font-['Inter',sans-serif] text-[#09090B] placeholder-[#A1A1AA] text-sm w-full font-medium"
+              className="bg-transparent border-none outline-none font-['Inter',sans-serif] text-foreground placeholder-muted-foreground/60 text-sm w-full font-medium"
             />
           </div>
-          <div className="hidden sm:flex items-center gap-1 border border-[#E4E4E7] rounded-md px-1.5 py-0.5 bg-white shadow-sm">
-            <span className="font-['Inter',sans-serif] font-semibold text-[#71717A] text-[11px]">⌘ K</span>
+          <div className="hidden sm:flex items-center gap-1 border border-border rounded-md px-1.5 py-0.5 bg-card shadow-sm">
+            <span className="font-['Inter',sans-serif] font-black text-muted-foreground text-[11px]">⌘ K</span>
           </div>
         </div>
 
@@ -56,34 +59,34 @@ export default function Header({
           {/* Gearbot AI toggle */}
           <button
             onClick={() => window.dispatchEvent(new CustomEvent("toggle-gearbot"))}
-            className="p-2 hover:bg-[#FEE2E2] rounded-lg transition-colors relative text-[#71717A] hover:text-[#D72322] group"
+            className="p-2 hover:bg-primary/10 rounded-xl transition-colors relative text-muted-foreground hover:text-primary group"
             title="Open Gearbot AI"
           >
             <HiSparkles className="text-xl group-hover:rotate-12 transition-transform" />
           </button>
           {/* Notifications */}
-          <Link to="/notifications" className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-[#71717A] relative inline-flex items-center justify-center">
+          <Link to="/notifications" className="p-2 hover:bg-muted rounded-xl transition-colors text-muted-foreground relative inline-flex items-center justify-center">
             <HiBell className="text-xl" />
-            <div className="absolute top-2 right-2 w-2 h-2 bg-[#D72322] rounded-full border-2 border-white"></div>
+            <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-card"></div>
           </Link>
         </div>
 
-        <div className="w-px h-8 bg-[#F4F4F5]" />
+        <div className="w-px h-8 bg-border" />
 
         {/* Profile */}
-        <Link to="/account" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-          <div className="size-10 rounded-full overflow-hidden bg-[#FEE2E2] flex items-center justify-center border border-[#E4E4E7] shadow-sm">
+        <Link to="/my-account" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
+          <div className="size-10 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center border border-border shadow-sm">
             {user ? (
-              <span className="text-[#D72322] font-semibold text-sm">{user.firstname[0]}{user.lastname[0]}</span>
+              <span className="text-primary font-black text-sm">{user.firstname[0]}{user.lastname[0]}</span>
             ) : (
-              <div className="w-full h-full bg-gray-200 animate-pulse" />
+              <div className="w-full h-full bg-muted animate-pulse" />
             )}
           </div>
           <div className="hidden md:block">
-            <p className="font-['Inter',sans-serif] font-semibold text-[#09090B] text-sm leading-none">
+            <p className="font-['Inter',sans-serif] font-black text-foreground text-sm leading-none">
               {user ? `${user.firstname} ${user.lastname}` : "Loading..."}
             </p>
-            <p className="font-['Inter',sans-serif] text-[#71717A] text-[11px] mt-1 uppercase font-bold tracking-wider">Fleet Owner</p>
+            <p className="font-['Inter',sans-serif] text-muted-foreground text-[11px] mt-1 uppercase font-black tracking-widest">Fleet Owner</p>
           </div>
         </Link>
       </div>

@@ -29,6 +29,18 @@ class UserResponse(UserBase):
     class Config:
         from_attributes = True
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    password: str
+
+class TokenVerificationResponse(BaseModel):
+    valid: bool
+    email: Optional[str] = None
+    message: str
+
 # ==========================================
 # DASHBOARD SCHEMAS
 # ==========================================

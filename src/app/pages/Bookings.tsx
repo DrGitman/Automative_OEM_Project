@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import { useLanguage } from "../context/LanguageContext";
 import { HiChevronLeft, HiChevronRight, HiPlus, HiCalendar, HiDotsVertical, HiX, HiClock, HiCurrencyDollar, HiLocationMarker, HiCheckCircle, HiInformationCircle } from "react-icons/hi";
 import { format, startOfWeek, addDays, subDays, eachDayOfInterval, startOfMonth, endOfMonth, isSameDay, addMonths, subMonths, isSameMonth, startOfDay, endOfDay } from "date-fns";
 import { toast } from "sonner";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 export default function Bookings() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"day" | "week" | "month">("week");
+  const { t } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [appointments, setAppointments] = useState<any[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -89,62 +91,62 @@ export default function Bookings() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#F8F9FB]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D72322]"></div>
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
+    <div className="bg-background min-h-screen flex font-['Inter',sans-serif] transition-colors duration-300 track-theme">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1 overflow-x-hidden page-transition">
+      <div className="ml-[240px] flex-1 overflow-x-hidden page-transition pt-[72px]">
         <Header
-          title="Bookings"
-          subtitle="Let's check your Garage today"
+          title={t('bookings')}
+          subtitle={t('garage')}
           searchValue={searchQuery}
           onSearch={setSearchQuery}
         />
 
         <div className="p-8 max-w-[1400px] mx-auto">
-          <div className="bg-white rounded-3xl border border-[#E4E4E7] shadow-sm overflow-hidden h-[calc(100vh-180px)] flex flex-col">
+          <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden h-[calc(100vh-180px)] flex flex-col">
             {/* Calendar Header */}
-            <div className="p-6 border-b border-[#F4F4F5] flex flex-col md:flex-row items-center justify-between gap-6 bg-white shrink-0">
+            <div className="p-6 border-b border-border flex flex-col md:flex-row items-center justify-between gap-6 bg-card shrink-0">
               <div className="flex items-center gap-6">
-                <div className="w-10 h-10 border border-[#E4E4E7] rounded-xl flex items-center justify-center text-[#D72322] bg-[#FAFAFA]">
+                <div className="w-10 h-10 border border-border rounded-xl flex items-center justify-center text-primary bg-muted">
                   <HiCalendar className="text-lg" />
                 </div>
                 <div>
-                  <h3 className="text-[#09090B] text-lg font-semibold">
+                  <h3 className="text-foreground text-lg font-semibold">
                     {viewMode === 'day' ? format(currentDate, "EEEE, MMM d, yyyy") : format(currentDate, "MMMM yyyy")}
                   </h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <button onClick={handlePrev} className="p-1 hover:bg-[#F4F4F5] rounded-md transition-all text-[#71717A]"><HiChevronLeft className="text-xl" /></button>
-                    <button onClick={() => setCurrentDate(new Date())} className="text-[10px] font-semibold text-[#D72322] uppercase tracking-wider hover:underline px-2">Today</button>
-                    <button onClick={handleNext} className="p-1 hover:bg-[#F4F4F5] rounded-md transition-all text-[#71717A]"><HiChevronRight className="text-xl" /></button>
+                    <button onClick={handlePrev} className="p-1 hover:bg-muted rounded-md transition-all text-muted-foreground"><HiChevronLeft className="text-xl" /></button>
+                    <button onClick={() => setCurrentDate(new Date())} className="text-[10px] font-semibold text-primary uppercase tracking-wider hover:underline px-2">{t('today')}</button>
+                    <button onClick={handleNext} className="p-1 hover:bg-muted rounded-md transition-all text-muted-foreground"><HiChevronRight className="text-xl" /></button>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 bg-[#F4F4F5] p-1 rounded-xl border border-[#E4E4E7]">
+              <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border">
                 {["day", "week", "month"].map((mode) => (
                   <button
                     key={mode}
                     onClick={() => setViewMode(mode as any)}
                     className={`px-6 py-2 rounded-lg text-xs font-semibold transition-all uppercase tracking-wider ${viewMode === mode
-                      ? "bg-white text-[#D72322] shadow-sm border border-[#E4E4E7]/50"
-                      : "text-[#71717A] hover:text-[#09090B]"
+                      ? "bg-card text-primary shadow-sm border border-border/50"
+                      : "text-muted-foreground hover:text-foreground"
                       }`}
                   >
-                    {mode}
+                    {t(mode)}
                   </button>
                 ))}
               </div>
 
               <button
                 onClick={() => setShowAddModal(true)}
-                className="bg-[#D72322] w-10 h-10 rounded-xl shadow-lg shadow-red-100 hover:bg-[#B91C1C] transition-all flex items-center justify-center text-white"
+                className="bg-primary w-10 h-10 rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center text-primary-foreground"
               >
                 <HiPlus className="text-xl" />
               </button>
@@ -169,18 +171,19 @@ export default function Bookings() {
 }
 
 function GridView({ mode, days, hours, appointments, onSelect }: any) {
+  const { t } = useLanguage();
   return (
-    <div className="min-w-[1200px] flex flex-col h-full">
+    <div className="min-w-[1200px] flex flex-col h-full bg-card">
       {/* Sticky Day Headers */}
-      <div className="grid grid-cols-[80px_1fr] bg-white sticky top-0 z-30 border-b border-[#F4F4F5] shadow-sm">
-        <div className="border-r border-[#F4F4F5] bg-white flex items-center justify-center">
-          <span className="text-[10px] font-bold text-[#71717A] uppercase tracking-wider">Time</span>
+      <div className="grid grid-cols-[80px_1fr] bg-card sticky top-0 z-30 border-b border-border shadow-sm">
+        <div className="border-r border-border bg-card flex items-center justify-center">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t('time')}</span>
         </div>
-        <div className={`grid grid-cols-${days.length} w-full bg-white`}>
+        <div className={`grid grid-cols-${days.length} w-full bg-card`}>
           {days.map((day: any) => (
-            <div key={day.toString()} className="py-4 px-2 text-center border-r border-[#F4F4F5] last:border-r-0">
-              <p className="text-[#71717A] text-[10px] font-semibold uppercase tracking-wider mb-1">{format(day, "EEE")}</p>
-              <p className={`text-base font-bold ${isSameDay(day, new Date()) ? 'text-[#D72322]' : 'text-[#09090B]'}`}>
+            <div key={day.toString()} className="py-4 px-2 text-center border-r border-border last:border-r-0">
+              <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider mb-1">{format(day, "EEE")}</p>
+              <p className={`text-base font-bold ${isSameDay(day, new Date()) ? 'text-primary' : 'text-foreground'}`}>
                 {format(day, "d")}
               </p>
             </div>
@@ -191,9 +194,9 @@ function GridView({ mode, days, hours, appointments, onSelect }: any) {
       {/* Time Grid */}
       <div className="relative">
         {hours.map((hour: string, hIdx: number) => (
-          <div key={hour} className="grid grid-cols-[80px_1fr] border-b border-[#F4F4F5] last:border-b-0 min-h-[120px]">
-            <div className="py-4 pr-3 text-right border-r border-[#F4F4F5] flex flex-col items-end">
-              <span className="text-[#71717A] text-[10px] font-bold">{hour}</span>
+          <div key={hour} className="grid grid-cols-[80px_1fr] border-b border-border last:border-b-0 min-h-[120px]">
+            <div className="py-4 pr-3 text-right border-r border-border flex flex-col items-end">
+              <span className="text-muted-foreground text-[10px] font-bold">{hour}</span>
             </div>
             <div className={`grid grid-cols-${days.length} w-full`}>
               {days.map((day: any, dIdx: number) => {
@@ -203,20 +206,20 @@ function GridView({ mode, days, hours, appointments, onSelect }: any) {
                 });
 
                 return (
-                  <div key={dIdx} className="border-r border-[#F4F4F5] last:border-r-0 p-2 relative group hover:bg-[#FAFAFA] transition-colors">
+                  <div key={dIdx} className="border-r border-border last:border-r-0 p-2 relative group hover:bg-muted/30 transition-colors">
                     {dayAppts.map((appt: any) => (
                       <div
                         key={appt.id}
                         onClick={() => onSelect(appt)}
-                        className="bg-red-50 border border-red-100 rounded-xl p-4 cursor-pointer hover:bg-red-100/50 transition-all"
+                        className="bg-primary/10 border border-primary/20 rounded-xl p-4 cursor-pointer hover:bg-primary/20 transition-all"
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-6 h-6 rounded-full border border-[#D72322]/20 overflow-hidden shadow-sm">
+                          <div className="w-6 h-6 rounded-full border border-primary/20 overflow-hidden shadow-sm">
                             <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${appt.name}`} alt="" />
                           </div>
                           <div>
-                            <p className="text-[#09090B] font-bold text-[11px] leading-tight truncate">{appt.name}</p>
-                            <p className="text-[#D72322] text-[9px] font-semibold uppercase tracking-wider">{appt.service}</p>
+                            <p className="text-foreground font-bold text-[11px] leading-tight truncate">{appt.name}</p>
+                            <p className="text-primary text-[9px] font-semibold uppercase tracking-wider">{appt.service}</p>
                           </div>
                         </div>
                       </div>
@@ -233,10 +236,11 @@ function GridView({ mode, days, hours, appointments, onSelect }: any) {
 }
 
 function MonthView({ days, appointments, currentDate, onSelect }: any) {
+  const { t } = useLanguage();
   return (
-    <div className="grid grid-cols-7 h-full">
+    <div className="grid grid-cols-7 h-full bg-card">
       {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(d => (
-        <div key={d} className="py-3 px-6 border-b border-r border-[#F4F4F5] bg-[#FAFAFA] text-center text-[10px] font-semibold text-[#71717A] uppercase tracking-wider sticky top-0 z-20">
+        <div key={d} className="py-3 px-6 border-b border-r border-border bg-muted/30 text-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wider sticky top-0 z-20">
           {d}
         </div>
       ))}
@@ -245,17 +249,17 @@ function MonthView({ days, appointments, currentDate, onSelect }: any) {
         const dayAppts = appointments.filter((a: any) => isSameDay(new Date(a.date), day));
 
         return (
-          <div key={day.toString()} className={`min-h-[180px] p-6 border-b border-r border-[#EEEFF2] transition-colors hover:bg-gray-50/50 ${!isCurrentMonth ? 'bg-[#F8F9FB]/20 grayscale' : ''}`}>
-            <span className={`text-lg font-black ${isSameDay(day, new Date()) ? 'text-[#D72322]' : isCurrentMonth ? 'text-[#04091E]' : 'text-[#A3A6B4]'}`}>
+          <div key={day.toString()} className={`min-h-[180px] p-6 border-b border-r border-border transition-colors hover:bg-muted/10 ${!isCurrentMonth ? 'bg-muted/5 grayscale' : ''}`}>
+            <span className={`text-lg font-black ${isSameDay(day, new Date()) ? 'text-primary' : isCurrentMonth ? 'text-foreground' : 'text-muted-foreground'}`}>
               {format(day, "d")}
             </span>
             <div className="mt-4 space-y-2">
               {dayAppts.slice(0, 3).map((a: any) => (
-                <div key={a.id} onClick={() => onSelect(a)} className="bg-[#D72322] text-white p-2 rounded-xl text-[9px] font-black truncate shadow-sm cursor-pointer hover:bg-[#B91C1C]">
+                <div key={a.id} onClick={() => onSelect(a)} className="bg-primary text-primary-foreground p-2 rounded-xl text-[9px] font-black truncate shadow-sm cursor-pointer hover:opacity-90">
                   {a.service}
                 </div>
               ))}
-              {dayAppts.length > 3 && <p className="text-[10px] font-black text-[#A3A6B4]">+{dayAppts.length - 3} more</p>}
+              {dayAppts.length > 3 && <p className="text-[10px] font-black text-muted-foreground">+{dayAppts.length - 3} {t('more')}</p>}
             </div>
           </div>
         );
@@ -265,6 +269,7 @@ function MonthView({ days, appointments, currentDate, onSelect }: any) {
 }
 
 function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     vehicle_id: "", service_type: "Oil Change", service_center: "", location_address: "", preferred_date: "", preferred_time: "08:00 AM - 10:00 AM", notes: "", estimated_duration: "1.5 Hours", estimated_cost: 85.0
   });
@@ -302,112 +307,112 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-[32px] w-full max-w-4xl flex overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh]">
-        <div className="flex-1 p-10 border-r border-[#EEEFF2] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-card rounded-[32px] w-full max-w-4xl flex border border-border overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] shadow-2xl">
+        <div className="flex-1 p-10 border-r border-border overflow-y-auto custom-scrollbar">
           <div className="flex items-center gap-3 mb-8">
-            <HiCalendar className="text-[#D72322] text-2xl" />
-            <h2 className="text-[10px] font-black text-[#04091E] uppercase tracking-[0.2em]">Service Details</h2>
+            <HiCalendar className="text-primary text-2xl" />
+            <h2 className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">{t('service_details_title')}</h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Select Vehicle</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('select_vehicle')}</label>
                 <select
                   value={formData.vehicle_id}
                   onChange={e => setFormData({ ...formData, vehicle_id: e.target.value })}
-                  className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] text-sm font-black text-[#04091E] appearance-none"
+                  className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground appearance-none"
                 >
-                  <option value="">Select Vehicle</option>
+                  <option value="">{t('select_vehicle')}</option>
                   {vehicles.map((v: any) => <option key={v.id} value={v.id}>{v.make} {v.model} ({v.license_plate})</option>)}
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Service Type</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('service_type')}</label>
                 <select
                   value={formData.service_type}
                   onChange={e => setFormData({ ...formData, service_type: e.target.value })}
-                  className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] text-sm font-black text-[#04091E] appearance-none"
+                  className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground appearance-none"
                 >
-                  {["Oil Change", "Brake Service", "Engine Check", "Tire Rotation", "Full Inspection"].map(s => <option key={s} value={s}>{s}</option>)}
+                  {["Oil Change", "Brake Service", "Engine Check", "Tire Rotation", "Full Inspection"].map(s => <option key={s} value={s}>{t(s.toLowerCase().replace(' ', '_')) || s}</option>)}
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Select Service Center</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('select_service_center')}</label>
                 <input
                   placeholder="e.g. Gearhouse Downtown Garage"
                   value={formData.service_center}
                   onChange={e => setFormData({ ...formData, service_center: e.target.value })}
-                  className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] text-sm font-black text-[#04091E]"
+                  className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Location Address</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('location_address')}</label>
                 <input
                   placeholder="123 Main St, Downtown"
                   value={formData.location_address}
                   onChange={e => setFormData({ ...formData, location_address: e.target.value })}
-                  className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] text-sm font-black text-[#04091E]"
+                  className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Preferred Date</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('preferred_date')}</label>
                 <input
                   type="date"
                   value={formData.preferred_date}
                   onChange={e => setFormData({ ...formData, preferred_date: e.target.value })}
-                  className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] text-sm font-black text-[#04091E]"
+                  className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Preferred Time Slot</label>
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('preferred_time_slot')}</label>
                 <select
                   value={formData.preferred_time}
                   onChange={e => setFormData({ ...formData, preferred_time: e.target.value })}
-                  className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] text-sm font-black text-[#04091E] appearance-none"
+                  className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground appearance-none"
                 >
                   {["07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM"].map(t => <option key={t} value={t}>{t} - {parseInt(t) + 2}:00 {t.includes('AM') ? 'AM' : 'PM'}</option>)}
                 </select>
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">Special Instructions</label>
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('special_instructions')}</label>
               <textarea
                 value={formData.notes}
                 onChange={e => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Add any specific details or concerns..."
-                className="w-full p-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-[24px] outline-none focus:border-[#D72322] text-sm font-medium h-32"
+                className="w-full p-6 bg-muted border border-border rounded-[24px] outline-none focus:border-primary text-sm font-medium h-32 text-foreground"
               />
             </div>
             <div className="flex gap-4 pt-4">
-              <button onClick={onClose} type="button" className="px-10 h-14 border border-[#EEEFF2] text-[#D72322] rounded-2xl font-black text-sm hover:bg-red-50 transition-all">Cancel</button>
-              <button type="submit" className="flex-1 h-14 bg-[#D72322] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-red-100">
-                <HiCheckCircle className="text-xl" /> Confirm Booking
+              <button onClick={onClose} type="button" className="px-10 h-14 border border-border text-primary rounded-2xl font-black text-sm hover:bg-primary/5 transition-all">{t('cancel')}</button>
+              <button type="submit" className="flex-1 h-14 bg-primary text-primary-foreground rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-xl shadow-primary/20">
+                <HiCheckCircle className="text-xl" /> {t('confirm_booking')}
               </button>
             </div>
           </form>
         </div>
-        <div className="w-80 bg-[#F8F9FB] p-10 flex flex-col overflow-y-auto shrink-0">
+        <div className="w-80 bg-muted/30 p-10 flex flex-col overflow-y-auto shrink-0">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-10">
-              <HiInformationCircle className="text-[#A3A6B4] text-2xl" />
-              <h2 className="text-[10px] font-black text-[#04091E] uppercase tracking-[0.2em]">Booking Summary</h2>
+              <HiInformationCircle className="text-muted-foreground text-2xl" />
+              <h2 className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">{t('booking_summary')}</h2>
             </div>
 
             <div className="space-y-8">
               <div>
-                <div className="flex items-center gap-2 text-[#A3A6B4] mb-2 uppercase tracking-widest text-[8px] font-black">
-                  <HiClock /> Estimated Duration
+                <div className="flex items-center gap-2 text-muted-foreground mb-2 uppercase tracking-widest text-[8px] font-black">
+                  <HiClock /> {t('estimated_duration')}
                 </div>
-                <p className="text-xl font-black text-[#04091E]">{formData.estimated_duration}</p>
+                <p className="text-xl font-black text-foreground">{formData.estimated_duration}</p>
               </div>
-              <div className="h-px bg-[#EEEFF2]" />
+              <div className="h-px bg-border" />
               <div>
-                <div className="flex items-center gap-2 text-[#A3A6B4] mb-2 uppercase tracking-widest text-[8px] font-black">
-                  <HiCurrencyDollar /> Estimated Cost
+                <div className="flex items-center gap-2 text-muted-foreground mb-2 uppercase tracking-widest text-[8px] font-black">
+                  <HiCurrencyDollar /> {t('estimated_cost_label')}
                 </div>
-                <p className="text-3xl font-black text-[#D72322]">${formData.estimated_cost.toFixed(2)}</p>
+                <p className="text-3xl font-black text-primary">${formData.estimated_cost.toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -416,7 +421,7 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
             <div className="flex gap-3">
               <div className="w-6 h-6 rounded-full border border-[#EEEFF2] flex items-center justify-center text-[10px] text-[#A3A6B4]">?</div>
               <p className="text-[9px] font-bold text-[#747681] leading-relaxed">
-                Cost is an estimate based on standard labor rates and parts. Final price may vary.
+                {t('cost_estimate_note')}
               </p>
             </div>
           </div>
@@ -427,36 +432,37 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
 }
 
 function BookingDetailsModal({ booking, onClose }: any) {
+  const { t } = useLanguage();
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-[32px] w-full max-w-xl p-10 animate-in zoom-in-95 duration-300 shadow-2xl overflow-y-auto max-h-[90vh] relative">
-        <button onClick={onClose} className="absolute top-8 right-8 p-2 hover:bg-[#F8F9FB] rounded-xl z-10"><HiX className="text-2xl text-[#747681]" /></button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-card rounded-[32px] w-full max-w-xl p-10 animate-in zoom-in-95 duration-300 shadow-2xl border border-border overflow-y-auto max-h-[90vh] relative">
+        <button onClick={onClose} className="absolute top-8 right-8 p-2 hover:bg-muted rounded-xl z-10"><HiX className="text-2xl text-muted-foreground" /></button>
 
         <div className="flex items-center gap-4 mb-10">
-          <div className="w-20 h-20 rounded-[24px] bg-[#FEF2F2] border border-red-50 flex items-center justify-center text-[#D72322]">
+          <div className="w-20 h-20 rounded-[24px] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
             <HiCalendar className="text-4xl" />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-[#04091E] leading-tight mb-1">{booking.service}</h2>
-            <p className="text-[#A3A6B4] text-xs font-black uppercase tracking-widest">{format(new Date(booking.date), "EEEE, d MMMM yyyy")}</p>
+            <h2 className="text-2xl font-black text-foreground leading-tight mb-1">{booking.service}</h2>
+            <p className="text-muted-foreground text-xs font-black uppercase tracking-widest">{format(new Date(booking.date), "EEEE, d MMMM yyyy")}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-8 mb-10">
-          <InfoItem label="TECHNICIAN" value={booking.name} />
-          <InfoItem label="TIME SLOT" value={booking.time} />
-          <InfoItem label="LOCATION" value={booking.center || 'Main Street Auto'} />
-          <InfoItem label="STATUS" value={booking.status || 'Confirmed'} />
+          <InfoItem label={t('technician')} value={booking.name} />
+          <InfoItem label={t('time_slot')} value={booking.time} />
+          <InfoItem label={t('location')} value={booking.center || 'Main Street Auto'} />
+          <InfoItem label={t('status')} value={booking.status || 'Confirmed'} />
         </div>
 
-        <div className="bg-[#F8F9FB] rounded-[24px] p-6 mb-10">
-          <p className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest mb-3 flex items-center gap-2">
-            <HiLocationMarker /> Address
+        <div className="bg-muted rounded-[24px] p-6 mb-10">
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
+            <HiLocationMarker /> {t('address')}
           </p>
-          <p className="text-sm font-black text-[#04091E]">{booking.address || '123 Downtown St, Suite 405'}</p>
+          <p className="text-sm font-black text-foreground">{booking.address || '123 Downtown St, Suite 405'}</p>
         </div>
 
-        <button onClick={onClose} className="w-full h-14 bg-[#04091E] text-white rounded-2xl font-black text-sm hover:scale-[1.02] transition-all">Close Details</button>
+        <button onClick={onClose} className="w-full h-14 bg-foreground text-background rounded-2xl font-black text-sm hover:scale-[1.02] transition-all">{t('close_details')}</button>
       </div>
     </div>
   );
@@ -465,8 +471,8 @@ function BookingDetailsModal({ booking, onClose }: any) {
 function InfoItem({ label, value }: { label: string, value: string }) {
   return (
     <div>
-      <p className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">{label}</p>
-      <p className="text-sm font-black text-[#04091E] uppercase">{value}</p>
+      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{label}</p>
+      <p className="text-sm font-black text-foreground uppercase">{value}</p>
     </div>
   );
 }

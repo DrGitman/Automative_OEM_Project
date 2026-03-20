@@ -12,6 +12,30 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Please enter your email address first.");
+      return;
+    }
+    const loadingToast = toast.loading("Sending reset link...");
+    try {
+      const response = await fetch("http://localhost:8000/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(`Reset link sent to ${data.to}`, { id: loadingToast, duration: 6000 });
+      } else {
+        const err = await response.json();
+        toast.error(err.detail || "Failed to send reset link.", { id: loadingToast });
+      }
+    } catch {
+      toast.error("Network error. Please try again.", { id: loadingToast });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const loadingToast = toast.loading("Logging in...");
@@ -145,7 +169,7 @@ export default function Login() {
             </label>
             <button
               type="button"
-              onClick={() => navigate("/reset-password")}
+              onClick={handleForgotPassword}
               style={{ fontSize: "14px", fontWeight: 600, color: "#D72322", background: "none", border: "none", cursor: "pointer", padding: 0 }}
             >
               Forgot Password?

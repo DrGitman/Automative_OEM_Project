@@ -6,6 +6,7 @@ import { toast } from "sonner";
 // @ts-ignore
 import gearhouseLogo from "../../assets/Gearhouse logo Car only.png";
 import Pagination from "../components/common/Pagination";
+import { useLanguage } from "../context/LanguageContext";
 
 // ==========================================
 // MY VEHICLES PAGE
@@ -22,6 +23,7 @@ export default function MyVehicles() {
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const [itemsPerPage, setItemsPerPage] = useState(3);
+  const { t } = useLanguage();
 
   const fetchVehicles = async () => {
     const userStr = localStorage.getItem("user");
@@ -70,20 +72,20 @@ export default function MyVehicles() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#F8F9FB]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D72322]"></div>
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#F8F9FB] min-h-screen flex font-['Inter',sans-serif]">
+    <div className="bg-background min-h-screen flex font-['Inter',sans-serif] transition-colors duration-300">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1 page-transition">
+      <div className="ml-[240px] flex-1 page-transition pt-[72px]">
         <Header
-          title="My Vehicles"
-          subtitle="Let's check your Garage today"
+          title={t('vehicles')}
+          subtitle={t('garage')}
           searchValue={searchQuery}
           onSearch={setSearchQuery}
         />
@@ -93,9 +95,9 @@ export default function MyVehicles() {
           <div className="flex justify-end items-center">
             <button
               onClick={() => setShowAddModal(true)}
-              className="bg-[#D72322] text-white px-8 h-14 rounded-2xl font-black text-sm flex items-center gap-2 shadow-xl shadow-red-100 hover:scale-105 transition-all"
+              className="bg-primary text-primary-foreground px-8 h-14 rounded-2xl font-black text-sm flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-105 transition-all"
             >
-              <HiPlus /> Add Vehicle
+              <HiPlus /> {t('add_vehicle')}
             </button>
           </div>
 
@@ -110,14 +112,14 @@ export default function MyVehicles() {
               />
             ))}
             {currentVehicles.length < itemsPerPage && Array.from({ length: itemsPerPage - currentVehicles.length }).map((_, idx) => (
-              <div key={`empty-${idx}`} className="h-full rounded-2xl border border-dashed border-[#E4E4E7] bg-gray-50/30 flex items-center justify-center min-h-[400px]">
-                <p className="text-[#A3A6B4] text-[10px] font-semibold uppercase tracking-wider">Empty Slot</p>
+              <div key={`empty-${idx}`} className="h-full rounded-2xl border border-dashed border-border bg-muted/30 flex items-center justify-center min-h-[400px]">
+                <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">{t('empty_slot')}</p>
               </div>
             ))}
           </div>
 
           {/* Pagination */}
-          <div className="mt-2">
+          <div className="mt-2 text-foreground">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -138,10 +140,11 @@ export default function MyVehicles() {
 }
 
 function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => void, onView: () => void }) {
+  const { t } = useLanguage();
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E4E4E7] shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col h-full">
+    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col h-full">
       <div className="flex justify-between items-start mb-6">
-        <div className="w-14 h-14 bg-[#F8F9FB] rounded-2xl flex items-center justify-center p-3 border border-[#EEEFF2]">
+        <div className="w-14 h-14 bg-muted rounded-2xl flex items-center justify-center p-3 border border-border">
           {vehicle.image_url ? (
             <img src={vehicle.image_url} alt="" className="w-full h-full object-cover rounded-lg" />
           ) : (
@@ -152,39 +155,39 @@ function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => 
           <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${vehicle.risk_level === 'High' ? 'bg-red-50 text-[#D72322]' :
             vehicle.risk_level === 'Medium' ? 'bg-orange-50 text-[#F97316]' : 'bg-gray-100 text-[#747681]'
             }`}>
-            {vehicle.risk_level || 'LOW'} RISK
+            {vehicle.risk_level || 'LOW'} {t('risk')}
           </span>
         </div>
       </div>
 
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-[#09090B] leading-tight mb-1">{vehicle.make} {vehicle.model}</h3>
-        <p className="text-[10px] font-semibold text-[#71717A] uppercase tracking-wider">{vehicle.year} • {vehicle.fuel_type || 'Pickup Truck'}</p>
+        <h3 className="text-lg font-semibold text-foreground leading-tight mb-1">{vehicle.make} {vehicle.model}</h3>
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{vehicle.year} • {vehicle.fuel_type || 'Pickup Truck'}</p>
       </div>
 
       <div className="space-y-4 mb-8 flex-1">
         <div className="flex justify-between items-center">
-          <span className="text-[9px] font-semibold text-[#71717A] uppercase tracking-wider">VIN</span>
-          <span className="text-sm font-medium text-[#09090B]">{vehicle.vin || 'GH-02938472'}</span>
+          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">{t('vin')}</span>
+          <span className="text-sm font-medium text-foreground">{vehicle.vin || 'GH-02938472'}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-[9px] font-semibold text-[#71717A] uppercase tracking-wider">Odometer</span>
-          <span className="text-sm font-medium text-[#09090B]">{(vehicle.mileage || 0).toLocaleString()} km</span>
+          <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider">{t('odometer')}</span>
+          <span className="text-sm font-medium text-foreground">{(vehicle.mileage || 0).toLocaleString()} km</span>
         </div>
       </div>
 
       <div className="flex gap-3 mt-auto">
         <button
           onClick={onView}
-          className="flex-1 h-11 bg-[#D72322] text-white rounded-lg text-xs font-semibold shadow-sm hover:bg-[#B91C1C] transition-all"
+          className="flex-1 h-11 bg-primary text-primary-foreground rounded-lg text-xs font-semibold shadow-sm hover:bg-primary/90 transition-all"
         >
-          View Details
+          {t('view_details')}
         </button>
         <button
           onClick={onEdit}
-          className="px-6 h-11 border border-[#E4E4E7] rounded-lg text-xs font-semibold text-[#71717A] hover:bg-gray-50 transition-all"
+          className="px-6 h-11 border border-border rounded-lg text-xs font-semibold text-muted-foreground hover:bg-muted transition-all"
         >
-          Edit
+          {t('edit_info')}
         </button>
       </div>
     </div>
@@ -193,11 +196,11 @@ function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => 
 
 function ModalLayout({ title, children, onClose }: { title: string, children: React.ReactNode, onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#04091E]/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-      <div className="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-        <div className="p-8 flex justify-between items-center bg-white border-b border-[#EEEFF2] shrink-0">
-          <h2 className="text-2xl font-black text-[#04091E]">{title}</h2>
-          <button onClick={onClose} className="p-2 hover:bg-[#F8F9FB] rounded-xl transition-all"><HiX className="text-2xl" /></button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-card rounded-[32px] w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] border border-border">
+        <div className="p-8 flex justify-between items-center bg-card border-b border-border shrink-0">
+          <h2 className="text-2xl font-black text-foreground">{title}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl transition-all"><HiX className="text-2xl text-foreground" /></button>
         </div>
         <div className="p-8 overflow-y-auto">
           {children}
@@ -208,6 +211,7 @@ function ModalLayout({ title, children, onClose }: { title: string, children: Re
 }
 
 function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefresh: () => void }) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     make: "", model: "", year: 2024, license_plate: "", fuel_type: "", vehicle_type: "", mileage: 0, service_interval: 10000, vin: "", notes: "", image_url: ""
   });
@@ -230,10 +234,10 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
       if (resp.ok) {
         const data = await resp.json();
         setFormData({ ...formData, image_url: data.url });
-        toast.success("Image uploaded!");
+        toast.success(t("image_uploaded"));
       }
     } catch (err) {
-      toast.error("Upload failed");
+      toast.error(t("upload_failed"));
     } finally {
       setUploading(false);
     }
@@ -253,29 +257,29 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
         body: JSON.stringify(formData)
       });
       if (resp.ok) {
-        toast.success("Vehicle added successfully!");
+        toast.success(t("vehicle_added_successfully"));
         onRefresh();
         onClose();
       }
     } catch (err) {
-      toast.error("Failed to add vehicle");
+      toast.error(t("failed_to_add_vehicle"));
     }
   };
 
   return (
-    <ModalLayout title="Add Vehicle" onClose={onClose}>
+    <ModalLayout title={t('add_vehicle')} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
-          <Input label="MAKE" placeholder="e.g. Toyota" value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
-          <Input label="MODEL" placeholder="e.g. Hilux" value={formData.model} onChange={(v: string) => setFormData({ ...formData, model: v })} />
-          <Input label="CURRENT MILEAGE" placeholder="0" type="number" value={formData.mileage} onChange={(v: string) => setFormData({ ...formData, mileage: parseInt(v) })} suffix="km" />
-          <Input label="LICENSE PLATE" placeholder="ABC-1234" value={formData.license_plate} onChange={(v: string) => setFormData({ ...formData, license_plate: v })} required />
-          <Select label="FUEL TYPE" options={["Diesel", "Gasoline", "Electric", "Hybrid"]} value={formData.fuel_type} onChange={(v: string) => setFormData({ ...formData, fuel_type: v })} />
-          <Select label="VEHICLE TYPE" options={["Pickup", "SUV", "Sedan", "Van", "Truck"]} value={formData.vehicle_type} onChange={(v: string) => setFormData({ ...formData, vehicle_type: v })} />
-          <Input label="SERVICE INTERVAL" value={formData.service_interval} onChange={(v: string) => setFormData({ ...formData, service_interval: parseInt(v) })} suffix="km" />
-          <Input label="YEAR" value={formData.year} onChange={(v: string) => setFormData({ ...formData, year: parseInt(v) })} />
+          <Input label={t('make')} placeholder="e.g. Toyota" value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
+          <Input label={t('model')} placeholder="e.g. Hilux" value={formData.model} onChange={(v: string) => setFormData({ ...formData, model: v })} />
+          <Input label={t('current_mileage')} placeholder="0" type="number" value={formData.mileage} onChange={(v: string) => setFormData({ ...formData, mileage: parseInt(v) })} suffix="km" />
+          <Input label={t('license_plate')} placeholder="ABC-1234" value={formData.license_plate} onChange={(v: string) => setFormData({ ...formData, license_plate: v })} required />
+          <Select label={t('fuel_type')} options={["Diesel", "Gasoline", "Electric", "Hybrid"]} value={formData.fuel_type} onChange={(v: string) => setFormData({ ...formData, fuel_type: v })} />
+          <Select label={t('vehicle_type')} options={["Pickup", "SUV", "Sedan", "Van", "Truck"]} value={formData.vehicle_type} onChange={(v: string) => setFormData({ ...formData, vehicle_type: v })} />
+          <Input label={t('service_interval')} value={formData.service_interval} onChange={(v: string) => setFormData({ ...formData, service_interval: parseInt(v) })} suffix="km" />
+          <Input label={t('year')} value={formData.year} onChange={(v: string) => setFormData({ ...formData, year: parseInt(v) })} />
           <div className="space-y-2">
-            <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">VEHICLE IMAGE</span>
+            <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">{t('vehicle_image')}</span>
             <input 
               type="file" 
               ref={fileInputRef} 
@@ -294,24 +298,24 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
               ) : (
                 <>
                   <HiUpload className="text-[#D72322] text-xl" />
-                  <span className="text-[10px] font-bold text-[#747681]">Upload Vehicle Image</span>
+                  <span className="text-[10px] font-bold text-[#747681]">{t('upload_vehicle_image')}</span>
                 </>
               )}
             </div>
           </div>
         </div>
         <div className="space-y-2">
-          <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">NOTES</span>
+          <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">{t('notes')}</span>
           <textarea
             value={formData.notes}
             onChange={e => setFormData({ ...formData, notes: e.target.value })}
-            placeholder="Add any additional details..."
+            placeholder={t('add_additional_details')}
             className="w-full p-4 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl h-32 outline-none focus:border-[#D72322] transition-all text-sm font-medium"
           />
         </div>
         <div className="flex gap-4 pt-4">
-          <button type="button" onClick={onClose} className="flex-1 h-14 border border-[#EEEFF2] text-[#747681] rounded-2xl font-black text-sm">Cancel</button>
-          <button type="submit" className="flex-1 h-14 bg-[#D72322] text-white rounded-2xl font-black text-sm shadow-xl shadow-red-100">Add Vehicle</button>
+          <button type="button" onClick={onClose} className="flex-1 h-14 border border-[#EEEFF2] text-[#747681] rounded-2xl font-black text-sm">{t('cancel')}</button>
+          <button type="submit" className="flex-1 h-14 bg-[#D72322] text-white rounded-2xl font-black text-sm shadow-xl shadow-red-100">{t('add_vehicle')}</button>
         </div>
       </form>
     </ModalLayout>
@@ -319,6 +323,7 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
 }
 
 function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClose: () => void, onRefresh: () => void }) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({ ...vehicle });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -339,10 +344,10 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
       if (resp.ok) {
         const data = await resp.json();
         setFormData({ ...formData, image_url: data.url });
-        toast.success("Image uploaded!");
+        toast.success(t("image_uploaded"));
       }
     } catch (err) {
-      toast.error("Upload failed");
+      toast.error(t("upload_failed"));
     } finally {
       setUploading(false);
     }
@@ -357,43 +362,43 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
         body: JSON.stringify(formData)
       });
       if (resp.ok) {
-        toast.success("Changes saved!");
+        toast.success(t("changes_saved"));
         onRefresh();
         onClose();
       }
     } catch (err) {
-      toast.error("Failed to update");
+      toast.error(t("failed_to_update"));
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Delete this vehicle? This action cannot be undone.")) return;
+    if (!window.confirm(t("delete_vehicle_confirmation"))) return;
     try {
       const resp = await fetch(`http://localhost:8000/vehicles/delete/${vehicle.id}`, { method: "DELETE" });
       if (resp.ok) {
-        toast.success("Vehicle removed");
+        toast.success(t("vehicle_removed"));
         onRefresh();
         onClose();
       }
     } catch (err) {
-      toast.error("Failed to delete");
+      toast.error(t("failed_to_delete"));
     }
   };
 
   return (
-    <ModalLayout title="Edit Vehicle" onClose={onClose}>
+    <ModalLayout title={t('edit_vehicle')} onClose={onClose}>
       <form onSubmit={handleUpdate} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
-          <Input label="MAKE" value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
-          <Input label="MODEL" value={formData.model} onChange={(v: string) => setFormData({ ...formData, model: v })} />
-          <Input label="CURRENT MILEAGE" value={formData.mileage} onChange={(v: string) => setFormData({ ...formData, mileage: parseFloat(v) })} suffix="km" />
-          <Select label="VEHICLE TYPE" options={["Pickup", "SUV", "Sedan", "Van", "Truck"]} value={formData.vehicle_type} onChange={(v: string) => setFormData({ ...formData, vehicle_type: v })} />
-          <Input label="SERVICE INTERVAL" value={formData.service_interval} onChange={(v: string) => setFormData({ ...formData, service_interval: parseInt(v) })} suffix="km" />
-          <Input label="YEAR" value={formData.year} onChange={(v: string) => setFormData({ ...formData, year: v })} />
-          <Input label="LICENSE PLATE" value={formData.license_plate} onChange={(v: string) => setFormData({ ...formData, license_plate: v })} />
-          <Select label="FUEL TYPE" options={["Diesel", "Gasoline", "Electric", "Hybrid"]} value={formData.fuel_type} onChange={(v: string) => setFormData({ ...formData, fuel_type: v })} />
+          <Input label={t('make')} value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
+          <Input label={t('model')} value={formData.model} onChange={(v: string) => setFormData({ ...formData, model: v })} />
+          <Input label={t('current_mileage')} value={formData.mileage} onChange={(v: string) => setFormData({ ...formData, mileage: parseFloat(v) })} suffix="km" />
+          <Select label={t('vehicle_type')} options={["Pickup", "SUV", "Sedan", "Van", "Truck"]} value={formData.vehicle_type} onChange={(v: string) => setFormData({ ...formData, vehicle_type: v })} />
+          <Input label={t('service_interval')} value={formData.service_interval} onChange={(v: string) => setFormData({ ...formData, service_interval: parseInt(v) })} suffix="km" />
+          <Input label={t('year')} value={formData.year} onChange={(v: string) => setFormData({ ...formData, year: v })} />
+          <Input label={t('license_plate')} value={formData.license_plate} onChange={(v: string) => setFormData({ ...formData, license_plate: v })} />
+          <Select label={t('fuel_type')} options={["Diesel", "Gasoline", "Electric", "Hybrid"]} value={formData.fuel_type} onChange={(v: string) => setFormData({ ...formData, fuel_type: v })} />
           <div className="space-y-2">
-            <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">VEHICLE IMAGE</span>
+            <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">{t('vehicle_image')}</span>
             <input 
               type="file" 
               ref={fileInputRef} 
@@ -412,25 +417,25 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
                 className="flex items-center gap-2 text-[10px] font-black text-[#04091E] border border-[#EEEFF2] px-4 py-2 rounded-xl bg-white hover:bg-gray-50 disabled:opacity-50"
               >
                 {uploading ? <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-[#D72322]"></div> : <HiUpload />} 
-                {uploading ? "Uploading..." : "Replace Image"}
+                {uploading ? t("uploading") : t("replace_image")}
               </button>
             </div>
           </div>
         </div>
 
         <div className="bg-[#FFF8F8] border border-red-50 rounded-[24px] p-6 space-y-4">
-          <h4 className="text-[10px] font-black text-[#D72322] uppercase tracking-[0.2em]">Maintenance Summary</h4>
+          <h4 className="text-[10px] font-black text-[#D72322] uppercase tracking-[0.2em]">{t('maintenance_summary')}</h4>
           <div className="flex justify-between items-end">
             <div>
-              <p className="text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">Next Service Due</p>
+              <p className="text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">{t('next_service_due')}</p>
               <p className="text-xl font-black text-[#04091E]">55,200 km</p>
             </div>
             <div>
-              <p className="text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">Current Mileage</p>
+              <p className="text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">{t('current_mileage')}</p>
               <p className="text-xl font-black text-[#04091E]">{formData.mileage?.toLocaleString()} km</p>
             </div>
             <div className="text-right">
-              <p className="text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">Health Score</p>
+              <p className="text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">{t('health_score')}</p>
               <div className="flex items-center gap-3">
                 <span className="text-xl font-black text-[#10B981]">{vehicle.health_score || 94}%</span>
                 <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -443,11 +448,11 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
 
         <div className="flex justify-between items-center pt-4">
           <button onClick={handleDelete} type="button" className="flex items-center gap-2 text-xs font-black text-[#D72322] hover:underline">
-            <HiTrash /> Delete Vehicle
+            <HiTrash /> {t('delete_vehicle')}
           </button>
           <div className="flex gap-4">
-            <button type="button" onClick={onClose} className="px-8 h-14 border border-[#EEEFF2] text-[#747681] rounded-2xl font-black text-sm">Cancel</button>
-            <button type="submit" className="px-8 h-14 bg-[#D72322] text-white rounded-2xl font-black text-sm shadow-xl shadow-red-100">Save Changes</button>
+            <button type="button" onClick={onClose} className="px-8 h-14 border border-[#EEEFF2] text-[#747681] rounded-2xl font-black text-sm">{t('cancel')}</button>
+            <button type="submit" className="px-8 h-14 bg-[#D72322] text-white rounded-2xl font-black text-sm shadow-xl shadow-red-100">{t('save_changes')}</button>
           </div>
         </div>
       </form>
@@ -456,31 +461,32 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
 }
 
 function ViewVehicleModal({ vehicle, onEdit, onClose }: { vehicle: any, onEdit: () => void, onClose: () => void }) {
+  const { t } = useLanguage();
   return (
-    <ModalLayout title="Vehicle Information" onClose={onClose}>
+    <ModalLayout title={t('vehicle_information')} onClose={onClose}>
       <div className="space-y-8">
         <div className="flex justify-between items-start">
           <div className="relative group">
             <img src={vehicle.image_url || gearhouseLogo} alt="" className="w-64 h-48 object-cover rounded-[32px] border border-[#EEEFF2]" />
             <div className="absolute -bottom-6 left-0 right-0 bg-white p-4 rounded-2xl border border-[#EEEFF2] shadow-sm flex items-center gap-3">
               <div className="w-3 h-3 rounded-full bg-[#10B981]" />
-              <span className="text-sm font-black text-[#04091E]">In Operation</span>
+              <span className="text-sm font-black text-[#04091E]">{t('in_operation')}</span>
             </div>
           </div>
-          <button onClick={onEdit} className="text-sm font-black text-[#D72322] hover:underline">Edit Info</button>
+          <button onClick={onEdit} className="text-sm font-black text-[#D72322] hover:underline">{t('edit_info')}</button>
         </div>
 
         <div className="grid grid-cols-2 gap-y-8 gap-x-12 pt-8">
-          <InfoItem label="VIN" value={vehicle.vin || '1HTF2394019238842'} />
-          <InfoItem label="MAKE" value={vehicle.make || 'Toyota'} />
-          <InfoItem label="MODEL" value={vehicle.model || 'Hilux Double Cab'} />
-          <InfoItem label="YEAR" value={vehicle.year || '2022'} />
-          <InfoItem label="ENGINE CC" value={vehicle.engine_cc || '2,755 cc'} />
-          <InfoItem label="ENGINE TYPE" value={vehicle.engine_type || '2.8L Diesel Turbo'} />
-          <InfoItem label="TRANSMISSION" value={vehicle.transmission || '6-Speed Automatic'} />
-          <InfoItem label="FUEL CAPACITY" value={vehicle.fuel_capacity || '80 Liters'} />
-          <InfoItem label="CURRENT ODOMETER" value={`${(vehicle.mileage || 0).toLocaleString()} km`} />
-          <InfoItem label="LAST SERVICE DATE" value={vehicle.last_service_date || '12 Oct 2023'} />
+          <InfoItem label={t('vin')} value={vehicle.vin || '1HTF2394019238842'} />
+          <InfoItem label={t('make')} value={vehicle.make || 'Toyota'} />
+          <InfoItem label={t('model')} value={vehicle.model || 'Hilux Double Cab'} />
+          <InfoItem label={t('year')} value={vehicle.year || '2022'} />
+          <InfoItem label={t('engine_cc')} value={vehicle.engine_cc || '2,755 cc'} />
+          <InfoItem label={t('engine_type')} value={vehicle.engine_type || '2.8L Diesel Turbo'} />
+          <InfoItem label={t('transmission')} value={vehicle.transmission || '6-Speed Automatic'} />
+          <InfoItem label={t('fuel_capacity')} value={vehicle.fuel_capacity || '80 Liters'} />
+          <InfoItem label={t('current_mileage')} value={`${(vehicle.mileage || 0).toLocaleString()} km`} />
+          <InfoItem label={t('last_service_date')} value={vehicle.last_service_date || '12 Oct 2023'} />
         </div>
       </div>
     </ModalLayout>
@@ -490,15 +496,15 @@ function ViewVehicleModal({ vehicle, onEdit, onClose }: { vehicle: any, onEdit: 
 function Input({ label, onChange, ...props }: any) {
   return (
     <div className="space-y-2 relative">
-      <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">{label}</label>
+      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{label}</label>
       <div className="relative">
         <input
           {...props}
           onChange={(e) => onChange?.(e.target.value)}
-          className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] transition-all text-sm font-black text-[#04091E]"
+          className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary transition-all text-sm font-black text-foreground"
         />
         {props.suffix && (
-          <span className="absolute right-6 top-1/2 -translate-y-1/2 text-xs font-bold text-[#A3A6B4]">{props.suffix}</span>
+          <span className="absolute right-6 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">{props.suffix}</span>
         )}
       </div>
     </div>
@@ -506,15 +512,16 @@ function Input({ label, onChange, ...props }: any) {
 }
 
 function Select({ label, options, value, onChange }: any) {
+  const { t } = useLanguage();
   return (
     <div className="space-y-2">
-      <label className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">{label}</label>
+      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{label}</label>
       <select
         value={value || ""}
         onChange={e => onChange(e.target.value)}
-        className="w-full h-14 px-6 bg-[#F8F9FB] border border-[#EEEFF2] rounded-2xl outline-none focus:border-[#D72322] transition-all text-sm font-black text-[#04091E] appearance-none"
+        className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary transition-all text-sm font-black text-foreground appearance-none"
       >
-        <option value="">Select {label}</option>
+        <option value="">{t('select')} {label}</option>
         {options.map((o: string) => <option key={o} value={o}>{o}</option>)}
       </select>
     </div>
@@ -524,8 +531,8 @@ function Select({ label, options, value, onChange }: any) {
 function InfoItem({ label, value }: { label: string, value: string }) {
   return (
     <div>
-      <p className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest mb-1">{label}</p>
-      <p className="text-lg font-black text-[#04091E]">{value}</p>
+      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{label}</p>
+      <p className="text-lg font-black text-foreground">{value}</p>
     </div>
   );
 }
