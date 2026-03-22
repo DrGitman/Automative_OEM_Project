@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import Root from "./pages/Root";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -13,14 +13,31 @@ import ErrorBoundaryPage from "./pages/ErrorBoundaryPage";
 import Notifications from "./pages/Notifications";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import LegalNotice from "./pages/LegalNotice";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
+    path: "/login",
+    Component: Login,
+  },
+  {
+    path: "/signup",
+    Component: SignUp,
+  },
+  {
+    path: "/forgot-password",
+    Component: CreateNewPassword,
+  },
+  {
     path: "/",
-    Component: Root,
+    element: (
+      <ProtectedRoute>
+        <Root />
+      </ProtectedRoute>
+    ),
     ErrorBoundary: ErrorBoundaryPage,
     children: [
-      { index: true, Component: Dashboard },
+      { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "dashboard", Component: Dashboard },
       { path: "vehicles", Component: MyVehicles },
       { path: "maintenance", Component: Maintenance },

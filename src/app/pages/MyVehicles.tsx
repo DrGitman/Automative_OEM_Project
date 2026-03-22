@@ -49,6 +49,11 @@ export default function MyVehicles() {
     fetchVehicles();
   }, []);
 
+  // Reset to page 1 when searching
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   const filteredVehicles = vehicles.filter((v) =>
     `${v.make} ${v.model}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
     v.license_plate?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -82,7 +87,7 @@ export default function MyVehicles() {
     <div className="bg-background min-h-screen flex font-['Inter',sans-serif] transition-colors duration-300">
       <Sidebar />
 
-      <div className="ml-[240px] flex-1 page-transition pt-[72px]">
+      <div className="ml-[240px] w-[calc(100%-240px)] page-transition pt-[72px]">
         <Header
           title={t('vehicles')}
           subtitle={t('garage')}
@@ -90,19 +95,19 @@ export default function MyVehicles() {
           onSearch={setSearchQuery}
         />
 
-        <div className="p-8 space-y-6 max-w-[1200px] mx-auto">
+        <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1400px]">
           {/* Header Actions */}
           <div className="flex justify-end items-center">
             <button
               onClick={() => setShowAddModal(true)}
-              className="bg-primary text-primary-foreground px-8 h-14 rounded-2xl font-black text-sm flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-105 transition-all"
+              className="bg-primary text-primary-foreground px-6 h-12 rounded-xl font-black text-xs flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
             >
               <HiPlus /> {t('add_vehicle')}
             </button>
           </div>
 
           {/* Grid */}
-          <div className="grid grid-cols-3 gap-8 min-h-[480px] content-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start">
             {currentVehicles.map((vehicle) => (
               <VehicleCard
                 key={vehicle.id}
@@ -111,21 +116,17 @@ export default function MyVehicles() {
                 onView={() => handleOpenView(vehicle)}
               />
             ))}
-            {currentVehicles.length < itemsPerPage && Array.from({ length: itemsPerPage - currentVehicles.length }).map((_, idx) => (
-              <div key={`empty-${idx}`} className="h-full rounded-2xl border border-dashed border-border bg-muted/30 flex items-center justify-center min-h-[400px]">
-                <p className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">{t('empty_slot')}</p>
-              </div>
-            ))}
+            {/* Remove empty slots placeholders as requested */}
           </div>
 
           {/* Pagination */}
-          <div className="mt-2 text-foreground">
+          <div className="mt-8 text-foreground">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               pageSize={itemsPerPage}
               totalItems={filteredVehicles.length}
-              itemsName="vehicles"
+              itemsName={t('vehicles') || "vehicles"}
               onPageChange={setCurrentPage}
             />
           </div>
@@ -142,27 +143,27 @@ export default function MyVehicles() {
 function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => void, onView: () => void }) {
   const { t } = useLanguage();
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col h-full">
+    <div className="bg-card rounded-2xl p-5 border border-border shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col h-full min-h-[360px]">
       <div className="flex justify-between items-start mb-6">
-        <div className="w-14 h-14 bg-muted rounded-2xl flex items-center justify-center p-3 border border-border">
+        <div className="w-14 h-14 bg-muted rounded-2xl flex items-center justify-center border border-border overflow-hidden shrink-0">
           {vehicle.image_url ? (
-            <img src={vehicle.image_url} alt="" className="w-full h-full object-cover rounded-lg" />
+            <img src={vehicle.image_url} alt="" className="w-full h-full object-cover" />
           ) : (
-            <img src={gearhouseLogo} alt="" className="w-full h-full object-contain grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all" />
+            <img src={gearhouseLogo} alt="" className="w-full h-full object-contain p-3 grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all text-[#D72322]" />
           )}
         </div>
         <div className="flex flex-col items-end gap-2">
           <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest ${vehicle.risk_level === 'High' ? 'bg-red-50 text-[#D72322]' :
             vehicle.risk_level === 'Medium' ? 'bg-orange-50 text-[#F97316]' : 'bg-gray-100 text-[#747681]'
             }`}>
-            {vehicle.risk_level || 'LOW'} {t('risk')}
+            {t((vehicle.risk_level || 'low').toLowerCase() + '_risk_val')} {t('risk')}
           </span>
         </div>
       </div>
 
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-foreground leading-tight mb-1">{vehicle.make} {vehicle.model}</h3>
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{vehicle.year} • {vehicle.fuel_type || 'Pickup Truck'}</p>
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{vehicle.year} • {vehicle.vehicle_type || t('pickup_truck_val')}</p>
       </div>
 
       <div className="space-y-4 mb-8 flex-1">
@@ -212,7 +213,7 @@ function ModalLayout({ title, children, onClose }: { title: string, children: Re
 
 function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefresh: () => void }) {
   const { t } = useLanguage();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<any>({
     make: "", model: "", year: 2024, license_plate: "", fuel_type: "", vehicle_type: "", mileage: 0, service_interval: 10000, vin: "", notes: "", image_url: ""
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -233,7 +234,7 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
       });
       if (resp.ok) {
         const data = await resp.json();
-        setFormData({ ...formData, image_url: data.url });
+        setFormData({ ...formData, image_url: `http://localhost:8000${data.url}` });
         toast.success(t("image_uploaded"));
       }
     } catch (err) {
@@ -270,14 +271,20 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
     <ModalLayout title={t('add_vehicle')} onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
-          <Input label={t('make')} placeholder="e.g. Toyota" value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
-          <Input label={t('model')} placeholder="e.g. Hilux" value={formData.model} onChange={(v: string) => setFormData({ ...formData, model: v })} />
+          <Input label={t('make')} placeholder={t('make_placeholder')} value={formData.make} onChange={(v: string) => setFormData({ ...formData, make: v })} />
+          <Input label={t('model')} placeholder={t('model_placeholder')} value={formData.model} onChange={(v: string) => setFormData({ ...formData, model: v })} />
           <Input label={t('current_mileage')} placeholder="0" type="number" value={formData.mileage} onChange={(v: string) => setFormData({ ...formData, mileage: parseInt(v) })} suffix="km" />
-          <Input label={t('license_plate')} placeholder="ABC-1234" value={formData.license_plate} onChange={(v: string) => setFormData({ ...formData, license_plate: v })} required />
+          <Input label={t('license_plate')} placeholder={t('plate_placeholder')} value={formData.license_plate} onChange={(v: string) => setFormData({ ...formData, license_plate: v })} required />
           <Select label={t('fuel_type')} options={["Diesel", "Gasoline", "Electric", "Hybrid"]} value={formData.fuel_type} onChange={(v: string) => setFormData({ ...formData, fuel_type: v })} />
           <Select label={t('vehicle_type')} options={["Pickup", "SUV", "Sedan", "Van", "Truck"]} value={formData.vehicle_type} onChange={(v: string) => setFormData({ ...formData, vehicle_type: v })} />
           <Input label={t('service_interval')} value={formData.service_interval} onChange={(v: string) => setFormData({ ...formData, service_interval: parseInt(v) })} suffix="km" />
-          <Input label={t('year')} value={formData.year} onChange={(v: string) => setFormData({ ...formData, year: parseInt(v) })} />
+          <Input 
+            label={t('year')} 
+            type="number"
+            placeholder="2024"
+            value={formData.year} 
+            onChange={(v: string) => setFormData({ ...formData, year: v ? parseInt(v) : "" })} 
+          />
           <div className="space-y-2">
             <span className="text-[10px] font-black text-[#A3A6B4] uppercase tracking-widest">{t('vehicle_image')}</span>
             <input 
@@ -324,7 +331,7 @@ function AddVehicleModal({ onClose, onRefresh }: { onClose: () => void, onRefres
 
 function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClose: () => void, onRefresh: () => void }) {
   const { t } = useLanguage();
-  const [formData, setFormData] = useState({ ...vehicle });
+  const [formData, setFormData] = useState<any>({ ...vehicle });
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -343,7 +350,7 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
       });
       if (resp.ok) {
         const data = await resp.json();
-        setFormData({ ...formData, image_url: data.url });
+        setFormData({ ...formData, image_url: `http://localhost:8000${data.url}` });
         toast.success(t("image_uploaded"));
       }
     } catch (err) {
@@ -394,7 +401,12 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
           <Input label={t('current_mileage')} value={formData.mileage} onChange={(v: string) => setFormData({ ...formData, mileage: parseFloat(v) })} suffix="km" />
           <Select label={t('vehicle_type')} options={["Pickup", "SUV", "Sedan", "Van", "Truck"]} value={formData.vehicle_type} onChange={(v: string) => setFormData({ ...formData, vehicle_type: v })} />
           <Input label={t('service_interval')} value={formData.service_interval} onChange={(v: string) => setFormData({ ...formData, service_interval: parseInt(v) })} suffix="km" />
-          <Input label={t('year')} value={formData.year} onChange={(v: string) => setFormData({ ...formData, year: v })} />
+          <Input 
+            label={t('year')} 
+            type="number"
+            value={formData.year} 
+            onChange={(v: string) => setFormData({ ...formData, year: v ? parseInt(v) : "" })} 
+          />
           <Input label={t('license_plate')} value={formData.license_plate} onChange={(v: string) => setFormData({ ...formData, license_plate: v })} />
           <Select label={t('fuel_type')} options={["Diesel", "Gasoline", "Electric", "Hybrid"]} value={formData.fuel_type} onChange={(v: string) => setFormData({ ...formData, fuel_type: v })} />
           <div className="space-y-2">
@@ -479,14 +491,14 @@ function ViewVehicleModal({ vehicle, onEdit, onClose }: { vehicle: any, onEdit: 
         <div className="grid grid-cols-2 gap-y-8 gap-x-12 pt-8">
           <InfoItem label={t('vin')} value={vehicle.vin || '1HTF2394019238842'} />
           <InfoItem label={t('make')} value={vehicle.make || 'Toyota'} />
-          <InfoItem label={t('model')} value={vehicle.model || 'Hilux Double Cab'} />
+          <InfoItem label={t('model')} value={vehicle.model || t('toyota_hilux_db_val')} />
           <InfoItem label={t('year')} value={vehicle.year || '2022'} />
-          <InfoItem label={t('engine_cc')} value={vehicle.engine_cc || '2,755 cc'} />
-          <InfoItem label={t('engine_type')} value={vehicle.engine_type || '2.8L Diesel Turbo'} />
-          <InfoItem label={t('transmission')} value={vehicle.transmission || '6-Speed Automatic'} />
-          <InfoItem label={t('fuel_capacity')} value={vehicle.fuel_capacity || '80 Liters'} />
+          <InfoItem label={t('engine_cc')} value={vehicle.engine_cc || t('engine_cc_val')} />
+          <InfoItem label={t('engine_type')} value={vehicle.engine_type || t('engine_turbo_val')} />
+          <InfoItem label={t('transmission')} value={vehicle.transmission || t('trans_auto_val')} />
+          <InfoItem label={t('fuel_capacity')} value={vehicle.fuel_capacity || t('fuel_cap_val')} />
           <InfoItem label={t('current_mileage')} value={`${(vehicle.mileage || 0).toLocaleString()} km`} />
-          <InfoItem label={t('last_service_date')} value={vehicle.last_service_date || '12 Oct 2023'} />
+          <InfoItem label={t('last_service_date')} value={vehicle.last_service_date || t('oct_2024_val')} />
         </div>
       </div>
     </ModalLayout>

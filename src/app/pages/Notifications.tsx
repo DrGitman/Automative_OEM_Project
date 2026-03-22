@@ -142,7 +142,7 @@ export default function Notifications() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
-                      <p className="text-foreground font-medium text-base leading-snug">{t(n.title.toLowerCase().replace(/ /g, '_')) || n.title}</p>
+                      <p className="text-foreground font-medium text-base leading-snug">{t(n.title) || n.title}</p>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className="text-xs text-muted-foreground font-normal whitespace-nowrap">{n.time}</span>
                         {n.isUnread && (
@@ -150,7 +150,7 @@ export default function Notifications() {
                         )}
                       </div>
                     </div>
-                    <p className="text-muted-foreground text-sm font-normal mt-1.5 leading-relaxed">{n.message}</p>
+                    <p className="text-muted-foreground text-sm font-normal mt-1.5 leading-relaxed">{t(n.message) || n.message}</p>
                     {n.actions && (
                       <div className="flex gap-3 mt-3">
                         {n.actions.map((action) => (
@@ -162,7 +162,7 @@ export default function Notifications() {
                                 : "text-muted-foreground hover:text-foreground"
                             }`}
                           >
-                            {t(action.label.toLowerCase().replace(/ /g, '_')) || action.label}
+                            {t(action.label) || action.label}
                           </button>
                         ))}
                       </div>
@@ -210,7 +210,7 @@ export default function Notifications() {
                             isSelected ? "text-foreground font-medium" : "text-muted-foreground font-normal"
                           }`}
                         >
-                          {t(cat.toLowerCase().replace(/ /g, '_')) || cat}
+                          {t(cat) || cat}
                         </span>
                       </button>
                     );
@@ -225,7 +225,7 @@ export default function Notifications() {
                     onClick={() => setShowDateDropdown(!showDateDropdown)}
                     className="w-full h-9 pl-4 pr-3 bg-muted border border-border rounded-xl flex items-center justify-between text-sm text-foreground font-normal"
                   >
-                    {t(dateRange.toLowerCase().replace(/ /g, '_')) || dateRange}
+                    {t(dateRange) || dateRange}
                     <HiChevronDown className={`text-muted-foreground transition-transform ${showDateDropdown ? "rotate-180" : ""}`} />
                   </button>
                   {showDateDropdown && (
@@ -238,7 +238,7 @@ export default function Notifications() {
                             dateRange === dr ? "text-primary font-medium" : "text-foreground font-normal"
                           }`}
                         >
-                          {t(dr.toLowerCase().replace(/ /g, '_')) || dr}
+                          {t(dr) || dr}
                         </button>
                       ))}
                     </div>

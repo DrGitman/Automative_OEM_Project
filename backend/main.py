@@ -92,10 +92,25 @@ def get_password_hash(password):
 def on_startup():
     try:
         models.Base.metadata.create_all(bind=database.engine)
+        
+        # Manual migration for phone and two_factor_enabled columns
+        from sqlalchemy import text
+        with database.SessionLocal() as db:
+            try:
+                # PostgreSQL specific syntax for adding columns only if they don't exist
+                db.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20)"))
+                db.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_enabled BOOLEAN DEFAULT FALSE"))
+                db.commit()
+                print("Database schema migration successful.")
+            except Exception as e:
+                db.rollback()
+                # If IF NOT EXISTS is not supported (older PG versions), it might error.
+                # However, it's supported since PG 9.6.
+                print(f"Migration error (this might be fine if columns already exist): {e}")
+
         print("Database tables verified/created successfully.")
     except Exception as e:
         print(f"CRITICAL: Could not create database tables. Error: {e}")
-        print("Please ensure your PostgreSQL user has CREATE permissions on the 'public' schema.")
 
 @app.get("/")
 def read_root():
@@ -211,7 +226,17 @@ def signup(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
         # Seed data for the new user so the dashboard isn't empty
         seed_user_data(db, new_user.id)
         
-        return new_user
+        return {
+            "id": new_user.id,
+            "email": new_user.email,
+            "firstname": new_user.firstname,
+            "lastname": new_user.lastname,
+            "profile_image": getattr(new_user, 'profile_image', None),
+            "phone": getattr(new_user, 'phone', None),
+            "role": getattr(new_user, 'role', 'Owner'),
+            "two_factor_enabled": getattr(new_user, 'two_factor_enabled', False),
+            "created_at": new_user.created_at
+        }
     except HTTPException:
         raise
     except Exception as e:
@@ -235,7 +260,18 @@ def login(user: schemas.UserLogin, db: Session = Depends(database.get_db)):
         # Ensure seed data exists (for existing users during development)
         seed_user_data(db, db_user.id)
         
-        return {"message": "Login successful", "user": {"id": db_user.id, "email": db_user.email, "firstname": db_user.firstname, "lastname": db_user.lastname}}
+        return {
+            "message": "Login successful", 
+            "user": {
+                "id": db_user.id, 
+                "email": db_user.email, 
+                "firstname": db_user.firstname, 
+                "lastname": db_user.lastname,
+                "profile_image": getattr(db_user, 'profile_image', None),
+                "phone": getattr(db_user, 'phone', None),
+                "two_factor_enabled": getattr(db_user, 'two_factor_enabled', False)
+            }
+        }
     except HTTPException:
         raise
     except Exception as e:
@@ -291,39 +327,9 @@ def get_dashboard_data(user_id: int, db: Session = Depends(database.get_db)):
                 "records_trend": [20, 40, 30, 60, 50, 80, 70],
                 "tasks_trend": [50, 30, 60, 40, 70, 50, 90]
             },
-            "vehicles": [
-                {
-                    "id": getattr(v, 'id', 0),
-                    "make": getattr(v, 'make', 'Unknown'),
-                    "model": getattr(v, 'model', 'Unknown'),
-                    "year": getattr(v, 'year', 2024),
-                    "vin": getattr(v, 'vin', 'N/A'),
-                    "license_plate": getattr(v, 'license_plate', 'N/A'),
-                    "color": getattr(v, 'color', 'N/A'),
-                    "mileage": getattr(v, 'mileage', 0),
-                    "engine_cc": getattr(v, 'engine_cc', 'N/A'),
-                    "engine_type": getattr(v, 'engine_type', 'N/A'),
-                    "transmission": getattr(v, 'transmission', 'N/A'),
-                    "fuel_capacity": getattr(v, 'fuel_capacity', 'N/A'),
-                    "fuel_type": getattr(v, 'fuel_type', 'N/A'),
-                    "last_service_date": v.last_service_date.isoformat() if v.last_service_date else None,
-                    "service_interval": getattr(v, 'service_interval', 10000),
-                    "status": getattr(v, 'status', 'Operational'),
-                    "risk_level": getattr(v, 'risk_level', 'Low'),
-                    "health_score": getattr(v, 'health_score', 100),
-                    "image_url": getattr(v, 'image_url', None)
-                } for v in user.vehicles
-            ],
+            "vehicles": user.vehicles,
             "chart_data": chart_data,
-            "notifications": [
-                {
-                    "id": getattr(n, 'id', 0),
-                    "title": getattr(n, 'title', 'Notification'),
-                    "message": getattr(n, 'message', ''),
-                    "type": getattr(n, 'type', 'info'),
-                    "created_at": n.created_at.isoformat() if n.created_at else None
-                } for n in notifications
-            ]
+            "notifications": notifications
         }
     except Exception as e:
         import traceback
@@ -399,6 +405,74 @@ def reset_password(data: schemas.ResetPasswordRequest, db: Session = Depends(dat
     return {"message": "Password updated successfully"}
 
 # ==========================================
+# USER PROFILE & SECURITY ENDPOINTS
+# ==========================================
+@app.put("/users/update/{user_id}", response_model=schemas.UserResponse)
+def update_user(user_id: int, user_update: schemas.UserUpdate, db: Session = Depends(database.get_db)):
+    try:
+        db_user = db.query(models.User).filter(models.User.id == user_id).first()
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        update_data = user_update.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            if hasattr(db_user, key):
+                setattr(db_user, key, value)
+        
+        db.commit()
+        db.refresh(db_user)
+        return {
+            "id": db_user.id,
+            "email": db_user.email,
+            "firstname": db_user.firstname,
+            "lastname": db_user.lastname,
+            "profile_image": getattr(db_user, 'profile_image', None),
+            "phone": getattr(db_user, 'phone', None),
+            "role": getattr(db_user, 'role', 'Owner'),
+            "two_factor_enabled": getattr(db_user, 'two_factor_enabled', False),
+            "created_at": db_user.created_at
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        import traceback
+        print(f"Update user error at {datetime.now()}:")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Update failed: {str(e)}")
+
+@app.put("/users/change-password/{user_id}")
+def change_password(user_id: int, data: schemas.PasswordChangeRequest, db: Session = Depends(database.get_db)):
+    try:
+        db_user = db.query(models.User).filter(models.User.id == user_id).first()
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        if not verify_password(data.current_password, db_user.password_hash):
+            raise HTTPException(status_code=400, detail="Incorrect current password")
+        
+        db_user.password_hash = get_password_hash(data.new_password)
+        db.commit()
+        return {"message": "Password changed successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"Change password error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/users/deactivate/{user_id}")
+def deactivate_user(user_id: int, db: Session = Depends(database.get_db)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # In a real app, you might just mark as inactive. Here we'll delete for simplicity.
+    db.delete(db_user)
+    db.commit()
+    return {"message": "Account deactivated"}
+
+# ==========================================
 # MAINTENANCE & SERVICE ENDPOINTS
 # ==========================================
 @app.get("/maintenance/data", response_model=schemas.MaintenancePageData)
@@ -441,7 +515,7 @@ def get_maintenance_data(user_id: int, db: Session = Depends(database.get_db)):
                 "cost": s.cost or 0.0,
                 "notes": s.description or "",
                 "technician_location": s.technician_location,
-                "parts": s.parts
+                "parts": [{"id": p.id, "part_name": p.part_name, "cost": p.cost} for p in s.parts] if s.parts else []
             })
         
         # Add alerts as overdue/open records
@@ -487,29 +561,7 @@ def get_maintenance_data(user_id: int, db: Session = Depends(database.get_db)):
             },
             "records": sorted(records, key=lambda x: x.get('date', ''), reverse=True),
             "upcoming": upcoming,
-            "vehicles": [
-                {
-                    "id": getattr(v, 'id', 0),
-                    "make": getattr(v, 'make', 'Unknown'),
-                    "model": getattr(v, 'model', 'Unknown'),
-                    "year": getattr(v, 'year', 2024),
-                    "vin": getattr(v, 'vin', 'N/A'),
-                    "license_plate": getattr(v, 'license_plate', 'N/A'),
-                    "color": getattr(v, 'color', 'N/A'),
-                    "mileage": getattr(v, 'mileage', 0.0),
-                    "engine_cc": getattr(v, 'engine_cc', 'N/A'),
-                    "engine_type": getattr(v, 'engine_type', 'N/A'),
-                    "transmission": getattr(v, 'transmission', 'N/A'),
-                    "fuel_capacity": getattr(v, 'fuel_capacity', 'N/A'),
-                    "fuel_type": getattr(v, 'fuel_type', 'N/A'),
-                    "last_service_date": v.last_service_date,
-                    "service_interval": getattr(v, 'service_interval', 10000),
-                    "status": getattr(v, 'status', 'In Operation'),
-                    "risk_level": getattr(v, 'risk_level', 'Low'),
-                    "health_score": getattr(v, 'health_score', 100),
-                    "image_url": getattr(v, 'image_url', None)
-                } for v in user.vehicles
-            ]
+            "vehicles": user.vehicles
         }
     except Exception as e:
         import traceback
@@ -715,16 +767,22 @@ def add_vehicle(vehicle: schemas.VehicleCreate, user_id: int, db: Session = Depe
 
 @app.post("/upload-image")
 async def upload_image(file: UploadFile = File(...)):
-    # Generate unique filename
-    file_extension = os.path.splitext(file.filename)[1]
-    unique_filename = f"{uuid.uuid4()}{file_extension}"
-    file_path = os.path.join(UPLOAD_DIR, unique_filename)
-    
-    # Save file
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    print(f"RECIEVED IMAGE UPLOAD: {file.filename}") # Simple DEBUG
+    try:
+        # Generate unique filename
+        file_extension = os.path.splitext(file.filename)[1]
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        file_path = os.path.join(UPLOAD_DIR, unique_filename)
         
-    return {"url": f"http://localhost:8000/uploads/{unique_filename}"}
+        # Save file
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            
+        print(f"FILE SAVED TO: {file_path}")
+        return {"url": f"/uploads/{unique_filename}"}
+    except Exception as e:
+        print(f"UPLOAD ERROR: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.put("/vehicles/update/{vehicle_id}", response_model=schemas.VehicleResponse)
 def update_vehicle(vehicle_id: int, vehicle: schemas.VehicleUpdate, db: Session = Depends(database.get_db)):

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { HiEye, HiEyeOff } from "react-icons/hi";
@@ -11,6 +11,13 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const handleForgotPassword = async () => {
     if (!email) {

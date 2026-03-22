@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function FloatingAIAgent({ isOpen, onClose }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const INITIAL_MESSAGE: Message = useMemo(() => ({
     role: "ai",
@@ -141,7 +141,13 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
-      recognition.lang = "en-US";
+      const langMap: Record<string, string> = {
+        'English': 'en-US',
+        'German': 'de-DE',
+        'Afrikaans': 'af-ZA',
+        'Oshiwambo': 'ng-NA'
+      };
+      recognition.lang = langMap[language as string] || 'en-US';
       recognitionRef.current = recognition;
       let accumulated = "";
 
@@ -164,9 +170,9 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
     } else {
       // Fallback simulation
       setIsListening(true);
-      setListeningText("Listening...");
+      setListeningText(t('listening_label'));
       silenceTimerRef.current = setTimeout(() => {
-        const sim = "What is the current fleet status?";
+        const sim = t('ai_resp_1');
         stopListening();
         sendMessage(sim);
       }, 4000);
@@ -280,7 +286,7 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
             <button
               onClick={toggleListen}
               className={`text-lg transition-colors flex-shrink-0 ${isListening ? "text-primary animate-pulse" : "text-muted-foreground hover:text-primary"}`}
-              title={isListening ? "Stop listening" : "Speak to Gearbot"}
+              title={isListening ? t('dismiss') : t('listening_label')}
             >
               <HiMicrophone />
             </button>
@@ -292,7 +298,7 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
                 className={`text-lg flex-shrink-0 transition-all ${
                   input.trim() ? "text-primary hover:scale-110 active:scale-90" : "text-muted-foreground/30 cursor-not-allowed"
                 }`}
-                title="Send message"
+                title={t('send_message')}
               >
                 <HiPaperAirplane className="rotate-90" />
               </button>

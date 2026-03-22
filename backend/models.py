@@ -14,6 +14,8 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     profile_image = Column(String(255), nullable=True)
+    phone = Column(String(20), nullable=True)
+    two_factor_enabled = Column(Boolean, default=False)
     role = Column(String(20), default="Owner")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

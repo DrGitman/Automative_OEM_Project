@@ -93,9 +93,10 @@ export default function Settings() {
                     onChange={(e) => setLocalLanguage(e.target.value as any)}
                     className="w-full h-[48px] px-4 bg-muted border border-border rounded-xl font-bold text-sm text-foreground outline-none focus:border-primary shadow-sm transition-colors"
                   >
-                  <option value="English">English</option>
-                  <option value="German">German</option>
-                  <option value="Afrikaans">Afrikaans</option>
+                   <option value="English">{t('English')}</option>
+                  <option value="German">{t('German')}</option>
+                  <option value="Afrikaans">{t('Afrikaans')}</option>
+                  <option value="Oshiwambo">{t('Oshiwambo')}</option>
                 </select>
               </div>
             </div>

@@ -1,24 +1,23 @@
+import psycopg2
+from database import SQLALCHEMY_DATABASE_URL
 
-import models, database
-from sqlalchemy.orm import Session
-
-def verify():
-    db = next(database.get_db())
+def check_columns():
     try:
-        # Check if we can reach the DB
-        db.execute("SELECT 1")
-        print("Database connection: SUCCESS")
+        conn = psycopg2.connect(SQLALCHEMY_DATABASE_URL)
+        cur = conn.cursor()
         
-        # Check tables
-        from sqlalchemy import inspect
-        inspector = inspect(database.engine)
-        tables = inspector.get_table_names()
-        print(f"Tables found: {tables}")
+        tables = ['users', 'vehicles', 'notifications', 'service_history']
+        for table in tables:
+            print(f"\nColumns in '{table}':")
+            cur.execute(f"SELECT column_name FROM information_schema.columns WHERE table_name = '{table}';")
+            cols = cur.fetchall()
+            for col in cols:
+                print(f"  - {col[0]}")
         
+        cur.close()
+        conn.close()
     except Exception as e:
-        print(f"Database connection: FAILED - {e}")
-    finally:
-        db.close()
+        print(f"Error checking columns: {e}")
 
 if __name__ == "__main__":
-    verify()
+    check_columns()

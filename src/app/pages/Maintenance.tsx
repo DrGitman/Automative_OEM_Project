@@ -50,16 +50,16 @@ export default function Maintenance() {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Are you sure you want to delete this record?")) return;
+    if (!window.confirm(t('delete_record_confirm'))) return;
     try {
       const resp = await fetch(`http://localhost:8000/maintenance/delete/${id}`, { method: 'DELETE' });
       if (resp.ok) {
-        toast.success("Record deleted");
+        toast.success(t('record_deleted'));
         fetchMaintenanceData();
         setActionMenuId(null);
       }
     } catch (err) {
-      toast.error("Failed to delete");
+      toast.error(t('failed_to_delete_record'));
     }
   };
 
@@ -73,17 +73,17 @@ export default function Maintenance() {
           body: JSON.stringify({ status: newStatus })
         });
         if (resp.ok) {
-          toast.success(`Status updated to ${newStatus}`);
+          toast.success(`${t('status_updated_to')} ${t(newStatus.toLowerCase() + '_status') || newStatus}`);
           fetchMaintenanceData();
         }
       } else {
         // It's an alert (virtual ID > 10000)
         // For now we just toast since alert closing logic might need another endpoint
-        toast.success("Alert status updated");
+        toast.success(t('alert_status_updated_msg'));
         fetchMaintenanceData();
       }
     } catch (err) {
-      toast.error("Failed to update status");
+      toast.error(t('failed_to_update_status'));
     } finally {
       setStatusMenuId(null);
     }
@@ -222,14 +222,14 @@ export default function Maintenance() {
                                 {record.status}
                               </span>
                             </div>
-                            {statusMenuId === record.id && (
-                              <div className="absolute left-4 top-[80%] bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-[#EEEFF2] py-2 w-40 z-[100] animate-in fade-in slide-in-from-top-2 flex flex-col">
-                                <p className="px-4 py-1 text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest border-b border-[#EEEFF2] mb-1">{t('set_status')}</p>
-                                <button onClick={() => handleStatusUpdate(record.id, 'COMPLETED')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#10B981] hover:bg-green-50 transition-colors">Completed</button>
-                                <button onClick={() => handleStatusUpdate(record.id, 'OPEN')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#F97316] hover:bg-orange-50 transition-colors">Open</button>
-                                <button onClick={() => handleStatusUpdate(record.id, 'OVERDUE')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#D72322] hover:bg-red-50 transition-colors">Overdue</button>
-                              </div>
-                            )}
+                              {statusMenuId === record.id && (
+                                <div className="absolute left-4 top-[80%] bg-white rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-[#EEEFF2] py-2 w-40 z-[100] animate-in fade-in slide-in-from-top-2 flex flex-col">
+                                  <p className="px-4 py-1 text-[8px] font-black text-[#A3A6B4] uppercase tracking-widest border-b border-[#EEEFF2] mb-1">{t('set_status')}</p>
+                                  <button onClick={() => handleStatusUpdate(record.id, 'COMPLETED')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#10B981] hover:bg-green-50 transition-colors">{t('completed_status')}</button>
+                                  <button onClick={() => handleStatusUpdate(record.id, 'OPEN')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#F97316] hover:bg-orange-50 transition-colors">{t('open_status')}</button>
+                                  <button onClick={() => handleStatusUpdate(record.id, 'OVERDUE')} className="w-full text-left px-4 py-2 text-xs font-bold text-[#D72322] hover:bg-red-50 transition-colors">{t('overdue_status')}</button>
+                                </div>
+                              )}
                           </td>
                           <td className="py-3 px-6 font-semibold text-[#09090B] text-xs">${record.cost.toLocaleString()}</td>
                           <td className="py-3 px-6 text-[11px] text-[#71717A] font-medium max-w-[180px] truncate">{record.notes}</td>
@@ -278,7 +278,7 @@ export default function Maintenance() {
                     totalPages={totalPages}
                     pageSize={recordsPerPage}
                     totalItems={filteredRecords.length}
-                    itemsName="records"
+                    itemsName={t('records') || "records"}
                     onPageChange={setCurrentPage}
                   />
                 </div>
@@ -295,20 +295,20 @@ export default function Maintenance() {
                 </div>
                 <div className="bg-primary/5 rounded-xl p-5 border border-primary/10 mb-5">
                   <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1">{t('next_maint')}</p>
-                  <p className="font-bold text-foreground text-base">Service in 1,240 km</p>
+                  <p className="font-bold text-foreground text-base">{t('service_in')} 1,240 km</p>
                 </div>
                 <div className="flex justify-between items-center mb-6">
                   <div>
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Est. Cost</p>
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('est_cost_upper')}</p>
                     <p className="font-black text-foreground text-base">$540.00</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">Confidence</p>
+                    <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('confidence_upper')}</p>
                     <p className="font-black text-foreground text-base">92%</p>
                   </div>
                 </div>
                 <button className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
-                  Optimize Schedule
+                  {t('optimize_schedule')}
                 </button>
               </div>
 
@@ -316,7 +316,7 @@ export default function Maintenance() {
               <div>
                 <div className="flex justify-between items-center mb-5">
                   <h3 className="font-semibold text-foreground text-[10px] uppercase tracking-wider font-['Inter']">{t('upcoming')}</h3>
-                  <span className="bg-primary text-primary-foreground text-[9px] px-2 py-0.5 rounded font-black tracking-wider">30D Window</span>
+                  <span className="bg-primary text-primary-foreground text-[9px] px-2 py-0.5 rounded font-black tracking-wider">{t('thirty_day_window')}</span>
                 </div>
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
                   {data?.upcoming.map((u: any) => (
@@ -332,7 +332,7 @@ export default function Maintenance() {
                     </div>
                   ))}
                   {(!data?.upcoming || data.upcoming.length === 0) && (
-                    <p className="text-muted-foreground text-[10px] font-medium text-center py-4 bg-muted/30 rounded-2xl border border-dashed border-border">No upcoming tasks</p>
+                    <p className="text-muted-foreground text-[10px] font-medium text-center py-4 bg-muted/30 rounded-2xl border border-dashed border-border">{t('no_upcoming_tasks')}</p>
                   )}
                 </div>
               </div>
@@ -566,7 +566,7 @@ function ViewMaintenanceModal({ record, onClose }: any) {
               onClick={() => window.print()}
               className="bg-primary text-primary-foreground px-10 h-16 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20 flex items-center gap-3 hover:scale-105 transition-all"
             >
-              <HiPrinter className="text-xl" /> Print/Export
+              <HiPrinter className="text-xl" /> {t('export')}
             </button>
           </div>
         </div>
@@ -596,11 +596,11 @@ function AddMaintenanceModal({ onClose, vehicles }: any) {
         body: JSON.stringify(formData)
       });
       if (resp.ok) {
-        toast.success("Maintenance added successfully");
+        toast.success(t('maint_added_success'));
         onClose();
       }
     } catch (err) {
-      toast.error("Failed to add record");
+      toast.error(t('failed_add_record'));
     }
   };
 
@@ -623,7 +623,7 @@ function AddMaintenanceModal({ onClose, vehicles }: any) {
           </div>
           <div className="grid grid-cols-2 gap-x-6 gap-y-6">
             <InputGroup label={t('date')} type="date" value={formData.service_date} onChange={(v: string) => setFormData({ ...formData, service_date: v })} />
-            <InputGroup label={t('tech_loc')} type="text" placeholder="e.g. QuickFix Motors" value={formData.technician_location} onChange={(v: string) => setFormData({ ...formData, technician_location: v })} />
+            <InputGroup label={t('tech_loc')} type="text" placeholder={t('gearhouse_garage_placeholder')} value={formData.technician_location} onChange={(v: string) => setFormData({ ...formData, technician_location: v })} />
           </div>
 
           <div className="col-span-2 space-y-3">
@@ -675,11 +675,11 @@ function EditMaintenanceModal({ record, onClose, onDelete }: any) {
         body: JSON.stringify(formData)
       });
       if (resp.ok) {
-        toast.success("Maintenance updated successfully");
+        toast.success(t('maint_update_success'));
         onClose();
       }
     } catch (err) {
-      toast.error("Failed to update record");
+      toast.error(t('failed_update_record'));
     }
   };
 
@@ -704,7 +704,7 @@ function EditMaintenanceModal({ record, onClose, onDelete }: any) {
           <InputGroup label="TECHNICIAN / LOCATION" type="text" value={formData.technician_location} onChange={(v: string) => setFormData({ ...formData, technician_location: v })} />
 
           <div className="col-span-2 space-y-3">
-            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-1">NOTES</label>
+            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest pl-1">{t('notes')}</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}

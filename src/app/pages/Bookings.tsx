@@ -278,7 +278,7 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
     e.preventDefault();
     const userStr = localStorage.getItem("user");
     if (!userStr) {
-      toast.error("User session not found. Please log in again.");
+      toast.error(t('session_not_found'));
       return;
     }
     const user = JSON.parse(userStr);
@@ -297,12 +297,12 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
       });
 
       if (resp.ok) {
-        toast.success("Workshop appointment booked!");
+        toast.success(t('appointment_booked'));
         onRefresh();
         onClose();
       }
     } catch (err) {
-      toast.error("Booking failed");
+      toast.error(t('booking_failed'));
     }
   };
 
@@ -335,13 +335,13 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
                   onChange={e => setFormData({ ...formData, service_type: e.target.value })}
                   className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground appearance-none"
                 >
-                  {["Oil Change", "Brake Service", "Engine Check", "Tire Rotation", "Full Inspection"].map(s => <option key={s} value={s}>{t(s.toLowerCase().replace(' ', '_')) || s}</option>)}
+                  {["Oil Change", "Brake Service", "Engine Check", "Tire Rotation", "Full Inspection"].map(s => <option key={s} value={s}>{t(s.toLowerCase().replace(' ', '_'))}</option>)}
                 </select>
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('select_service_center')}</label>
                 <input
-                  placeholder="e.g. Gearhouse Downtown Garage"
+                  placeholder={t('gearhouse_garage_placeholder')}
                   value={formData.service_center}
                   onChange={e => setFormData({ ...formData, service_center: e.target.value })}
                   className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground"
@@ -350,7 +350,7 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('location_address')}</label>
                 <input
-                  placeholder="123 Main St, Downtown"
+                  placeholder={t('main_street_placeholder')}
                   value={formData.location_address}
                   onChange={e => setFormData({ ...formData, location_address: e.target.value })}
                   className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary text-sm font-black text-foreground"
@@ -381,7 +381,7 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
               <textarea
                 value={formData.notes}
                 onChange={e => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Add any specific details or concerns..."
+                placeholder={t('add_special_instructions')}
                 className="w-full p-6 bg-muted border border-border rounded-[24px] outline-none focus:border-primary text-sm font-medium h-32 text-foreground"
               />
             </div>
@@ -451,15 +451,15 @@ function BookingDetailsModal({ booking, onClose }: any) {
         <div className="grid grid-cols-2 gap-8 mb-10">
           <InfoItem label={t('technician')} value={booking.name} />
           <InfoItem label={t('time_slot')} value={booking.time} />
-          <InfoItem label={t('location')} value={booking.center || 'Main Street Auto'} />
-          <InfoItem label={t('status')} value={booking.status || 'Confirmed'} />
+          <InfoItem label={t('location')} value={booking.center || t('main_street_auto')} />
+          <InfoItem label={t('status')} value={booking.status || t('confirmed')} />
         </div>
 
         <div className="bg-muted rounded-[24px] p-6 mb-10">
           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3 flex items-center gap-2">
             <HiLocationMarker /> {t('address')}
           </p>
-          <p className="text-sm font-black text-foreground">{booking.address || '123 Downtown St, Suite 405'}</p>
+          <p className="text-sm font-black text-foreground">{booking.address || t('downtown_address')}</p>
         </div>
 
         <button onClick={onClose} className="w-full h-14 bg-foreground text-background rounded-2xl font-black text-sm hover:scale-[1.02] transition-all">{t('close_details')}</button>

@@ -10,6 +10,7 @@ class UserBase(BaseModel):
     email: EmailStr
     firstname: str
     lastname: str
+    phone: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
@@ -24,6 +25,9 @@ class PasswordReset(BaseModel):
 
 class UserResponse(UserBase):
     id: int
+    profile_image: Optional[str] = None
+    role: str = "Owner"
+    two_factor_enabled: bool = False
     created_at: datetime
 
     class Config:
@@ -40,6 +44,18 @@ class TokenVerificationResponse(BaseModel):
     valid: bool
     email: Optional[str] = None
     message: str
+
+class UserUpdate(BaseModel):
+    firstname: Optional[str] = None
+    lastname: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    profile_image: Optional[str] = None
+    two_factor_enabled: Optional[bool] = None
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
 
 # ==========================================
 # DASHBOARD SCHEMAS
