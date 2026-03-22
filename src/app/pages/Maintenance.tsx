@@ -295,19 +295,26 @@ export default function Maintenance() {
                 </div>
                 <div className="bg-primary/5 rounded-xl p-5 border border-primary/10 mb-5">
                   <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-1">{t('next_maint')}</p>
-                  <p className="font-bold text-foreground text-base">{t('service_in')} 1,240 km</p>
+                  <p className="font-bold text-foreground text-base">
+                    {data?.stats?.ai_predicted > 0 
+                      ? `${t('service_in')} ~1,240 km` 
+                      : "No immediate service predicted"}
+                  </p>
                 </div>
                 <div className="flex justify-between items-center mb-6">
                   <div>
                     <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('est_cost_upper')}</p>
-                    <p className="font-black text-foreground text-base">$540.00</p>
+                    <p className="font-black text-foreground text-base">${data?.stats?.ai_predicted > 0 ? "540.00" : "0.00"}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('confidence_upper')}</p>
-                    <p className="font-black text-foreground text-base">92%</p>
+                    <p className="font-black text-foreground text-base">{data?.stats?.ai_predicted > 0 ? "92%" : "100%"}</p>
                   </div>
                 </div>
-                <button className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
+                <button 
+                  onClick={() => window.dispatchEvent(new CustomEvent("toggle-gearbot"))}
+                  className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
+                >
                   {t('optimize_schedule')}
                 </button>
               </div>
@@ -405,7 +412,7 @@ function MiniStat({ label, value, trend, highlight, check, sparkle, color }: any
 function ViewMaintenanceModal({ record, onClose }: any) {
   const { t } = useLanguage();
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
       <div className="bg-card w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-border">
         {/* Print Only Checklist Version */}
         <div className="hidden print:block p-10 font-serif text-[#04091E]">
@@ -605,7 +612,7 @@ function AddMaintenanceModal({ onClose, vehicles }: any) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-card w-full max-w-2xl rounded-[32px] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] border border-border">
         <div className="p-10 flex justify-between items-center border-b border-border shrink-0">
           <h2 className="text-2xl font-black text-primary">{t('add_service')}</h2>
@@ -684,7 +691,7 @@ function EditMaintenanceModal({ record, onClose, onDelete }: any) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-card w-full max-w-2xl rounded-[32px] overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] border border-border">
         <div className="p-10 flex justify-between items-center border-b border-border shrink-0">
           <h2 className="text-2xl font-black text-primary">{t('edit_service')}</h2>

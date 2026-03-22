@@ -121,6 +121,7 @@ export default function Dashboard() {
         <Header
           title={`${t('hi')}, ${stats.user_name.split(' ')[0]}`}
           subtitle={t('garage')}
+          predictionCount={stats.ai_predicted}
         />
 
         <div className="p-4 sm:p-6 lg:p-8 space-y-8 max-w-[1400px]">
@@ -159,7 +160,7 @@ export default function Dashboard() {
                 <div>
                   <p className="text-muted-foreground text-xs mb-1 font-medium italic">{t('maintenance_activity')}</p>
                   <div className="flex items-center gap-3">
-                    <h2 className="text-2xl font-black text-foreground">242 {t('alerts')}</h2>
+                    <h2 className="text-2xl font-black text-foreground">{stats.active_alerts} {t('alerts')}</h2>
                     <span className="bg-primary text-primary-foreground text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-lg shadow-primary/20">
                       <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
                         <path d="m19 12-7 7-7-7M12 19V5" />
@@ -354,7 +355,9 @@ export default function Dashboard() {
                 <h4 className="text-lg font-black text-foreground uppercase tracking-tight">{t('ai_insight')}</h4>
               </div>
               <p className="text-2xl font-black text-foreground leading-[1.2] mb-10">
-                {t('ai_prediction')}
+                {stats.ai_predicted > 0 
+                  ? `${t('hi')}, I predict ${stats.ai_predicted} vehicles will need maintenance within 30 days.`
+                  : "All systems clear! No urgent predictions for your fleet today."}
               </p>
               <div className="flex gap-4 mt-auto">
                 <button
@@ -401,7 +404,7 @@ export default function Dashboard() {
                   {t('maintenance_forecast')}
                 </h4>
                 <p className="text-muted-foreground leading-relaxed font-bold">
-                  Based on your current mileage trends and historical data, our AI models predict that <span className="text-primary font-black underline decoration-primary/30 underline-offset-4">3 vehicles</span> will require service within the next <span className="text-foreground font-black">14 days</span>.
+                  Based on your current mileage trends and historical data, our AI models predict that <span className="text-primary font-black underline decoration-primary/30 underline-offset-4">{stats.ai_predicted} vehicles</span> will require service within the next <span className="text-foreground font-black">30 days</span>.
                 </p>
               </div>
 
@@ -409,10 +412,15 @@ export default function Dashboard() {
               <div className="space-y-4">
                 <h4 className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.3em]">{t('detailed_analysis')}</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <InsightItem title={t('brake_wear')} detail="85% worn on Sedan" risk="High" />
-                  <InsightItem title={t('engine_oil')} detail="Due in 450km" risk="Medium" />
-                  <InsightItem title={t('tire_health')} detail="Rotation advised" risk="Low" />
-                  <InsightItem title={t('battery')} detail="Optimal state" risk="None" />
+                  {stats.top_insights && stats.top_insights.length > 0 ? (
+                    stats.top_insights.map((ins: any, i: number) => (
+                      <InsightItem key={i} title={ins.vehicle} detail={ins.insight} risk={ins.risk} />
+                    ))
+                  ) : (
+                    <div className="col-span-2 py-8 text-center bg-background/50 rounded-xl border border-dashed border-border">
+                      <p className="text-muted-foreground font-bold italic">No critical maintenance insights at the moment.</p>
+                    </div>
+                  )}
                 </div>
               </div>
 

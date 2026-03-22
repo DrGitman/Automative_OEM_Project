@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { HiSparkles, HiX, HiMicrophone, HiPaperAirplane } from "react-icons/hi";
+import { HiSparkles, HiX, HiMicrophone, HiPaperAirplane, HiRefresh } from "react-icons/hi";
 import { useLanguage } from "../context/LanguageContext";
 
 interface Message {
@@ -14,6 +14,21 @@ interface Props {
 
 export default function FloatingAIAgent({ isOpen, onClose }: Props) {
   const { t, language } = useLanguage();
+  const [userId, setUserId] = useState<number | null>(null);
+  const [pendingAction, setPendingAction] = useState<any>(null);
+  const [isExecuting, setIsExecuting] = useState(false);
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setUserId(user.id);
+      } catch (e) {
+        console.error("Auth error", e);
+      }
+    }
+  }, []);
 
   const INITIAL_MESSAGE: Message = useMemo(() => ({
     role: "ai",
@@ -95,22 +110,83 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
     };
   }, []);
 
-  const sendMessage = useCallback((textOverride?: string) => {
+  const sendMessage = useCallback(async (textOverride?: string, wasVoice: boolean = false) => {
     const text = (textOverride ?? input).trim();
     if (!text) return;
+    
     setMessages(prev => [...prev, { role: "user", content: text }]);
     setInput("");
     setListeningText("");
     setIsTyping(true);
-    setTimeout(() => {
-      const reply = AI_RESPONSES[Math.floor(Math.random() * AI_RESPONSES.length)];
+
+    try {
+      const response = await fetch(`http://localhost:8000/ai/chat?user_id=${userId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      
+      const data = await response.json();
+      const reply = data.response || "I'm having trouble connecting to my service.";
+      const action = data.action;
+      
       setMessages(prev => [...prev, { role: "ai", content: reply }]);
+      if (action) {
+        setPendingAction(action);
+      }
+      
+      // Voice Output (TTS) - ONLY if the user spoke to the AI
+      if (wasVoice) {
+        const utterance = new SpeechSynthesisUtterance(reply);
+        const langMap: Record<string, string> = {
+          'English': 'en-US',
+          'German': 'de-DE',
+          'Afrikaans': 'af-ZA',
+          'Oshiwambo': 'en-US'
+        };
+        utterance.lang = langMap[language as string] || 'en-US';
+        window.speechSynthesis.speak(utterance);
+      }
+      
+    } catch (error) {
+      console.error("AI Error:", error);
+      setMessages(prev => [...prev, { role: "ai", content: "Sorry, I can't reach the backend right now." }]);
+    } finally {
       setIsTyping(false);
-    }, 1400);
-  }, [input]);
+    }
+  }, [input, userId, language]);
+
+  const confirmAction = async () => {
+    if (!pendingAction || !userId) return;
+    setIsExecuting(true);
+    try {
+      const resp = await fetch(`http://localhost:8000/ai/execute-action?user_id=${userId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(pendingAction),
+      });
+      const data = await resp.json();
+      if (data.status === "success") {
+        setMessages(prev => [...prev, { role: "ai", content: `Done! ${data.message}` }]);
+        setPendingAction(null);
+      }
+    } catch (e) {
+      console.error("Action Error", e);
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  const clearChat = () => {
+    setMessages([INITIAL_MESSAGE]);
+    setPendingAction(null);
+    setInput("");
+    setListeningText("");
+    setIsTyping(false);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(undefined, false); }
   };
 
   const stopListening = useCallback(() => {
@@ -129,7 +205,7 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     silenceTimerRef.current = setTimeout(() => {
       stopListening();
-      if (text.trim()) sendMessage(text.trim());
+      if (text.trim()) sendMessage(text.trim(), true);
     }, 4000);
   }, [stopListening, sendMessage]);
 
@@ -174,7 +250,7 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
       silenceTimerRef.current = setTimeout(() => {
         const sim = t('ai_resp_1');
         stopListening();
-        sendMessage(sim);
+        sendMessage(sim, true);
       }, 4000);
     }
   };
@@ -205,12 +281,21 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
               <p className="text-muted-foreground text-xs font-normal mt-0.5">{t('fleet_assistant')}</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="size-7 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
-          >
-            <HiX className="text-sm" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={clearChat}
+              className="size-7 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-primary transition-all group/refresh"
+              title="Clear Chat"
+            >
+              <HiRefresh className="text-sm group-hover/refresh:rotate-180 transition-transform duration-500" />
+            </button>
+            <button
+              onClick={onClose}
+              className="size-7 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
+            >
+              <HiX className="text-sm" />
+            </button>
+          </div>
         </div>
 
         {/* Chat Area */}
@@ -232,6 +317,32 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
                 <div className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                 <div className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
                 <div className="size-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              </div>
+            </div>
+          )}
+          
+          {pendingAction && (
+            <div className="flex justify-center p-4">
+              <div className="bg-primary/10 border border-primary/20 rounded-2xl p-6 w-full text-center space-y-4 shadow-xl">
+                <p className="text-[10px] font-black text-primary uppercase tracking-widest">Action Required</p>
+                <p className="text-sm font-bold text-foreground">
+                  Confirm {pendingAction.details?.label || pendingAction.type.replace(/_/g, ' ')}?
+                </p>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={confirmAction}
+                    disabled={isExecuting}
+                    className="flex-1 bg-primary text-primary-foreground py-2.5 rounded-xl text-xs font-black shadow-lg shadow-primary/20 disabled:opacity-50"
+                  >
+                    {isExecuting ? "Executing..." : "Confirm"}
+                  </button>
+                  <button 
+                    onClick={() => setPendingAction(null)}
+                    className="flex-1 bg-muted text-muted-foreground py-2.5 rounded-xl text-xs font-black"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -293,7 +404,7 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
             {/* Send button — hidden while listening */}
             {!isListening && (
               <button
-                onClick={() => sendMessage()}
+                onClick={() => sendMessage(undefined, false)}
                 disabled={!input.trim()}
                 className={`text-lg flex-shrink-0 transition-all ${
                   input.trim() ? "text-primary hover:scale-110 active:scale-90" : "text-muted-foreground/30 cursor-not-allowed"

@@ -1,18 +1,22 @@
+import os
+from dotenv import load_dotenv
+# Load environment variables early
+load_dotenv()
+
 from fastapi import FastAPI, Depends, HTTPException, status, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from typing import List, Optional, Dict, Any
-from datetime import datetime
-import models, schemas, database, os, shutil, uuid
+from datetime import datetime, timedelta
+import models, schemas, database, shutil, uuid
 import smtplib
 from email.mime.text import MIMEText
-from datetime import datetime, timedelta
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+from services.ml_engine import MLEngine
+from services.scraper import ScraperService
+from services.agent import GearhouseAgent
+from services import actions
 
 # --- SMTP Configuration ---
 SMTP_SERVER = "smtp.gmail.com"
@@ -314,18 +318,50 @@ def get_dashboard_data(user_id: int, db: Session = Depends(database.get_db)):
             {"month": "Jul", "open_alerts": 30, "closed_alerts": 24},
         ]
 
+        # Get real AI insights and predictions
+        insights = []
+        ml_engine = MLEngine()
+        ai_predicted_count = 0
+        
+        for v in user.vehicles:
+            try:
+                # Update risk level dynamically via AI
+                alert_count = len([a for a in v.alerts if a.status == "Open"])
+                v.risk_level = ml_engine.assess_risk(v, alert_count)
+                
+                # Get tips for the modal
+                v_tips = ml_engine.generate_health_tips(v)
+                if v.risk_level != "Low" or v_tips:
+                    insights.append({
+                        "vehicle": f"{v.make} {v.model}",
+                        "insight": v_tips[0] if v_tips else "General maintenance check advised",
+                        "risk": v.risk_level
+                    })
+                
+                # Count predictions (within 30 days)
+                next_service = MLEngine.predict_next_service(v, v.service_history)
+                if (next_service - datetime.now()).days <= 30:
+                    ai_predicted_count += 1
+            except Exception as e:
+                print(f"ML Processing error for {v.id}: {e}")
+
+        active_alerts = sum(len([a for a in v.alerts if a.status == "Open"]) for v in user.vehicles)
+
         return {
             "stats": {
+                "user_name": f"{user.firstname} {user.lastname}",
                 "total_investment": float(total_inv or 0.0),
+                "investment_change": "+12.5% from last week",
+                "investment_trend": [30, 45, 35, 60, 50, 75, 65, 80],
                 "service_records_count": int(service_count or 0),
+                "records_change": "+2 this month",
+                "records_trend": [20, 30, 25, 40, 35, 50, 45, 60],
                 "scheduled_tasks_count": int(scheduled_tasks or 0),
-                "user_name": f"{getattr(user, 'firstname', 'User')} {getattr(user, 'lastname', '')}".strip(),
-                "investment_change": "- 0.5% from last week",
-                "records_change": "+ 1.0% from last week",
-                "tasks_change": "+ 1.0% from last week",
-                "investment_trend": [30, 70, 45, 90, 60, 100, 80],
-                "records_trend": [20, 40, 30, 60, 50, 80, 70],
-                "tasks_trend": [50, 30, 60, 40, 70, 50, 90]
+                "tasks_change": "-1 from yesterday",
+                "tasks_trend": [50, 40, 60, 45, 70, 55, 80, 65],
+                "ai_predicted": ai_predicted_count,
+                "active_alerts": active_alerts,
+                "top_insights": insights[:4]
             },
             "vehicles": user.vehicles,
             "chart_data": chart_data,
@@ -543,21 +579,36 @@ def get_maintenance_data(user_id: int, db: Session = Depends(database.get_db)):
                 "category": "Booking"
             })
         
-        # Add a mock AI prediction if needed
-        if not upcoming:
-            upcoming.append({
-                "id": "ai-1",
-                "title": "Tire Rotation",
-                "date": "Feb 15, 2026",
-                "category": "AI Prediction"
-            })
+        # Add real AI predictions and update risk levels
+        ml = MLEngine()
+        for vehicle in user.vehicles:
+            try:
+                # Update risk level via AI
+                alert_count = len([a for a in vehicle.alerts if a.status == "Open"])
+                vehicle.risk_level = ml.assess_risk(vehicle, alert_count)
+
+                # Use ML Engine to predict next service
+                next_service = MLEngine.predict_next_service(vehicle, vehicle.service_history)
+                # If predicted date is within next 30 days, add to upcoming
+                if (next_service - datetime.now()).days <= 30:
+                    upcoming.append({
+                        "id": f"ai-pred-{vehicle.id}",
+                        "title": f"Predicted: {vehicle.make} Service",
+                        "date": next_service.strftime("%b %d, %Y"),
+                        "category": "AI Prediction"
+                    })
+            except Exception as e:
+                print(f"ML Prediction error for vehicle {vehicle.id}: {e}")
+
+        # Update stats with real predicted count
+        ai_predicted_count = len([u for u in upcoming if u["category"] == "AI Prediction"])
 
         return {
             "stats": {
                 "total_logs": int(total_logs or 0),
                 "active_alerts": int(active_alerts or 0),
                 "completed_ytd": int(completed_ytd or 0),
-                "ai_predicted": 15
+                "ai_predicted": ai_predicted_count
             },
             "records": sorted(records, key=lambda x: x.get('date', ''), reverse=True),
             "upcoming": upcoming,
@@ -807,6 +858,38 @@ def delete_vehicle(vehicle_id: int, db: Session = Depends(database.get_db)):
     db.delete(db_vehicle)
     db.commit()
     return {"message": "Vehicle deleted successfully"}
+
+app.include_router(actions.router, prefix="/ai", tags=["AI Actions"])
+
+# ==========================================
+# AI AGENT ENDPOINTS
+# ==========================================
+@app.post("/ai/chat")
+async def ai_chat(user_id: int, message: Dict[str, str], db: Session = Depends(database.get_db)):
+    try:
+        agent = GearhouseAgent(db, user_id)
+        msg_text = message.get("message", "")
+        result = agent.chat(msg_text)
+        return result
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/ai/recommendations/{vehicle_id}")
+def get_ai_recommendations(vehicle_id: int, db: Session = Depends(database.get_db)):
+    vehicle = db.query(models.Vehicle).filter(models.Vehicle.id == vehicle_id).first()
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    
+    tips = MLEngine.generate_health_tips(vehicle)
+    scraped_issues = ScraperService.get_common_issues(vehicle.make, vehicle.model)
+    
+    return {
+        "tips": tips,
+        "common_issues": scraped_issues,
+        "risk_level": MLEngine.assess_risk(vehicle, len([a for a in vehicle.alerts if a.status == "Open"]))
+    }
 
 if __name__ == "__main__":
     import uvicorn

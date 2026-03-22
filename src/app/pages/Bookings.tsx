@@ -307,7 +307,7 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
       <div className="bg-card rounded-[32px] w-full max-w-4xl flex border border-border overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] shadow-2xl">
         <div className="flex-1 p-10 border-r border-border overflow-y-auto custom-scrollbar">
           <div className="flex items-center gap-3 mb-8">
@@ -434,7 +434,7 @@ function AddBookingModal({ vehicles, onClose, onRefresh }: any) {
 function BookingDetailsModal({ booking, onClose }: any) {
   const { t } = useLanguage();
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
       <div className="bg-card rounded-[32px] w-full max-w-xl p-10 animate-in zoom-in-95 duration-300 shadow-2xl border border-border overflow-y-auto max-h-[90vh] relative">
         <button onClick={onClose} className="absolute top-8 right-8 p-2 hover:bg-muted rounded-xl z-10"><HiX className="text-2xl text-muted-foreground" /></button>
 

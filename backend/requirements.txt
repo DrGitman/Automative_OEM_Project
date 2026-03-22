@@ -9,3 +9,10 @@ passlib[bcrypt]
 python-jose[cryptography]
 python-dotenv
 watchfiles
+scikit-learn
+google-generativeai
+requests
+beautifulsoup4
+numpy
+pandas
+mcp-agent

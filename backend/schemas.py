@@ -142,6 +142,11 @@ class NotificationResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class DashboardInsight(BaseModel):
+    vehicle: str
+    insight: str
+    risk: str
+
 class DashboardStats(BaseModel):
     total_investment: float
     service_records_count: int
@@ -153,6 +158,9 @@ class DashboardStats(BaseModel):
     investment_trend: List[float] = []
     records_trend: List[float] = []
     tasks_trend: List[float] = []
+    ai_predicted: int = 0
+    active_alerts: int = 0
+    top_insights: List[DashboardInsight] = []
 
 class ChartDataPoint(BaseModel):
     month: str
