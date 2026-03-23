@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { HiSparkles, HiX, HiMicrophone, HiPaperAirplane, HiRefresh } from "react-icons/hi";
 import { useLanguage } from "../context/LanguageContext";
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   role: "user" | "ai";
@@ -307,7 +308,37 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
                   ? "bg-primary text-white rounded-br-sm"
                   : "bg-background text-foreground rounded-bl-sm shadow-sm border border-border"
               }`}>
-                {msg.content}
+                {msg.role === "user" ? (
+                  msg.content
+                ) : (
+                  <ReactMarkdown
+                    components={{
+                      p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-bold text-foreground" {...props} />,
+                      em: ({node, ...props}) => <em className="italic" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc pl-4 mb-2 last:mb-0 space-y-1" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal pl-4 mb-2 last:mb-0 space-y-1" {...props} />,
+                      li: ({node, ...props}) => <li className="" {...props} />,
+                      h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-2 mt-2" {...props} />,
+                      h2: ({node, ...props}) => <h2 className="text-base font-bold mb-2 mt-2" {...props} />,
+                      h3: ({node, ...props}) => <h3 className="text-sm font-bold mb-2 mt-2" {...props} />,
+                      a: ({node, ...props}) => <a className="text-primary hover:underline font-medium" target="_blank" rel="noopener noreferrer" {...props} />,
+                      code({node, inline, className, children, ...props}: any) {
+                        return inline ? (
+                          <code className="bg-muted/50 px-1 py-0.5 rounded text-primary text-[13px] font-mono border border-border" {...props}>
+                            {children}
+                          </code>
+                        ) : (
+                          <pre className="bg-muted/30 p-3 rounded-xl text-[13px] font-mono overflow-x-auto border border-border my-2">
+                            <code {...props}>{children}</code>
+                          </pre>
+                        )
+                      }
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                )}
               </div>
             </div>
           ))}
