@@ -354,7 +354,7 @@ function PasswordChangeModal({ isOpen, onClose, userId, t }: any) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-card w-full max-w-[480px] rounded-[32px] border border-border shadow-2xl shadow-primary/5 overflow-hidden animate-in zoom-in-95 duration-300">
         <div className="p-8 border-b border-border flex items-center justify-between bg-muted/30">
           <div>
@@ -447,7 +447,7 @@ function InputGroup({ label, value, onChange }: any) {
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-14 px-6 bg-muted border border-border rounded-2xl font-bold text-sm text-foreground outline-none focus:border-primary focus:bg-card shadow-sm transition-all"
+        className="w-full h-14 px-6 bg-muted border border-border rounded-2xl text-sm text-foreground outline-none focus:border-primary focus:bg-card shadow-sm transition-all"
       />
     </div>
   );

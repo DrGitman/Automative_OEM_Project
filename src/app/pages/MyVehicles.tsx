@@ -197,14 +197,16 @@ function VehicleCard({ vehicle, onEdit, onView }: { vehicle: any, onEdit: () => 
 
 function ModalLayout({ title, children, onClose }: { title: string, children: React.ReactNode, onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
       <div className="bg-card rounded-[32px] w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh] border border-border">
         <div className="p-8 flex justify-between items-center bg-card border-b border-border shrink-0">
           <h2 className="text-2xl font-black text-foreground">{title}</h2>
           <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl transition-all"><HiX className="text-2xl text-foreground" /></button>
         </div>
-        <div className="p-8 overflow-y-auto">
-          {children}
+        <div className="overflow-y-auto custom-scrollbar flex-1">
+          <div className="p-8">
+            {children}
+          </div>
         </div>
       </div>
     </div>
@@ -475,48 +477,80 @@ function EditVehicleModal({ vehicle, onClose, onRefresh }: { vehicle: any, onClo
 function ViewVehicleModal({ vehicle, onEdit, onClose }: { vehicle: any, onEdit: () => void, onClose: () => void }) {
   const { t } = useLanguage();
   return (
-    <ModalLayout title={t('vehicle_information')} onClose={onClose}>
-      <div className="space-y-8">
-        <div className="flex justify-between items-start">
-          <div className="relative group">
-            <img src={vehicle.image_url || gearhouseLogo} alt="" className="w-64 h-48 object-cover rounded-[32px] border border-[#EEEFF2]" />
-            <div className="absolute -bottom-6 left-0 right-0 bg-white p-4 rounded-2xl border border-[#EEEFF2] shadow-sm flex items-center gap-3">
-              <div className="w-3 h-3 rounded-full bg-[#10B981]" />
-              <span className="text-sm font-black text-[#04091E]">{t('in_operation')}</span>
-            </div>
-          </div>
-          <button onClick={onEdit} className="text-sm font-black text-[#D72322] hover:underline">{t('edit_info')}</button>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div className="bg-card rounded-[32px] w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col min-h-[75vh] max-h-[90vh] border border-border">
+        {/* Header */}
+        <div className="px-8 py-6 flex justify-between items-center border-b border-border shrink-0">
+          <h2 className="text-2xl font-black text-foreground">{t('vehicle_information')}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl transition-all">
+            <HiX className="text-2xl text-foreground" />
+          </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-y-8 gap-x-12 pt-8">
-          <InfoItem label={t('vin')} value={vehicle.vin || '1HTF2394019238842'} />
-          <InfoItem label={t('make')} value={vehicle.make || 'Toyota'} />
-          <InfoItem label={t('model')} value={vehicle.model || t('toyota_hilux_db_val')} />
-          <InfoItem label={t('year')} value={vehicle.year || '2022'} />
-          <InfoItem label={t('engine_cc')} value={vehicle.engine_cc || t('engine_cc_val')} />
-          <InfoItem label={t('engine_type')} value={vehicle.engine_type || t('engine_turbo_val')} />
-          <InfoItem label={t('transmission')} value={vehicle.transmission || t('trans_auto_val')} />
-          <InfoItem label={t('fuel_capacity')} value={vehicle.fuel_capacity || t('fuel_cap_val')} />
-          <InfoItem label={t('current_mileage')} value={`${(vehicle.mileage || 0).toLocaleString()} km`} />
-          <InfoItem label={t('last_service_date')} value={vehicle.last_service_date || t('oct_2024_val')} />
+        {/* Body: image left (wider) + details right (narrower) */}
+        <div className="flex overflow-hidden flex-1">
+          {/* Left — large image panel */}
+          <div className="flex-[1.1] bg-muted relative flex items-center justify-center p-5">
+            <div className="w-full h-full rounded-3xl overflow-hidden">
+              <img
+                src={vehicle.image_url || gearhouseLogo}
+                alt={`${vehicle.make} ${vehicle.model}`}
+                className="w-full h-full object-contain rounded-2xl"
+              />
+            </div>
+            {/* Overlay status badge */}
+            <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-2xl px-4 py-2.5">
+              <div className="w-2 h-2 rounded-full bg-green-400" />
+              <span className="text-xs font-semibold text-white">{t('in_operation')}</span>
+            </div>
+          </div>
+
+          {/* Right — vehicle details, all visible without scrolling */}
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="px-8 py-6 space-y-5">
+              {/* Title */}
+              <div className="pb-4 border-b border-border">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-0.5">{vehicle.year}</p>
+                <h3 className="text-xl font-bold text-foreground tracking-tight">{vehicle.make} {vehicle.model}</h3>
+                <button
+                  onClick={onEdit}
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline underline-offset-4 transition-all"
+                >
+                  {t('edit_info')} →
+                </button>
+              </div>
+
+              {/* Specs — 2 columns so all 8 fit in 4 rows */}
+              <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                <InfoItem label={t('vin')} value={vehicle.vin || '—'} />
+                <InfoItem label={t('license_plate')} value={vehicle.license_plate || '—'} />
+                <InfoItem label={t('current_mileage')} value={`${(vehicle.mileage || 0).toLocaleString()} km`} />
+                <InfoItem label={t('fuel_type')} value={vehicle.fuel_type || '—'} />
+                <InfoItem label={t('vehicle_type')} value={vehicle.vehicle_type || '—'} />
+                <InfoItem label={t('transmission')} value={vehicle.transmission || '—'} />
+                <InfoItem label={t('last_service_date')} value={vehicle.last_service_date || '—'} />
+                <InfoItem label={t('health_score')} value={`${vehicle.health_score || 94}%`} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </ModalLayout>
+    </div>
   );
 }
 
 function Input({ label, onChange, ...props }: any) {
   return (
     <div className="space-y-2 relative">
-      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{label}</label>
+      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">{label}</label>
       <div className="relative">
         <input
           {...props}
           onChange={(e) => onChange?.(e.target.value)}
-          className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary transition-all text-sm font-black text-foreground"
+          className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary transition-all text-sm font-normal text-foreground"
         />
         {props.suffix && (
-          <span className="absolute right-6 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground">{props.suffix}</span>
+          <span className="absolute right-6 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">{props.suffix}</span>
         )}
       </div>
     </div>
@@ -527,11 +561,11 @@ function Select({ label, options, value, onChange }: any) {
   const { t } = useLanguage();
   return (
     <div className="space-y-2">
-      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{label}</label>
+      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">{label}</label>
       <select
         value={value || ""}
         onChange={e => onChange(e.target.value)}
-        className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary transition-all text-sm font-black text-foreground appearance-none"
+        className="w-full h-14 px-6 bg-muted border border-border rounded-2xl outline-none focus:border-primary transition-all text-sm font-normal text-foreground appearance-none"
       >
         <option value="">{t('select')} {label}</option>
         {options.map((o: string) => <option key={o} value={o}>{o}</option>)}
@@ -543,8 +577,8 @@ function Select({ label, options, value, onChange }: any) {
 function InfoItem({ label, value }: { label: string, value: string }) {
   return (
     <div>
-      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{label}</p>
-      <p className="text-lg font-black text-foreground">{value}</p>
+      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.12em] mb-1">{label}</p>
+      <p className="text-base font-semibold text-foreground">{value}</p>
     </div>
   );
 }
