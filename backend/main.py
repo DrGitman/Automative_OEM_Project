@@ -24,29 +24,19 @@ SMTP_PORT = 587
 SENDER_EMAIL = os.getenv("SMTP_EMAIL", "orilionaobeb@gmail.com") 
 SENDER_PASSWORD = os.getenv("SMTP_PASSWORD") # This must be an App Password
 
-def send_reset_email(receiver_email: str, token: str):
+def send_email(receiver_email: str, subject: str, body_html: str):
+    """
+    General utility to send an email via SMTP.
+    """
     if not SENDER_PASSWORD:
-        print("Warning: SMTP_PASSWORD not set. Cannot send real reset email.")
-        # For development, we'll log the link
-        print(f"--- RESET LINK (DEV): http://localhost:5173/reset-password?token={token} ---")
+        print(f"Warning: SMTP_PASSWORD not set. Logging email to {receiver_email}")
+        print(f"Subject: {subject}")
+        print(f"Body: {body_html}")
         return True
 
     try:
-        reset_link = f"http://localhost:5173/reset-password?token={token}"
-        body = f"""
-        <html>
-        <body>
-            <h2>Password Reset Request</h2>
-            <p>You requested to reset your password for Gearhouse OEM Dashboard.</p>
-            <p>Click the link below to set a new password. This link is valid for 15 minutes.</p>
-            <a href="{reset_link}" style="background-color: #D72322; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
-            <p>If you didn't request this, you can safely ignore this email.</p>
-            <p>Regards,<br>Gearhouse Team</p>
-        </body>
-        </html>
-        """
-        message = MIMEText(body, "html")
-        message["Subject"] = "Gearhouse Password Reset"
+        message = MIMEText(body_html, "html")
+        message["Subject"] = subject
         message["From"] = SENDER_EMAIL
         message["To"] = receiver_email
 
@@ -59,6 +49,22 @@ def send_reset_email(receiver_email: str, token: str):
     except Exception as e:
         print(f"SMTP Error: {e}")
         return False
+
+def send_reset_email(receiver_email: str, token: str):
+    reset_link = f"http://localhost:5173/reset-password?token={token}"
+    body = f"""
+    <html>
+    <body>
+        <h2>Password Reset Request</h2>
+        <p>You requested to reset your password for Gearhouse OEM Dashboard.</p>
+        <p>Click the link below to set a new password. This link is valid for 15 minutes.</p>
+        <a href="{reset_link}" style="background-color: #D72322; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
+        <p>If you didn't request this, you can safely ignore this email.</p>
+        <p>Regards,<br>Gearhouse Team</p>
+    </body>
+    </html>
+    """
+    return send_email(receiver_email, "Gearhouse Password Reset", body)
 
 app = FastAPI()
 

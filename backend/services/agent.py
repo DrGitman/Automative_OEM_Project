@@ -7,7 +7,7 @@ from .scraper import ScraperService
 import models
 import json
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 # Setup Gemini - Try loading from environment
 def configure_genai():
@@ -29,7 +29,10 @@ class GearhouseAgent:
         # Define tools for function calling
         tools = [
             self.book_appointment_tool,
-            self.update_vehicle_tool
+            self.update_vehicle_tool,
+            self.send_email_tool,
+            self.add_service_history_tool,
+            self.manage_alert_tool
         ]
 
         self.model = genai.GenerativeModel(
@@ -48,8 +51,6 @@ class GearhouseAgent:
             service_center: The name of the service center.
             location_address: The address of the service center.
         """
-        # This is a tool definition, the actual execution happens via the frontend confirmation flow
-        # as per the current architecture in actions.py
         return {
             "type": "BOOK_APPOINTMENT",
             "details": {
@@ -82,6 +83,67 @@ class GearhouseAgent:
             "details": details
         }
 
+    def send_email_tool(self, recipient_email: str, subject: str, body: str):
+        """
+        Sends an email to a specified recipient.
+
+        Args:
+            recipient_email: The email address of the recipient.
+            subject: The subject of the email.
+            body: The body content of the email.
+        """
+        return {
+            "type": "SEND_EMAIL",
+            "details": {
+                "label": f"Send email to {recipient_email}",
+                "recipient_email": recipient_email,
+                "subject": subject,
+                "body": body
+            }
+        }
+
+    def add_service_history_tool(self, vehicle_id: int, service_type: str, cost: float, description: str, mileage: float, date: Optional[str] = None):
+        """
+        Adds a new record to a vehicle's service history.
+
+        Args:
+            vehicle_id: The ID of the vehicle.
+            service_type: Type of service performed.
+            cost: Total cost of the service.
+            description: Detailed notes about the work done.
+            mileage: Odometer reading at the time of service.
+            date: Date of service in ISO format (YYYY-MM-DD). Defaults to today.
+        """
+        return {
+            "type": "ADD_SERVICE_HISTORY",
+            "details": {
+                "label": f"Add {service_type} record for Vehicle #{vehicle_id}",
+                "vehicle_id": vehicle_id,
+                "service_type": service_type,
+                "cost": cost,
+                "description": description,
+                "mileage": mileage,
+                "service_date": date or datetime.now().isoformat()
+            }
+        }
+
+    def manage_alert_tool(self, alert_id: int, status: str):
+        """
+        Updates the status of a maintenance alert (e.g., resolving it).
+
+        Args:
+            alert_id: The ID of the alert to manage.
+            status: The new status (Open, Closed).
+        """
+        return {
+            "type": "MANAGE_ALERT",
+            "details": {
+                "label": f"Mark Alert #{alert_id} as {status}",
+                "alert_id": alert_id,
+                "status": status
+            }
+        }
+
     def chat(self, message: str, language: str = "English"):
         # Ensure configured
         configure_genai()
@@ -105,7 +167,8 @@ class GearhouseAgent:
         - NO REPETITIVE GREETINGS: Do not greet the user in every response.
         - STAY ON TOPIC: Focus on vehicle maintenance and fleet management.
         - DATA DRIVEN: Use the database context to provide real values.
-        - TOOLS: Use the provided tools if the user wants to book an appointment or update vehicle info.
+        - PROACTIVE TOOLS: Use the provided tools whenever a user wants to perform an action (booking, updating, emailing, logging history, or resolving alerts).
+        - ONE-COMMAND ACTIONS: If a user gives a command like "Schedule an oil change for my Hilux tomorrow", use the appropriate tool immediately.
         - PERSONALITY: Professional, modern, and efficient.
         """
         
@@ -118,16 +181,20 @@ class GearhouseAgent:
             action = None
 
             # Check for function calls in the response
-            # Gemini response might contain multiple parts, one of which could be a function call
             for part in response.candidates[0].content.parts:
                 if fn := part.function_call:
                     # Map function call back to our action format
-                    # We call the tool method locally to get the structured action dict
                     args = {k: v for k, v in fn.args.items()}
                     if fn.name == "book_appointment_tool":
                         action = self.book_appointment_tool(**args)
                     elif fn.name == "update_vehicle_tool":
                         action = self.update_vehicle_tool(**args)
+                    elif fn.name == "send_email_tool":
+                        action = self.send_email_tool(**args)
+                    elif fn.name == "add_service_history_tool":
+                        action = self.add_service_history_tool(**args)
+                    elif fn.name == "manage_alert_tool":
+                        action = self.manage_alert_tool(**args)
                     
                     # If there's a function call, we might want to append a message about it
                     if not text:
