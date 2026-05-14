@@ -124,7 +124,10 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
       const response = await fetch(`http://localhost:8000/ai/chat?user_id=${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({
+          message: text,
+          language: language
+        }),
       });
       
       const data = await response.json();
@@ -134,6 +137,12 @@ export default function FloatingAIAgent({ isOpen, onClose }: Props) {
       setMessages(prev => [...prev, { role: "ai", content: reply }]);
       if (action) {
         setPendingAction(action);
+        // Automatically scroll to show the action required card
+        setTimeout(() => {
+          if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100);
       }
       
       // Voice Output (TTS) - ONLY if the user spoke to the AI

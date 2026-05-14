@@ -16,8 +16,20 @@ class KnowledgeBase:
             return "User not found."
             
         context = f"Fleet Owner: {user.firstname} {user.lastname}\n"
-        context += f"Total Vehicles: {len(user.vehicles)}\n\n"
+        context += f"Total Vehicles: {len(user.vehicles)}\n"
         
+        # Add notification context
+        notifications = self.db.query(models.Notification).filter(
+            models.Notification.user_id == user_id,
+            models.Notification.is_read == False
+        ).order_by(models.Notification.created_at.desc()).limit(3).all()
+
+        if notifications:
+            context += "\nRecent Unread Notifications:\n"
+            for n in notifications:
+                context += f"- [{n.category}] {n.title}: {n.message}\n"
+
+        context += "\n--- FLEET DETAILS ---\n"
         for v in user.vehicles:
             context += self.get_vehicle_context(v.id) + "\n---\n"
             

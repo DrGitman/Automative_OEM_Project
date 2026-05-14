@@ -5,3 +5,9 @@ backend/.env
 .env.*
 !.env.example
 .claude/
+__pycache__/
+*.pyc
+*.log
+*.db
+backend/uploads/*
+!backend/uploads/.gitkeep
