@@ -114,7 +114,7 @@ class GearhouseAgent:
             chat_session = self.model.start_chat(history=[])
             response = chat_session.send_message(f"{system_instruction}\n\nUSER MESSAGE: {message}")
             
-            text = response.text
+            text = ""
             action = None
 
             # Check for function calls in the response
@@ -132,6 +132,11 @@ class GearhouseAgent:
                     # If there's a function call, we might want to append a message about it
                     if not text:
                         text = f"I've prepared the details to {action['details']['label'].lower()}. Please confirm to proceed."
+                elif hasattr(part, 'text') and part.text:
+                    text = part.text
+
+            if not text and not action:
+                text = "I'm sorry, I couldn't process that request. Could you please rephrase?"
 
             return {"response": text, "action": action}
         except Exception as e:
