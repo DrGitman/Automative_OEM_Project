@@ -29,6 +29,17 @@ class KnowledgeBase:
             for n in notifications:
                 context += f"- [{n.category}] {n.title}: {n.message}\n"
 
+        # Add Calendar (Appointments) context
+        appointments = self.db.query(models.Appointment).filter(
+            models.Appointment.user_id == user_id,
+            models.Appointment.preferred_date >= datetime.now()
+        ).order_by(models.Appointment.preferred_date.asc()).limit(5).all()
+
+        if appointments:
+            context += "\nUpcoming Calendar/Appointments:\n"
+            for a in appointments:
+                context += f"- {a.preferred_date.strftime('%Y-%m-%d')} {a.preferred_time}: {a.service_type} at {a.service_center} (Status: {a.status})\n"
+
         context += "\n--- FLEET DETAILS ---\n"
         for v in user.vehicles:
             context += self.get_vehicle_context(v.id) + "\n---\n"

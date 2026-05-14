@@ -26,7 +26,7 @@ def test_chat_api():
         if resp.status_code == 200:
             data = resp.json()
             print("Response Data:")
-            print(f"  Response: {data.get('response')[:100]}...")
+            print(f"  Response: {data.get('response')[:100] if data.get('response') else 'No text'}...")
             print(f"  Action: {data.get('action')}")
         else:
             print(f"Error Response: {resp.text}")
