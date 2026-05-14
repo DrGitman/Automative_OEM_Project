@@ -16,3 +16,5 @@ beautifulsoup4
 numpy
 pandas
 mcp-agent
+email-validator
+requests

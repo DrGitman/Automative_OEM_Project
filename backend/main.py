@@ -865,11 +865,12 @@ app.include_router(actions.router, prefix="/ai", tags=["AI Actions"])
 # AI AGENT ENDPOINTS
 # ==========================================
 @app.post("/ai/chat")
-async def ai_chat(user_id: int, message: Dict[str, str], db: Session = Depends(database.get_db)):
+async def ai_chat(user_id: int, message: Dict[str, Any], db: Session = Depends(database.get_db)):
     try:
         agent = GearhouseAgent(db, user_id)
         msg_text = message.get("message", "")
-        result = agent.chat(msg_text)
+        language = message.get("language", "English")
+        result = agent.chat(msg_text, language=language)
         return result
     except Exception as e:
         import traceback
