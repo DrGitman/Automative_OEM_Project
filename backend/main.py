@@ -894,6 +894,4 @@ def get_ai_recommendations(vehicle_id: int, db: Session = Depends(database.get_d
 
 if __name__ == "__main__":
     import uvicorn
-    # Create database tables if they don't exist
-    models.Base.metadata.create_all(bind=database.engine)
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
